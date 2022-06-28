@@ -8,4 +8,5 @@ function SiteHead() {
         </Head>
     )
 }
+
 export default SiteHead;
