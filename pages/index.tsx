@@ -1,12 +1,16 @@
-import type { NextPage } from 'next'
-import Footer from "../components/footer"
+import {useState} from 'react';
+import type {NextPage} from 'next'
+import SiteFooter from "../components/SiteFooter"
+import SiteHead from "../components/SiteHead";
+import Form from "../components/Form";
 
 const Home: NextPage = () => {
-  return (
-    <>
-        <Footer/>
-    </>
-  ) 
+    return (
+        <>
+            <SiteHead/>
+            <Form/>
+            <SiteFooter/>
+        </>
+    )
 }
-
 export default Home
