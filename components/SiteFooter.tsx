@@ -4,7 +4,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
 function SiteFooter() {
     return (
-        <div className={"fixed left-0 bottom-3 w-full text-center"}>
+        <div className={"fixed left-0 right-0 text-center bottom-4"}>
             <p>Created by Rase</p>
             <Link href="https://github.com/52617365">
                 <GitHubIcon/>
