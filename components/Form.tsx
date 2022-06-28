@@ -1,4 +1,6 @@
 import React from "react";
+import SpiceLevel from "./SpiceLevel"
+import Button from "../components/Button"
 
 function Form() {
     const [state, setState] = React.useState({
@@ -7,49 +9,25 @@ function Form() {
         kirpea: false,
     });
 
+    const {tulinen, mieto, kirpea} = state;
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setState({
             ...state,
             [event.target.name]: event.target.checked,
         });
     };
-    const {tulinen, mieto, kirpea} = state;
-    const [buttonLoading, setButtonLoading] = React.useState(false);
-
-    function setButton() {
-        setButtonLoading(true)
-    }
 
     return (
         <div className={"flex flex-col justify-center items-center h-full inset-x-0 top-0"}>
-            <div className={"text-center border-4 rounded-md border-indigo-600 "}>
-                <div
-                    className="grid gap-3 grid-cols-3 grid-rows-3">
-                    <div className={"form-control"}>
-                        <label className="label cursor-pointer">
-                            <span className="label-text">Tulinen</span>
-                            <input type="checkbox" defaultChecked={tulinen} onChange={handleChange} name={"tulinen"}
-                                   className="checkbox"/>
-                        </label>
-                    </div>
-                    <div className={"form-control"}>
-                        <label className="label cursor-pointer">
-                            <span className="label-text">Mieto</span>
-                            <input type="checkbox" defaultChecked={mieto} onChange={handleChange} name={"mieto"}
-                                   className="checkbox"/>
-                        </label>
-                    </div>
-                    <div className={"form-control"}>
-                        <label className="label cursor-pointer">
-                            <span className="label-text">Kirpeä</span>
-                            <input type="checkbox" defaultChecked={kirpea} onChange={handleChange} name={"kirpea"}
-                                   className="checkbox"/>
-                        </label>
-                    </div>
-                </div>
+            <div className={"text-center border-4 rounded-md"}>
+                <p>Tulisuus</p>
+                <SpiceLevel tulinen={tulinen} mieto={mieto} kirpea={kirpea} handleChange={handleChange}/>
+                <p>Add something</p>
+                {/* TODO: Add other options here, E.g other user preferences. */}
+                <SpiceLevel tulinen={tulinen} mieto={mieto} kirpea={kirpea} handleChange={handleChange}/>
                 {/* TODO: Make button go back to false state when fetching is done.*/}
-                {buttonLoading ? <button className="btn loading">Ladataan...</button> :
-                    <button onClick={setButton} type="submit" className="btn">Etsi</button>}
+                <Button/>
             </div>
         </div>
     )
