@@ -4,26 +4,26 @@
 
 html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family: monospace, "Courier New";
+    padding: 0;
+    margin: 0;
+    font-family: "Bahnschrift", Bahnschrift, serif;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 #__next {
-  background-color: #787878;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+    background-color: #787878;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 * {
-  box-sizing: border-box;
-  background-color: #787878;
+    box-sizing: border-box;
+    background-color: #787878;
 }
