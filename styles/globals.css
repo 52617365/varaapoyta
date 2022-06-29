@@ -15,7 +15,6 @@ a {
 }
 
 #__next {
-    background-color: #787878;
     position: absolute;
     top: 0;
     bottom: 0;
@@ -25,5 +24,4 @@ a {
 
 * {
     box-sizing: border-box;
-    background-color: #787878;
 }
