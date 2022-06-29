@@ -1,17 +1,13 @@
 import type {NextPage} from 'next'
-import SiteFooter from "../components/SiteFooter"
-import SiteHead from "../components/SiteHead";
-import Form from "../components/Form";
-import Introduction from "../components/Introduction"
+import Link from "next/link"
 
 const Home: NextPage = () => {
     return (
-        <>
-            <SiteHead/>
-            <Introduction/>
-            <Form/>
-            <SiteFooter/>
-        </>
+        <Link className="relative w-full" href={"/login"}>
+            <button className="absolute m-auto top-0 left-0 right-0 bottom-0 btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Kirjaudu sisään
+                tallentaaksesi mieltymyksesi
+            </button>
+        </Link>
     )
 }
 export default Home
