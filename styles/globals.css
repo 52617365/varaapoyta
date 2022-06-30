@@ -25,3 +25,6 @@ a {
 * {
     box-sizing: border-box;
 }
+span + span {
+    margin-left: 10px;
+}
