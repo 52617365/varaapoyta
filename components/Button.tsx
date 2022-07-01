@@ -1,6 +1,6 @@
 import React from "react";
 
-function Button() {
+function Button({text}: {text: string}) {
     const [buttonLoading, setButtonLoading] = React.useState(false);
 
     function setButton() {
@@ -10,7 +10,7 @@ function Button() {
     return (
         <>
             {buttonLoading ? <button className="btn loading">Ladataan...</button> :
-                <button onClick={setButton} type="submit" className="btn">Etsi</button>}
+                <button onClick={setButton} type="submit" className="btn">{text}</button>}
         </>
     )
 }
