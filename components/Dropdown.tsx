@@ -1,4 +1,4 @@
-function DropDown({handleChange, name, items}: { handleChange: any, name: string, items: Array<JSX.Element> }) {
+function DropDown({name, items}: { name: string, items: Array<JSX.Element> }) {
     return (
         <div className="dropdown dropdown-hover">
             <label tabIndex={0} className="btn m-1">{name}</label>
