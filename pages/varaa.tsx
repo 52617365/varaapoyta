@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Button from "../components/Button"
 import SiteFooter from "../components/SiteFooter";
 import SiteHead from "../components/SiteHead";
@@ -14,7 +15,11 @@ function Varaa() {
                         <div className={"grid gap-10"}>
                             <Button text={"Varaa pöytäsi"}/>
                             {/*TODO: Make this button go in top right corner.*/}
-                            <Button text={"Muuta asetuksiasi"}/>
+                            <Link href={"/asetukset"}>
+                                <a>
+                                    <Button text={"Muuta asetuksiasi"}/>
+                                </a>
+                            </Link>
                         </div>
                     </div>
                 </div>
