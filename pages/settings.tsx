@@ -3,30 +3,48 @@ import SiteFooter from "../components/SiteFooter";
 import React from "react";
 import DropDown from "../components/Dropdown";
 import Checkbox from "../components/Checkbox";
-import Button from "../components/Button";
+import SubmitButton from "../components/SubmitButton"
 
-function GenerateCheckboxes(items: string[], handler: Function) {
+function GenerateCheckboxes(items: string[]) {
     return (
         items.map((item) => {
             return (
-                <Checkbox key={item} handler={handler} name={item}/>
+                <Checkbox key={item} name={item}/>
             )
         }))
 }
 
 function Settings({restaurants}: { restaurants: string[] }) {
-    // in the end valitutRavintolat will contain all the user selected restaurants.
-    // valitutAsetukset will be an object of arrays, array will contain all of the settings from the corresponding key (key will be a setting section)
-    // E.g {restaurants: [res1, res2...]},
-    const [valitutAsetukset, lisaaAsetus] = React.useState(
-        {}
-    );
+    const [settings, setSettings] = React.useState({
+        restaurants: [],
+    })
 
-    function asetusHandler(key: string, asetus: string) {
-    //    TODO: Add functionality for settings
-    }
+    const restaurantBoxes = GenerateCheckboxes(restaurants)
 
-    const restaurantBoxes = GenerateCheckboxes(restaurants, asetusHandler)
+    const handleChange = (e: any) => {
+        // Destructuring
+        const {name, checked} = e.target;
+        const {restaurants} = settings;
+
+        // console.log(`${name} is ${checked}`);
+
+        // Case 1 : The user checks the box
+        if (checked) {
+            setSettings({
+                // @ts-ignore
+                restaurants: [...restaurants, name],
+            });
+        }
+        // Case 2  : The user unchecks the box
+        else {
+            setSettings({
+                restaurants: restaurants.filter((e) => e !== name),
+            });
+        }
+
+    };
+
+    console.log(settings.restaurants)
 
     return (
         <>
@@ -34,13 +52,15 @@ function Settings({restaurants}: { restaurants: string[] }) {
             <div className={"flex flex-col justify-center items-center h-full inset-x-0 top-0"}>
                 {/*TODO: Capture state of selected items.*/}
                 {/*Ravintolat settings*/}
-                <DropDown
-                    items={restaurantBoxes}
-                    name={"Ravintolat"}
-                />
-                <div className={"absolute bottom-1/3"}>
-                    <Button text={"Tallenna asetukset"}/>
-                </div>
+                <form onChange={handleChange}>
+                    <DropDown
+                        items={restaurantBoxes}
+                        name={"Ravintolat"}
+                    />
+                    <div className={"absolute bottom-1/3"}>
+                        <SubmitButton text={"Tallenna asetukset"}/>
+                    </div>
+                </form>
             </div>
             <SiteFooter/>
         </>
