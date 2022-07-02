@@ -50,6 +50,11 @@ function Asetukset({restaurants}: { restaurants: string[] }) {
         <>
             <SiteHead/>
             <div className="relative hero min-h-screen bg-base-200">
+                <Link href={"/varaa"}>
+                    <a className={"absolute top-0 right-0"}>
+                        <Button text={"Takaisin varaamaan"}/>
+                    </a>
+                </Link>
                 <div className="hero-content text-center">
                     <div className="absolute top-1/3 max-w-md pr-5">
                         <h1 className={"text-xl pb-10"}>Asetukset</h1>
@@ -60,11 +65,6 @@ function Asetukset({restaurants}: { restaurants: string[] }) {
                             />
                             {/*TODO: Once user has saved settings, make button go back into the false state (not loading)*/}
                             <Button text={"Tallenna asetukset"}/>
-                            <Link href={"/varaa"}>
-                                <a>
-                                    <Button text={"Takaisin varaamaan"}/>
-                                </a>
-                            </Link>
                         </div>
                     </div>
                     <SiteFooter/>
@@ -77,6 +77,7 @@ function Asetukset({restaurants}: { restaurants: string[] }) {
 // TODO: Add other data in here too.
 export async function getStaticProps() {
     // TODO: Hae ravintola nimet jostain ja anna ne main componenttiin tasta.
+    // restaurants variableen tulee tulevaisuudessa tietokannasta tieto. se kyllakin staattisesti renderoityna at compile time.
     const restaurants = ["restaurant1", "restaurant2", "restaurant3"];
     return {
         props: {
