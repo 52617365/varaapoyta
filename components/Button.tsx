@@ -10,7 +10,7 @@ function Button({text}: {text: string}) {
     return (
         <>
             {buttonLoading ? <button className="btn loading">Ladataan...</button> :
-                <button onClick={setButton} type="submit" className="btn">{text}</button>}
+                <button onClick={setButton} className="btn">{text}</button>}
         </>
     )
 }
