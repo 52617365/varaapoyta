@@ -3,7 +3,7 @@ import SiteFooter from "../components/SiteFooter";
 import React from "react";
 import DropDown from "../components/Dropdown";
 import Checkbox from "../components/Checkbox";
-import SubmitButton from "../components/SubmitButton"
+import Button from "../components/Button";
 
 function GenerateCheckboxes(items: string[]) {
     return (
@@ -17,6 +17,7 @@ function GenerateCheckboxes(items: string[]) {
 function Settings({restaurants}: { restaurants: string[] }) {
     const [settings, setSettings] = React.useState({
         restaurants: [],
+        //    TODO: Insert other wanted settings in here and do the same for all of them.
     })
 
     const restaurantBoxes = GenerateCheckboxes(restaurants)
@@ -25,8 +26,6 @@ function Settings({restaurants}: { restaurants: string[] }) {
         // Destructuring
         const {name, checked} = e.target;
         const {restaurants} = settings;
-
-        // console.log(`${name} is ${checked}`);
 
         // Case 1 : The user checks the box
         if (checked) {
@@ -52,15 +51,17 @@ function Settings({restaurants}: { restaurants: string[] }) {
             <div className={"flex flex-col justify-center items-center h-full inset-x-0 top-0"}>
                 {/*TODO: Capture state of selected items.*/}
                 {/*Ravintolat settings*/}
-                <form onChange={handleChange}>
+                <div onChange={handleChange}>
                     <DropDown
                         items={restaurantBoxes}
                         name={"Ravintolat"}
                     />
+
+                    {/*TODO: Once user has saved settings, make button go back into the false state (not laoding)*/}
                     <div className={"absolute bottom-1/3"}>
-                        <SubmitButton text={"Tallenna asetukset"}/>
+                        <Button text={"Tallenna asetukset"}/>
                     </div>
-                </form>
+                </div>
             </div>
             <SiteFooter/>
         </>
