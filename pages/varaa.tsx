@@ -1,12 +1,10 @@
 import Link from "next/link";
 import Button from "../components/Button"
 import SiteFooter from "../components/SiteFooter";
-import SiteHead from "../components/SiteHead";
 
 function Varaa() {
     return (
         <>
-            <SiteHead/>
             <div className="relative hero min-h-screen bg-base-200">
                 <Link href={"/asetukset"}>
                     <a className={"absolute top-0 right-0"}>
