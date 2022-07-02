@@ -8,6 +8,11 @@ function Varaa() {
         <>
             <SiteHead/>
             <div className="relative hero min-h-screen bg-base-200">
+                <Link href={"/asetukset"}>
+                    <a className={"absolute top-0 right-0"}>
+                        <Button text={"Muuta asetuksiasi"}/>
+                    </a>
+                </Link>
                 <div className="hero-content text-center">
                     <div className="absolute top-1/3 max-w-md pr-5">
                         {/*TODO: Add different paths to different oauth logins here*/}
@@ -15,11 +20,6 @@ function Varaa() {
                         <div className={"grid gap-10"}>
                             <Button text={"Varaa pöytäsi"}/>
                             {/*TODO: Make this button go in top right corner.*/}
-                            <Link href={"/asetukset"}>
-                                <a>
-                                    <Button text={"Muuta asetuksiasi"}/>
-                                </a>
-                            </Link>
                         </div>
                     </div>
                 </div>
