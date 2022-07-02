@@ -14,7 +14,7 @@ function MyApp({Component, pageProps}: AppProps) {
         <ThemeProvider defaultTheme="night">
             <Head>
                 <title>Varaapoyta</title>
-                <meta name="viewport" content="viewport-fit=cover"/>
+                <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0"/>
             </Head>
             <Component {...pageProps} />
             <SiteFooter/>
