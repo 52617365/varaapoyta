@@ -6,6 +6,8 @@ import SiteFooter from "../components/SiteFooter"
 
 // TODO: Laita sivu toimimaan hyvin mobilen kanssa.
 // TODO: Loyda tapa kayttaa uudelleen yhta handleChange funkiota kaikkiin asetuksiin.
+// TODO: Asetukset sivulla, laita asetusruudut sulkeutumaan silloin, kun niita painetaan uudestaan.
+
 function MyApp({Component, pageProps}: AppProps) {
     return (
         <ThemeProvider defaultTheme="night">
