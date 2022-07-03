@@ -1,5 +1,3 @@
-import SiteHead from "../components/SiteHead";
-import SiteFooter from "../components/SiteFooter";
 import React from "react";
 import DropDown from "../components/Dropdown";
 import Checkbox from "../components/Checkbox";
@@ -15,40 +13,54 @@ function GenerateCheckboxes(items: string[]) {
         }))
 }
 
-function Asetukset({restaurants}: { restaurants: string[] }) {
+function DropDownHandler(e: any, key: any, settings: any, setSettings: any) {
+    // Destructuring
+    const {name, checked} = e.target;
+
+    // Case 1 : The user checks the box
+    if (checked) {
+        setSettings((prev: any) => ({
+            ...prev,
+            [key]: [...settings[key], name]
+        }))
+        // Case 2  : The user unchecks the box
+    } else {
+        setSettings({
+            [key]: settings[key].filter((e: string) => e !== name)
+        });
+    }
+
+    // Case 1 : The user checks the box
+    // if (checked) {
+    //     setSettings({
+    //         //@ts-ignore
+    //         settings["name"]: [...items, name];
+    //     })
+    // }
+    // // Case 2  : The user unchecks the box
+    // else {
+    //     setSettings({
+    //         key: items.filter((e: string) => e !== name)
+    //     });
+    // }
+}
+
+function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
     const [settings, setSettings] = React.useState({
-        restaurants: [],
+        ravintolat: [],
+        kaupungit: [],
         //    TODO: Insert other wanted settings in here and do the same for all of them.
     })
 
-    const restaurantBoxes = GenerateCheckboxes(restaurants)
+    const ravintolaBoxes = GenerateCheckboxes(ravintolat)
+    const kaupungitBoxes = GenerateCheckboxes(kaupungit)
 
-    const handleChange = (e: any) => {
-        // Destructuring
-        const {name, checked} = e.target;
-        const {restaurants} = settings;
+    // TODO: Make this function generic so that it works with all settings.
 
-        // Case 1 : The user checks the box
-        if (checked) {
-            setSettings({
-                // @ts-ignore
-                restaurants: [...restaurants, name],
-            });
-        }
-        // Case 2  : The user unchecks the box
-        else {
-            setSettings({
-                restaurants: restaurants.filter((e) => e !== name),
-            });
-        }
-
-    };
-
-    console.log(settings.restaurants)
+    console.log(settings)
 
     return (
         <>
-            <SiteHead/>
             <div className="relative hero min-h-screen bg-base-200">
                 <Link href={"/varaa"}>
                     <a className={"absolute top-0 right-0"}>
@@ -57,17 +69,22 @@ function Asetukset({restaurants}: { restaurants: string[] }) {
                 </Link>
                 <div className="hero-content text-center">
                     <div className="absolute top-1/3 max-w-md pr-5">
-                        <h1 className={"text-xl pb-10"}>Asetukset</h1>
-                        <div onChange={handleChange} className={"grid gap-10"}>
+                        {/*TODO: Add different paths to different oauth logins here*/}
+                        <h1 className={"pb-10 text-xl"}>Asetukset</h1>
+                        <div className={"grid gap-5 w-full"}>
                             <DropDown
-                                items={restaurantBoxes}
+                                onChange={val => DropDownHandler(val, "ravintolat", settings, setSettings)}
+                                items={ravintolaBoxes}
                                 name={"Ravintolat"}
                             />
-                            {/*TODO: Once user has saved settings, make button go back into the false state (not loading)*/}
+                            <DropDown
+                                onChange={val => DropDownHandler(val, "kaupungit", settings, setSettings)}
+                                items={kaupungitBoxes}
+                                name={"Kaupungit"}
+                            />
                             <Button text={"Tallenna asetukset"}/>
                         </div>
                     </div>
-                    <SiteFooter/>
                 </div>
             </div>
         </>
@@ -78,10 +95,12 @@ function Asetukset({restaurants}: { restaurants: string[] }) {
 export async function getStaticProps() {
     // TODO: Hae ravintola nimet jostain ja anna ne main componenttiin tasta.
     // restaurants variableen tulee tulevaisuudessa tietokannasta tieto. se kyllakin staattisesti renderoityna at compile time.
-    const restaurants = ["restaurant1", "restaurant2", "restaurant3"];
+    const ravintolat = ["restaurant1", "restaurant2", "restaurant3"];
+    const kaupungit = ["Rovaniemi", "Helsinki", "Tampere"]
     return {
         props: {
-            restaurants
+            ravintolat: ravintolat,
+            kaupungit: kaupungit
         },
     }
 }
