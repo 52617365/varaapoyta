@@ -14,7 +14,7 @@ function Varaa() {
                 <div className="hero-content text-center">
                     <div className="absolute top-1/3 max-w-md pr-5">
                         {/*TODO: Add different paths to different oauth logins here*/}
-                        <h1 className={"text-xl pb-10 text-xl"}>Raflaamo varaaja</h1>
+                        <h1 className={"pb-10 text-xl"}>Raflaamo varaaja</h1>
                         <div className={"grid gap-10 w-full"}>
                             <Button text={"Varaa pöytäsi"}/>
                         </div>

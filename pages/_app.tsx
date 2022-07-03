@@ -2,9 +2,6 @@ import '../styles/globals.css'
 import type {AppProps} from 'next/app'
 import {ThemeProvider} from 'next-themes'
 import Head from "next/head";
-import Link from "next/link";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import SiteFooter from "../components/SiteFooter"
 
 // TODO: Laita sivu toimimaan hyvin mobilen kanssa.
