@@ -13,51 +13,59 @@ function GenerateCheckboxes(items: string[]) {
         }))
 }
 
-function DropDownHandler(e: any, key: any, settings: any, setSettings: any) {
+function RavintolaHandler(e: any, settings: any, setSettings: any) {
     // Destructuring
     const {name, checked} = e.target;
+    const {ravintolat} = settings;
 
     // Case 1 : The user checks the box
     if (checked) {
-        setSettings((prev: any) => ({
-            ...prev,
-            [key]: [...settings[key], name]
-        }))
-        // Case 2  : The user unchecks the box
-    } else {
         setSettings({
-            [key]: settings[key].filter((e: string) => e !== name)
+            // @ts-ignore
+            ravintolat: [...ravintolat, name],
         });
     }
+    // Case 2  : The user unchecks the box
+    else {
+        setSettings({
+            ravintolat: ravintolat.filter((e: string) => e !== name),
+        });
+    }
+}
+
+function KaupunkiHandler(e: any, settings: any, setSettings: any) {
+    // Destructuring
+    const {name, checked} = e.target;
+    const {kaupungit} = settings;
 
     // Case 1 : The user checks the box
-    // if (checked) {
-    //     setSettings({
-    //         //@ts-ignore
-    //         settings["name"]: [...items, name];
-    //     })
-    // }
-    // // Case 2  : The user unchecks the box
-    // else {
-    //     setSettings({
-    //         key: items.filter((e: string) => e !== name)
-    //     });
-    // }
+    if (checked) {
+        setSettings({
+            // @ts-ignore
+            kaupungit: [...kaupungit, name],
+        });
+    }
+    // Case 2  : The user unchecks the box
+    else {
+        setSettings({
+            kaupungit: kaupungit.filter((e: string) => e !== name),
+        });
+    }
 }
 
 function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
-    const [settings, setSettings] = React.useState({
+    const ravintolaBoxes = GenerateCheckboxes(ravintolat)
+    const [ravintola_lista, lisaaRavintola] = React.useState({
         ravintolat: [],
-        kaupungit: [],
-        //    TODO: Insert other wanted settings in here and do the same for all of them.
     })
 
-    const ravintolaBoxes = GenerateCheckboxes(ravintolat)
     const kaupungitBoxes = GenerateCheckboxes(kaupungit)
+    const [kaupunki_lista, lisaaKaupunki] = React.useState({
+        kaupungit: [],
+    })
 
-    // TODO: Make this function generic so that it works with all settings.
-
-    console.log(settings)
+    console.log(ravintola_lista.ravintolat)
+    console.log(kaupunki_lista.kaupungit)
 
     return (
         <>
@@ -73,12 +81,12 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
                         <h1 className={"pb-10 text-xl"}>Asetukset</h1>
                         <div className={"grid gap-5 w-full"}>
                             <DropDown
-                                onChange={val => DropDownHandler(val, "ravintolat", settings, setSettings)}
+                                onChange={val => RavintolaHandler(val, ravintola_lista, lisaaRavintola)}
                                 items={ravintolaBoxes}
                                 name={"Ravintolat"}
                             />
                             <DropDown
-                                onChange={val => DropDownHandler(val, "kaupungit", settings, setSettings)}
+                                onChange={val => KaupunkiHandler(val, kaupunki_lista, lisaaKaupunki)}
                                 items={kaupungitBoxes}
                                 name={"Kaupungit"}
                             />
@@ -94,7 +102,6 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
 // TODO: Add other data in here too.
 export async function getStaticProps() {
     // TODO: Hae ravintola nimet jostain ja anna ne main componenttiin tasta.
-    // restaurants variableen tulee tulevaisuudessa tietokannasta tieto. se kyllakin staattisesti renderoityna at compile time.
     const ravintolat = ["restaurant1", "restaurant2", "restaurant3"];
     const kaupungit = ["Rovaniemi", "Helsinki", "Tampere"]
     return {
