@@ -4,10 +4,7 @@ import {ThemeProvider} from 'next-themes'
 import Head from "next/head";
 import SiteFooter from "../components/SiteFooter"
 
-// TODO: Laita sivu toimimaan hyvin mobilen kanssa.
-// TODO: Loyda tapa kayttaa uudelleen yhta handleChange funkiota kaikkiin asetuksiin.
-// TODO: Asetukset sivulla, laita asetusruudut sulkeutumaan silloin, kun niita painetaan uudestaan.
-
+// TODO: Instead of logging in, use local storage to store settings.
 function MyApp({Component, pageProps}: AppProps) {
     return (
         <ThemeProvider defaultTheme="night">
