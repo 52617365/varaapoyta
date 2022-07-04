@@ -3,6 +3,8 @@ import DropDown from "../components/Dropdown";
 import Checkbox from "../components/Checkbox";
 import Button from "../components/Button";
 import Link from "next/link";
+import {useSWRConfig} from "swr";
+import SaveButton from "../components/SaveButton"
 
 function GenerateCheckboxes(items: string[]) {
     return (
@@ -54,6 +56,9 @@ function KaupunkiHandler(e: any, settings: any, setSettings: any) {
 }
 
 function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
+    const {cache, mutate, ...extraConfig} = useSWRConfig()
+    const [buttonLoading, setButtonLoading] = React.useState(false);
+
     const ravintolaBoxes = GenerateCheckboxes(ravintolat)
     const [ravintola_lista, lisaaRavintola] = React.useState({
         ravintolat: [],
@@ -64,8 +69,15 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
         kaupungit: [],
     })
 
-    console.log(ravintola_lista.ravintolat)
-    console.log(kaupunki_lista.kaupungit)
+    function setButton() {
+        setButtonLoading(true)
+        cache.set("ravintolat", ravintola_lista)
+        cache.set("kaupungit", kaupunki_lista)
+        setButtonLoading(false)
+    }
+
+    console.log(cache.get("ravintolat"))
+    console.log(cache.get("kaupungit"))
 
     return (
         <>
@@ -90,7 +102,10 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
                                 items={kaupungitBoxes}
                                 name={"Kaupungit"}
                             />
-                            <Button text={"Tallenna asetukset"}/>
+                            <div onClick={setButton}>
+                                <SaveButton text={"Tallenna asetukset"} buttonLoading={buttonLoading}
+                                            setButton={setButton}/>
+                            </div>
                         </div>
                     </div>
                 </div>
