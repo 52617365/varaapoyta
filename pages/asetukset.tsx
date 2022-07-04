@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import DropDown from "../components/Dropdown";
 import Checkbox from "../components/Checkbox";
 import Button from "../components/Button";
@@ -56,7 +56,7 @@ function KaupunkiHandler(e: any, settings: any, setSettings: any) {
 }
 
 function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
-    const {cache, mutate, ...extraConfig} = useSWRConfig()
+    const {cache} = useSWRConfig()
     const [buttonLoading, setButtonLoading] = React.useState(false);
 
     const ravintolaBoxes = GenerateCheckboxes(ravintolat)
@@ -69,15 +69,28 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
         kaupungit: [],
     })
 
+    //TODO: Saa nama latautumaan silloin, kun asetukset page avataan.
+
+    // useEffect(() => {
+    //     const ravintolat = cache.get("restaurants")
+    //     if (ravintolat) {
+    //         lisaaRavintola(ravintolat);
+    //     }
+    // }, [cache]);
+    //
+    // useEffect(() => {
+    //     const kaupungit = cache.get("kaupungit")
+    //     if (kaupungit) {
+    //         lisaaKaupunki(kaupungit);
+    //     }
+    // }, [cache]);
+
     function setButton() {
         setButtonLoading(true)
         cache.set("ravintolat", ravintola_lista)
         cache.set("kaupungit", kaupunki_lista)
         setButtonLoading(false)
     }
-
-    console.log(cache.get("ravintolat"))
-    console.log(cache.get("kaupungit"))
 
     return (
         <>

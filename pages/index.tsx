@@ -2,6 +2,7 @@ import type {NextPage} from 'next'
 import Link from "next/link"
 import Image from "next/image"
 import SiteFooter from "../components/SiteFooter";
+import {useSWRConfig} from "swr";
 
 const Home: NextPage = () => {
     return (
@@ -26,7 +27,7 @@ const Home: NextPage = () => {
                                 </button>
                             </Link>
                         </span>
-                            <span>
+                        <span>
                                 <Link href={"/login"}>
                                     <button className="btn btn-square">
                                         <Image alt="github logo" src={"/pictures/github.svg"} width={50} height={50}/>

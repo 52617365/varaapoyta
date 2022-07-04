@@ -1,8 +1,12 @@
 import Link from "next/link";
 import Button from "../components/Button"
 import SiteFooter from "../components/SiteFooter";
+import {useSWRConfig} from "swr";
 
 function Varaa() {
+    const {cache, mutate, ...extraConfig} = useSWRConfig()
+    console.log(cache.get("ravintolat"))
+    console.log(cache.get("kaupungit"))
     return (
         <>
             <div className="relative hero min-h-screen bg-base-200">
