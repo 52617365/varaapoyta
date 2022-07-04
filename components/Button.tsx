@@ -1,6 +1,6 @@
 import React from "react";
 
-function Button({text}: {text: string}) {
+function Button({text}: { text: string }) {
     const [buttonLoading, setButtonLoading] = React.useState(false);
 
     function setButton() {
@@ -14,4 +14,5 @@ function Button({text}: {text: string}) {
         </>
     )
 }
+
 export default Button;
