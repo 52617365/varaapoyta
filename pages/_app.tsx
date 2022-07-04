@@ -3,7 +3,7 @@ import type {AppProps} from 'next/app'
 import {ThemeProvider} from 'next-themes'
 import Head from "next/head";
 import SiteFooter from "../components/SiteFooter"
-import useSWR, {SWRConfig} from 'swr'
+import {SWRConfig} from 'swr'
 
 // TODO: Instead of logging in, use local storage to store settings.
 // Load local storage on load.
