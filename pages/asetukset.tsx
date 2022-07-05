@@ -3,7 +3,6 @@ import DropDown from "../components/Dropdown";
 import Checkbox from "../components/Checkbox";
 import Button from "../components/Button";
 import Link from "next/link";
-import {useSWRConfig} from "swr";
 import SaveButton from "../components/SaveButton"
 
 function GenerateCheckboxes(items: string[]) {
@@ -69,24 +68,26 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
     //TODO: Saa nama latautumaan silloin, kun asetukset page avataan.
 
     useEffect(() => {
-        window.localStorage.setItem("varaapoyta_kaupungit", JSON.stringify(kaupunki_lista.kaupungit))
-    }, [kaupunki_lista]);
+        if (kaupunki_lista.kaupungit.length > 1) {
+            window.localStorage.setItem("varaapoyta_kaupungit", JSON.stringify(kaupunki_lista.kaupungit))
+        }
+    }, [kaupunki_lista.kaupungit]);
 
     useEffect(() => {
-        window.localStorage.setItem("varaapoyta_ravintolat", JSON.stringify(ravintola_lista.ravintolat))
-    }, [ravintola_lista]);
+        if (ravintola_lista.ravintolat.length > 1) {
+            window.localStorage.setItem("varaapoyta_ravintolat", JSON.stringify(ravintola_lista.ravintolat))
+        }
+    }, [ravintola_lista.ravintolat]);
 
     //TODO: Make this work.
     useEffect(() => {
-        const kaupunki_storage = window.localStorage.getItem("varaapoyta_kaupungit")
-        const ravintolat_storage = window.localStorage.getItem("varaapoyta_ravintolat")
+        // @ts-ignore
+        const ravintolat_storage = JSON.parse(window.localStorage.getItem("varaapoyta_ravintolat")) || [];
+        // @ts-ignore
+        const kaupungit_storage = JSON.parse(window.localStorage.getItem("varaapoyta_kaupungit")) || [];
 
-        if (kaupunki_storage !== null && kaupunki_storage !== "undefined") {
-            lisaaKaupunki({kaupungit: JSON.parse(kaupunki_storage)})
-        }
-        if (ravintolat_storage !== null && ravintolat_storage !== "undefined") {
-            lisaaRavintola({ravintolat: JSON.parse(ravintolat_storage)})
-        }
+        lisaaKaupunki({kaupungit: kaupungit_storage})
+        lisaaRavintola({ravintolat: ravintolat_storage})
     }, []);
 
     function setButton() {
