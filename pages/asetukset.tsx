@@ -52,6 +52,7 @@ function KaupunkiHandler(e: any, settings: any, setSettings: any) {
     }
 }
 
+// TODO: Laita local storagesta haetut setit checkboxeihin ja checkaa ne checkboxit.
 function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
     const [buttonLoading, setButtonLoading] = React.useState(false);
 
@@ -65,7 +66,6 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
         kaupungit: [],
     })
 
-    //TODO: Saa nama latautumaan silloin, kun asetukset page avataan.
 
     useEffect(() => {
         if (kaupunki_lista.kaupungit.length > 1) {
@@ -79,7 +79,6 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
         }
     }, [ravintola_lista.ravintolat]);
 
-    //TODO: Make this work.
     useEffect(() => {
         // @ts-ignore
         const ravintolat_storage = JSON.parse(window.localStorage.getItem("varaapoyta_ravintolat")) || [];
@@ -108,7 +107,6 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
                 </Link>
                 <div className="hero-content text-center">
                     <div className="absolute top-1/3 max-w-md pr-5">
-                        {/*TODO: Add different paths to different oauth logins here*/}
                         <h1 className={"pb-10 text-xl"}>Asetukset</h1>
                         <div className={"grid gap-5 w-full"}>
                             <DropDown
@@ -133,7 +131,6 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
     )
 }
 
-// TODO: Add other data in here too.
 export async function getStaticProps() {
     // TODO: Hae ravintola nimet jostain ja anna ne main componenttiin tasta.
     const ravintolat = ["restaurant1", "restaurant2", "restaurant3"];
