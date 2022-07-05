@@ -69,29 +69,28 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
     //TODO: Saa nama latautumaan silloin, kun asetukset page avataan.
 
     useEffect(() => {
-        window.localStorage.setItem("varaapoyta_kaupungit", JSON.stringify(kaupunki_lista))
+        window.localStorage.setItem("varaapoyta_kaupungit", JSON.stringify(kaupunki_lista.kaupungit))
     }, [kaupunki_lista]);
 
     useEffect(() => {
-        window.localStorage.setItem("varaapoyta_ravintolat", JSON.stringify(ravintola_lista))
+        window.localStorage.setItem("varaapoyta_ravintolat", JSON.stringify(ravintola_lista.ravintolat))
     }, [ravintola_lista]);
 
+    //TODO: Make this work.
     useEffect(() => {
         const kaupunki_storage = window.localStorage.getItem("varaapoyta_kaupungit")
         const ravintolat_storage = window.localStorage.getItem("varaapoyta_ravintolat")
 
         if (kaupunki_storage !== null && kaupunki_storage !== "undefined") {
-            lisaaKaupunki(JSON.parse(kaupunki_storage))
+            lisaaKaupunki({kaupungit: JSON.parse(kaupunki_storage)})
         }
         if (ravintolat_storage !== null && ravintolat_storage !== "undefined") {
-            lisaaRavintola(JSON.parse(ravintolat_storage))
+            lisaaRavintola({ravintolat: JSON.parse(ravintolat_storage)})
         }
     }, []);
 
     function setButton() {
         setButtonLoading(true)
-        // cache.set("ravintolat", ravintola_lista)
-        // cache.set("kaupungit", kaupunki_lista)
         setButtonLoading(false)
     }
 
