@@ -23,7 +23,6 @@ function RavintolaHandler(e: any, settings: any, setSettings: any) {
     // Case 1 : The user checks the box
     if (checked) {
         setSettings({
-            // @ts-ignore
             ravintolat: [...ravintolat, name],
         });
     }
@@ -43,7 +42,6 @@ function KaupunkiHandler(e: any, settings: any, setSettings: any) {
     // Case 1 : The user checks the box
     if (checked) {
         setSettings({
-            // @ts-ignore
             kaupungit: [...kaupungit, name],
         });
     }
@@ -56,7 +54,6 @@ function KaupunkiHandler(e: any, settings: any, setSettings: any) {
 }
 
 function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
-    const {cache} = useSWRConfig()
     const [buttonLoading, setButtonLoading] = React.useState(false);
 
     const ravintolaBoxes = GenerateCheckboxes(ravintolat)
@@ -71,26 +68,35 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
 
     //TODO: Saa nama latautumaan silloin, kun asetukset page avataan.
 
-    // useEffect(() => {
-    //     const ravintolat = cache.get("restaurants")
-    //     if (ravintolat) {
-    //         lisaaRavintola(ravintolat);
-    //     }
-    // }, [cache]);
-    //
-    // useEffect(() => {
-    //     const kaupungit = cache.get("kaupungit")
-    //     if (kaupungit) {
-    //         lisaaKaupunki(kaupungit);
-    //     }
-    // }, [cache]);
+    useEffect(() => {
+        window.localStorage.setItem("varaapoyta_kaupungit", JSON.stringify(kaupunki_lista))
+    }, [kaupunki_lista]);
+
+    useEffect(() => {
+        window.localStorage.setItem("varaapoyta_ravintolat", JSON.stringify(ravintola_lista))
+    }, [ravintola_lista]);
+
+    useEffect(() => {
+        const kaupunki_storage = window.localStorage.getItem("varaapoyta_kaupungit")
+        const ravintolat_storage = window.localStorage.getItem("varaapoyta_ravintolat")
+
+        if (kaupunki_storage !== null && kaupunki_storage !== "undefined") {
+            lisaaKaupunki(JSON.parse(kaupunki_storage))
+        }
+        if (ravintolat_storage !== null && ravintolat_storage !== "undefined") {
+            lisaaRavintola(JSON.parse(ravintolat_storage))
+        }
+    }, []);
 
     function setButton() {
         setButtonLoading(true)
-        cache.set("ravintolat", ravintola_lista)
-        cache.set("kaupungit", kaupunki_lista)
+        // cache.set("ravintolat", ravintola_lista)
+        // cache.set("kaupungit", kaupunki_lista)
         setButtonLoading(false)
     }
+
+    console.log(ravintola_lista.ravintolat)
+    console.log(kaupunki_lista.kaupungit)
 
     return (
         <>
