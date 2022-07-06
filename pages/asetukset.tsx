@@ -3,7 +3,6 @@ import DropDown from "../components/Dropdown";
 import Checkbox from "../components/Checkbox";
 import Button from "../components/Button";
 import Link from "next/link";
-import SaveButton from "../components/SaveButton"
 
 function GenerateCheckboxes(items: string[]) {
     return (
@@ -54,8 +53,6 @@ function KaupunkiHandler(e: any, settings: any, setSettings: any) {
 
 // TODO: Laita local storagesta haetut setit checkboxeihin ja checkaa ne checkboxit.
 function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
-    const [buttonLoading, setButtonLoading] = React.useState(false);
-
     const ravintolaBoxes = GenerateCheckboxes(ravintolat)
     const [ravintola_lista, lisaaRavintola] = React.useState({
         ravintolat: [],
@@ -111,11 +108,6 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
         lisaaRavintola({ravintolat: unique_ravintolat})
     }, []);
 
-    function setButton() {
-        setButtonLoading(true)
-        setButtonLoading(false)
-    }
-
     console.log(ravintola_lista.ravintolat)
     console.log(kaupunki_lista.kaupungit)
 
@@ -141,10 +133,6 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
                                 items={kaupungitBoxes}
                                 name={"Kaupungit"}
                             />
-                            <div onClick={setButton}>
-                                <SaveButton text={"Tallenna asetukset"} buttonLoading={buttonLoading}
-                                            setButton={setButton}/>
-                            </div>
                         </div>
                     </div>
                 </div>

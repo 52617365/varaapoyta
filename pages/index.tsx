@@ -3,6 +3,8 @@ import Link from "next/link"
 import Image from "next/image"
 import SiteFooter from "../components/SiteFooter";
 import {useSWRConfig} from "swr";
+import Button from "../components/Button";
+import React from "react";
 
 const Home: NextPage = () => {
     return (
@@ -11,8 +13,17 @@ const Home: NextPage = () => {
                 <div className="hero-content text-center">
                     <div className="max-w-md pr-5">
                         <h1 className="text-5xl font-bold">Moikka,</h1>
-                        <p className="py-6">Aloita pöytävaraaminen kirjautumalla sisäan, ja tallentamalla
-                            mieltymyksesi.</p>
+                        <p className="py-6">Aloita pöytävaraaminen asettamalla mieltymyksesi asetuksissa.</p>
+                        <Link href={"/varaa"}>
+                            <a className={"absolute top-0 right-0"}>
+                                <Button text={"Varaa"}/>
+                            </a>
+                        </Link>
+                        <Link href={"/asetukset"}>
+                            <a className={"absolute top-0 right-20"}>
+                                <Button text={"Asetukset"}/>
+                            </a>
+                        </Link>
                         <span>
                             <Link href={"/login"}>
                                 <button className="btn btn-square">
