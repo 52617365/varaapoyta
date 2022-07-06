@@ -20,9 +20,12 @@ function RavintolaHandler(e: any, settings: any, setSettings: any) {
 
     // Case 1 : The user checks the box
     if (checked) {
-        setSettings({
-            ravintolat: [...ravintolat, name],
-        });
+        // checking if the state alrdy has the value we're about to set to avoid duplicates.
+        if (!settings.ravintolat.includes(name)) {
+            setSettings({
+                ravintolat: [...ravintolat, name],
+            });
+        }
     }
     // Case 2  : The user unchecks the box
     else {
@@ -32,6 +35,7 @@ function RavintolaHandler(e: any, settings: any, setSettings: any) {
     }
 }
 
+// tama on kaupunkeja varten.
 function KaupunkiHandler(e: any, settings: any, setSettings: any) {
     // Destructuring
     const {name, checked} = e.target;
@@ -39,9 +43,12 @@ function KaupunkiHandler(e: any, settings: any, setSettings: any) {
 
     // Case 1 : The user checks the box
     if (checked) {
-        setSettings({
-            kaupungit: [...kaupungit, name],
-        });
+        // checking if the state alrdy has the value we're about to set to avoid duplicates.
+        if (!settings.kaupungit.includes(name)) {
+            setSettings({
+                kaupungit: [...kaupungit, name],
+            });
+        }
     }
     // Case 2  : The user unchecks the box
     else {
@@ -94,18 +101,11 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
     }, [ravintola_lista.ravintolat]);
 
     useEffect(() => {
-        // @ts-ignore
-        const ravintolat_storage = JSON.parse(window.localStorage.getItem("varaapoyta_ravintolat")) || [];
-        let unique_ravintolat = ravintolat_storage.filter((c: any, index: any) => {
-            return ravintolat_storage.indexOf(c) === index;
-        });
-        // @ts-ignore
-        const kaupungit_storage = JSON.parse(window.localStorage.getItem("varaapoyta_kaupungit")) || [];
-        let unique_kaupungit = kaupungit_storage.filter((c: any, index: any) => {
-            return kaupungit_storage.indexOf(c) === index;
-        });
-        lisaaKaupunki({kaupungit: unique_kaupungit})
-        lisaaRavintola({ravintolat: unique_ravintolat})
+        const ravintolat_storage = JSON.parse(window.localStorage.getItem("varaapoyta_ravintolat") as string) || [];
+        lisaaRavintola({ravintolat: ravintolat_storage});
+
+        const kaupunki_storage = JSON.parse(window.localStorage.getItem("varaapoyta_kaupungit") as string) || [];
+        lisaaKaupunki({kaupungit: kaupunki_storage});
     }, []);
 
     console.log(ravintola_lista.ravintolat)
