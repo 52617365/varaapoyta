@@ -4,12 +4,21 @@ import Checkbox from "../components/Checkbox";
 import Button from "../components/Button";
 import Link from "next/link";
 
-function GenerateCheckboxes(items: string[]) {
+function GenerateCheckboxes(items: string[], storage_items: string[]) {
+    // At this time, storage_items will contain all the items from the local storage. So here we check if it's in the local storage, we mark the checkbox as checked, else its unchecked.
     return (
         items.map((item) => {
-            return (
-                <Checkbox key={item} name={item}/>
-            )
+            {
+                if (storage_items.includes(item)) {
+                    return (
+                        <Checkbox key={item} name={item} checked={true}/>
+                    )
+                } else {
+                    return (
+                        <Checkbox key={item} name={item} checked={false}/>
+                    )
+                }
+            }
         }))
 }
 
@@ -18,7 +27,7 @@ function RavintolaHandler(e: any, settings: any, setSettings: any) {
     const {name, checked} = e.target;
     const {ravintolat} = settings;
 
-    // Case 1 : The user checks the box
+    // Case 1: The user checks the box
     if (checked) {
         // checking if the state alrdy has the value we're about to set to avoid duplicates.
         if (!settings.ravintolat.includes(name)) {
@@ -27,7 +36,7 @@ function RavintolaHandler(e: any, settings: any, setSettings: any) {
             });
         }
     }
-    // Case 2  : The user unchecks the box
+    // Case 2: The user unchecks the box
     else {
         setSettings({
             ravintolat: ravintolat.filter((e: string) => e !== name),
@@ -41,7 +50,7 @@ function KaupunkiHandler(e: any, settings: any, setSettings: any) {
     const {name, checked} = e.target;
     const {kaupungit} = settings;
 
-    // Case 1 : The user checks the box
+    // Case 1: The user checks the box
     if (checked) {
         // checking if the state alrdy has the value we're about to set to avoid duplicates.
         if (!settings.kaupungit.includes(name)) {
@@ -50,7 +59,7 @@ function KaupunkiHandler(e: any, settings: any, setSettings: any) {
             });
         }
     }
-    // Case 2  : The user unchecks the box
+    // Case 2: The user unchecks the box
     else {
         setSettings({
             kaupungit: kaupungit.filter((e: string) => e !== name),
@@ -60,21 +69,20 @@ function KaupunkiHandler(e: any, settings: any, setSettings: any) {
 
 // TODO: Laita local storagesta haetut setit checkboxeihin ja checkaa ne checkboxit.
 function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
-    const ravintolaBoxes = GenerateCheckboxes(ravintolat)
     const [ravintola_lista, lisaaRavintola] = React.useState({
         ravintolat: [],
     })
+    const ravintolaBoxes = GenerateCheckboxes(ravintolat, ravintola_lista.ravintolat)
 
-    const kaupungitBoxes = GenerateCheckboxes(kaupungit)
     const [kaupunki_lista, lisaaKaupunki] = React.useState({
         kaupungit: [],
     })
+    const kaupungitBoxes = GenerateCheckboxes(kaupungit, kaupunki_lista.kaupungit)
 
 
     useEffect(() => {
         if (kaupunki_lista.kaupungit.length > 1) {
             window.localStorage.setItem("varaapoyta_kaupungit", JSON.stringify(kaupunki_lista.kaupungit))
-
             const items = window.localStorage.getItem("varaapoyta_kaupungit")
             if (items !== null) {
                 const parsed_items = JSON.parse(items)
