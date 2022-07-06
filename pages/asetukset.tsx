@@ -70,23 +70,45 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
     useEffect(() => {
         if (kaupunki_lista.kaupungit.length > 1) {
             window.localStorage.setItem("varaapoyta_kaupungit", JSON.stringify(kaupunki_lista.kaupungit))
+
+            const items = window.localStorage.getItem("varaapoyta_kaupungit")
+            if (items !== null) {
+                const parsed_items = JSON.parse(items)
+                const deduplicated_items = parsed_items.filter((c: any, index: any) => {
+                    return parsed_items.indexOf(c) === index;
+                });
+                window.localStorage.setItem("varaapoyta_kaupungit", JSON.stringify(deduplicated_items))
+            }
         }
     }, [kaupunki_lista.kaupungit]);
 
     useEffect(() => {
         if (ravintola_lista.ravintolat.length > 1) {
             window.localStorage.setItem("varaapoyta_ravintolat", JSON.stringify(ravintola_lista.ravintolat))
+            const items = window.localStorage.getItem("varaapoyta_ravintolat")
+            if (items !== null) {
+                const parsed_items = JSON.parse(items)
+                const deduplicated_items = parsed_items.filter((c: any, index: any) => {
+                    return parsed_items.indexOf(c) === index;
+                });
+                window.localStorage.setItem("varaapoyta_ravintolat", JSON.stringify(deduplicated_items))
+            }
         }
     }, [ravintola_lista.ravintolat]);
 
     useEffect(() => {
         // @ts-ignore
         const ravintolat_storage = JSON.parse(window.localStorage.getItem("varaapoyta_ravintolat")) || [];
+        let unique_ravintolat = ravintolat_storage.filter((c: any, index: any) => {
+            return ravintolat_storage.indexOf(c) === index;
+        });
         // @ts-ignore
         const kaupungit_storage = JSON.parse(window.localStorage.getItem("varaapoyta_kaupungit")) || [];
-
-        lisaaKaupunki({kaupungit: kaupungit_storage})
-        lisaaRavintola({ravintolat: ravintolat_storage})
+        let unique_kaupungit = kaupungit_storage.filter((c: any, index: any) => {
+            return kaupungit_storage.indexOf(c) === index;
+        });
+        lisaaKaupunki({kaupungit: unique_kaupungit})
+        lisaaRavintola({ravintolat: unique_ravintolat})
     }, []);
 
     function setButton() {
