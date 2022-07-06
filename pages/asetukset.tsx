@@ -123,6 +123,7 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
                     <div className="absolute top-1/3 max-w-md pr-5">
                         <h1 className={"pb-10 text-xl"}>Asetukset</h1>
                         <div className={"grid gap-5 w-full"}>
+                            {/*TODO: Add the dropdown here directly because else it's just a prop passing hell.*/}
                             <DropDown
                                 onChange={val => RavintolaHandler(val, ravintola_lista, lisaaRavintola)}
                                 items={ravintolaBoxes}
