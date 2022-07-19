@@ -1,121 +1,126 @@
-import React, {useEffect} from "react";
+import React, {DependencyList, EffectCallback, useEffect, useRef} from "react";
 import DropDown from "../components/Dropdown";
 import Checkbox from "../components/Checkbox";
 import Button from "../components/Button";
 import Link from "next/link";
 
-// TODO: Fix checkboxes not updating on first page load, instead they generate on refresh.
-function GenerateCheckboxes(items: string[], storage_items: string[]) {
-    // At this time, storage_items will contain all the items from the local storage. So here we check if it's in the local storage, we mark the checkbox as checked, else its unchecked.
-    return (
-        items.map((item) => {
-            {
-                if (storage_items.includes(item)) {
-                    return (
-                        <Checkbox key={item} name={item} checked={true}/>
-                    )
-                } else {
-                    return (
-                        <Checkbox key={item} name={item} checked={false}/>
-                    )
-                }
-            }
-        }))
+// Locate checked checkboxes.
+function GenerateCheckboxes(items: string[], checked_items: string[]) {
+    return items.map((item) => {
+        if (checked_items.includes(item)) {
+            return <Checkbox name={item} checked={true}/>
+        } else {
+            return <Checkbox name={item} checked={false}/>
+        }
+    })
 }
 
 function RavintolaHandler(e: any, settings: any, setSettings: any) {
     // Destructuring
     const {name, checked} = e.target;
-    const {ravintolat} = settings;
 
     // Case 1: The user checks the box
     if (checked) {
         // checking if the state alrdy has the value we're about to set to avoid duplicates.
-        if (!settings.ravintolat.includes(name)) {
-            setSettings({
-                ravintolat: [...ravintolat, name],
-            });
-        }
+        setSettings(
+            [...settings, name],
+        );
     }
     // Case 2: The user unchecks the box
     else {
-        setSettings({
-            ravintolat: ravintolat.filter((e: string) => e !== name),
-        });
+        setSettings(
+            settings.filter((e: string) => e !== name),
+        );
     }
 }
 
-// tama on kaupunkeja varten.
 function KaupunkiHandler(e: any, settings: any, setSettings: any) {
     // Destructuring
     const {name, checked} = e.target;
-    const {kaupungit} = settings;
 
     // Case 1: The user checks the box
     if (checked) {
         // checking if the state alrdy has the value we're about to set to avoid duplicates.
-        if (!settings.kaupungit.includes(name)) {
-            setSettings({
-                kaupungit: [...kaupungit, name],
-            });
-        }
+        setSettings(
+            [...settings, name],
+        );
     }
     // Case 2: The user unchecks the box
     else {
-        setSettings({
-            kaupungit: kaupungit.filter((e: string) => e !== name),
-        });
+        setSettings(
+            settings.filter((e: string) => e !== name),
+        );
     }
 }
 
+/**
+ * @param effect
+ * @param dependencies
+ *
+ */
+function useNoInitialEffect(
+    effect: EffectCallback,
+    dependencies?: DependencyList
+) {
+    //Preserving the true by default as initial render cycle
+    const initialRender = useRef(true);
+
+    useEffect(() => {
+        let effectReturns: void | (() => void) = () => {
+        };
+
+        // Updating the ref to false on the first render, causing
+        // subsequent render to execute the effect
+        if (initialRender.current) {
+            initialRender.current = false;
+        } else {
+            effectReturns = effect();
+        }
+
+        // Preserving and allowing the Destructor returned by the effect
+        // to execute on component unmount and perform cleanup if
+        // required.
+        if (effectReturns && typeof effectReturns === 'function') {
+            return effectReturns;
+        }
+        return undefined;
+    }, [effect]);
+}
+
+// TODO: eka itemi joka laitetaan local storageen ei reksiteroidy
 // TODO: Laita local storagesta haetut setit checkboxeihin ja checkaa ne checkboxit.
+// TODO: checkboxit ei lataa ekalla refreshilla vaan silloin, kun refreshaa uusiksi.
 function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
-    const [ravintola_lista, lisaaRavintola] = React.useState({
-        ravintolat: [],
-    })
-    const ravintolaBoxes = GenerateCheckboxes(ravintolat, ravintola_lista.ravintolat)
+    const [ravintola_lista, lisaaRavintola] = React.useState([])
+    const [kaupunki_lista, lisaaKaupunki] = React.useState([])
 
-    const [kaupunki_lista, lisaaKaupunki] = React.useState({
-        kaupungit: [],
-    })
-    const kaupungitBoxes = GenerateCheckboxes(kaupungit, kaupunki_lista.kaupungit)
+    let ravintolaBoxes = GenerateCheckboxes(ravintolat, ravintola_lista)
+    let kaupungitBoxes = GenerateCheckboxes(kaupungit, kaupunki_lista)
 
-
+    console.log(ravintola_lista)
+    console.log(kaupunki_lista)
+    // loading up states on page load.
     useEffect(() => {
-        if (kaupunki_lista.kaupungit.length > 1) {
-            window.localStorage.setItem("varaapoyta_kaupungit", JSON.stringify(kaupunki_lista.kaupungit))
-            const items = window.localStorage.getItem("varaapoyta_kaupungit")
-            if (items != null) {
-                const parsed_items = JSON.parse(items)
-                const deduplicated_items = parsed_items.filter((c: any, index: any) => {
-                    return parsed_items.indexOf(c) === index;
-                });
-                window.localStorage.setItem("varaapoyta_kaupungit", JSON.stringify(deduplicated_items))
-            }
+        let ravintolat_storage = localStorage.getItem('varaapoyta_ravintolat')
+        let kaupungit_storage = localStorage.getItem('varaapoyta_kaupungit')
+
+        if (ravintolat_storage != null) {
+            let ravintolat_parsed = JSON.parse(ravintolat_storage)
+            lisaaRavintola(ravintolat_parsed);
         }
-    }, [kaupunki_lista]);
-
-    useEffect(() => {
-        if (ravintola_lista.ravintolat.length > 1) {
-            window.localStorage.setItem("varaapoyta_ravintolat", JSON.stringify(ravintola_lista.ravintolat))
-            const items = window.localStorage.getItem("varaapoyta_ravintolat")
-            if (items != null) {
-                const parsed_items = JSON.parse(items)
-                const deduplicated_items = parsed_items.filter((c: any, index: any) => {
-                    return parsed_items.indexOf(c) === index;
-                });
-                window.localStorage.setItem("varaapoyta_ravintolat", JSON.stringify(deduplicated_items))
-            }
+        if (kaupungit_storage != null) {
+            let kaupungit_parsed = JSON.parse(kaupungit_storage)
+            lisaaKaupunki(kaupungit_parsed);
         }
-    }, [ravintola_lista]);
-
-    useEffect(() => {
-        const ravintolat_storage = JSON.parse(window.localStorage.getItem("varaapoyta_ravintolat") as string) || [];
-        lisaaRavintola({ravintolat: ravintolat_storage});
-
-        const kaupunki_storage = JSON.parse(window.localStorage.getItem("varaapoyta_kaupungit") as string) || [];
-        lisaaKaupunki({kaupungit: kaupunki_storage});
     }, []);
+
+    // Loading up the states into local storage on change.
+    useNoInitialEffect(() => {
+        // to avoid setting empty array into local storage on page load.
+        // TODO: this is buggy cuz now it wont let me update local storage into 0 options.
+        localStorage.setItem("varaapoyta_ravintolat", JSON.stringify(ravintola_lista))
+        localStorage.setItem("varaapoyta_kaupungit", JSON.stringify(kaupunki_lista))
+    }, [ravintola_lista, kaupunki_lista]);
 
     return (
         <>
