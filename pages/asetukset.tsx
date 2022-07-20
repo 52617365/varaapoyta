@@ -4,6 +4,8 @@ import Checkbox from "../components/Checkbox";
 import Button from "../components/Button";
 import Link from "next/link";
 
+// TODO: Laita local storage toimimaan.
+
 // Locate checked checkboxes.
 function GenerateCheckboxes(items: string[], checked_items: string[]) {
     return items.map((item) => {
@@ -87,9 +89,6 @@ function useNoInitialEffect(
     }, [effect]);
 }
 
-// TODO: eka itemi joka laitetaan local storageen ei reksiteroidy
-// TODO: Laita local storagesta haetut setit checkboxeihin ja checkaa ne checkboxit.
-// TODO: checkboxit ei lataa ekalla refreshilla vaan silloin, kun refreshaa uusiksi.
 function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
     const [ravintola_lista, lisaaRavintola] = React.useState([])
     const [kaupunki_lista, lisaaKaupunki] = React.useState([])
