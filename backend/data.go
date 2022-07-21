@@ -2,22 +2,18 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
 
 func main() {
-	payload := payload{
-		restaurantId: "2",
-		date:         "2022-07-20",
-		time:         "12:00",
-		amount:       "2",
-	}
-
-	payloadString := makePayLoad(payload)
-	fmt.Println(payloadString)
+	dd := getCurrentDate()
+	dt := getCurrentTime()
+	fmt.Println(dd)
+	fmt.Println(dt)
 }
 
 // TODO: add some format check before sending in request.
@@ -61,12 +57,33 @@ func makePayload(id int) string {
 	fmt.Println(payloadString)
 	return payloadString
 }
-func getAvailableTables(time time.Duration) {
-	fmt.Println("The time is:", time)
-	URL := "http://dummy.restapiexample.com/api/v1/employee/1"
-	resp, err := http.Get(URL)
-	if err != nil {
-		log.Fatalln("Oopsie mudafuka")
+
+func generateUrls() []string {
+	urls := []string{}
+	for i := 1; i < 21; i++ {
+		payload_string := makePayload(i)
+		urls = append(urls, payload_string)
 	}
-	fmt.Println(resp.StatusCode)
+	return urls
+}
+
+func getAvailableTables() []string {
+	urls := generateUrls()
+
+	results := make([]string, len(urls))
+	for i := 0; i < len(urls); i++ {
+		c := make(chan string)
+		go func(url string, channel *chan string) {
+			res, err := http.Get(url)
+			if err != nil {
+				return
+			}
+			if res.StatusCode != 200 {
+				return
+			}
+			c <- url
+		}(urls[i], &c)
+		results[i] = <-c
+	}
+	return results
 }
