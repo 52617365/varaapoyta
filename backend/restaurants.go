@@ -2,19 +2,10 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"regexp"
+	"log"
 	"strconv"
 	"strings"
-	"time"
 )
-
-func main() {
-	dd := getCurrentDate()
-	dt := getCurrentTime()
-	fmt.Println(dd)
-	fmt.Println(dt)
-}
 
 // TODO: add some format check before sending in request.
 type payload struct {
@@ -25,63 +16,60 @@ type payload struct {
 	amount       string // Amount of eaters.
 }
 
-// 2022-07-21 12:45:54.1414084 +0300 EEST m=+0.001537301
-func getCurrentDate() string {
-	re, _ := regexp.Compile(`\d{4}-\d{2}-\d{2}`)
-	dt := time.Now().String()
-	return re.FindString(dt)
-}
-
-func getCurrentTime() string {
-	re, _ := regexp.Compile(`\d{2}:\d{2}`)
-	dt := time.Now().String()
-	return re.FindString(dt)
-}
-
 func makePayload(id int) string {
-	payload_struct := payload{
+	// TODO: make time floor into the latest time e.g (17:15 goes to 17:30) etc.
+	payloadStruct := payload{
 		restaurantId: strconv.Itoa(id),
-		date:         "2022-07-21",
-		time:         "17:00",
+		date:         getCurrentDate(),
+		time:         getCurrentTime(),
 		amount:       "1",
 	}
 	// example payload https://s-varaukset.fi/online/reserve/availability/fi/357?date=2022-07-20&slot_id=357&time=12%3A00&amount=1&price_code=&check=1
 	payloadString := fmt.Sprintf(
 		"https://s-varaukset.fi/online/reserve/availability/fi/%s?date=%s&slot_id=%s&time=%s&amount=%s&price_code=&check=1",
-		payload_struct.restaurantId,
-		payload_struct.date,
-		payload_struct.restaurantId,
-		strings.Replace(payload_struct.time, ":", "%3A", -1), // We replace the ":" in time with "%3A" to fit request format.
-		payload_struct.amount,
+		payloadStruct.restaurantId,
+		payloadStruct.date,
+		payloadStruct.restaurantId,
+		strings.Replace(payloadStruct.time, ":", "%3A", -1), // We replace the ":" in time with "%3A" to fit request format.
+		payloadStruct.amount,
 	)
-	fmt.Println(payloadString)
 	return payloadString
 }
 
+// This file handles everything related to getting information from restaurants.
 func generateUrls() []string {
-	urls := []string{}
-	for i := 1; i < 21; i++ {
-		payload_string := makePayload(i)
-		urls = append(urls, payload_string)
+	var urls []string
+	for i := 1; i < 5; i++ {
+		payloadString := makePayload(i)
+		urls = append(urls, payloadString)
 	}
 	return urls
 }
 
+// This will determine if the body contains something and it will return bool
+func stringContains(res *string, substr string) bool {
+	if !strings.Contains(*res, substr) {
+		return false
+	}
+	return true
+}
+
 func getAvailableTables() []string {
 	urls := generateUrls()
-
 	results := make([]string, len(urls))
 	for i := 0; i < len(urls); i++ {
 		c := make(chan string)
 		go func(url string, channel *chan string) {
-			res, err := http.Get(url)
+			body, err := getRequestBody(&url)
 			if err != nil {
+				log.Fatalln("error with get request.")
 				return
 			}
-			if res.StatusCode != 200 {
-				return
+
+			if stringContains(&body, "Jatka varausta") {
+				c <- url
 			}
-			c <- url
+			// else use it cuz its valid.
 		}(urls[i], &c)
 		results[i] = <-c
 	}
