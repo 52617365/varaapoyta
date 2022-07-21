@@ -2,7 +2,6 @@ import type {NextPage} from 'next'
 import Link from "next/link"
 import Image from "next/image"
 import SiteFooter from "../components/SiteFooter";
-import {useSWRConfig} from "swr";
 import Button from "../components/Button";
 import React from "react";
 

@@ -10,7 +10,6 @@ function DropDown({
              className="dropdown dropdown-right dropdown-hover">
             <label tabIndex={0} className="btn m-1">{name}</label>
             <ul tabIndex={0} className="dropdown-content menu shadow bg-base-100 rounded-box">
-                {/*TODO: Add all restaurants here*/}
                 {items}
             </ul>
         </div>

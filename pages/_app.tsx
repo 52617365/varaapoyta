@@ -6,9 +6,6 @@ import SiteFooter from "../components/SiteFooter"
 import {SWRConfig} from 'swr'
 
 // TODO: Instead of logging in, use local storage to store settings.
-// Load local storage on load.
-// If user presses save then load the settings into local storage.
-
 function MyApp({Component, pageProps}: AppProps) {
     return (
         <SWRConfig value={{provider: () => new Map()}}>
