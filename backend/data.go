@@ -29,18 +29,36 @@ type payload struct {
 	amount       string // Amount of eaters.
 }
 
-func makePayLoad(payload payload) string {
-	// TODO: make payload from struct
-	// TODO: Turn time from 12:30 to 12%3A00 etc (: is %3A) (might not need to tbh)
+// 2022-07-21 12:45:54.1414084 +0300 EEST m=+0.001537301
+func getCurrentDate() string {
+	re, _ := regexp.Compile(`\d{4}-\d{2}-\d{2}`)
+	dt := time.Now().String()
+	return re.FindString(dt)
+}
+
+func getCurrentTime() string {
+	re, _ := regexp.Compile(`\d{2}:\d{2}`)
+	dt := time.Now().String()
+	return re.FindString(dt)
+}
+
+func makePayload(id int) string {
+	payload_struct := payload{
+		restaurantId: strconv.Itoa(id),
+		date:         "2022-07-21",
+		time:         "17:00",
+		amount:       "1",
+	}
 	// example payload https://s-varaukset.fi/online/reserve/availability/fi/357?date=2022-07-20&slot_id=357&time=12%3A00&amount=1&price_code=&check=1
 	payloadString := fmt.Sprintf(
 		"https://s-varaukset.fi/online/reserve/availability/fi/%s?date=%s&slot_id=%s&time=%s&amount=%s&price_code=&check=1",
-		payload.restaurantId,
-		payload.date,
-		payload.restaurantId,
-		strings.Replace(payload.time, ":", "%3A", -1), // We replace the ":" in time with "%3A" to fit request format.
-		payload.amount,
+		payload_struct.restaurantId,
+		payload_struct.date,
+		payload_struct.restaurantId,
+		strings.Replace(payload_struct.time, ":", "%3A", -1), // We replace the ":" in time with "%3A" to fit request format.
+		payload_struct.amount,
 	)
+	fmt.Println(payloadString)
 	return payloadString
 }
 func getAvailableTables(time time.Duration) {
