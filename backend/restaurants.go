@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/gocolly/colly"
 	"log"
-	"strconv"
 	"strings"
 )
 
@@ -16,62 +16,81 @@ type payload struct {
 	amount       string // Amount of eaters.
 }
 
-func makePayload(id int) string {
+type payloadResult struct {
+	restaurant string
+	available  bool
+}
+
+func initializeColly() *colly.Collector {
+	c := colly.NewCollector(
+		colly.Async(true),
+	)
+	c.Limit(&colly.LimitRule{DomainGlob: "*", Parallelism: 5})
+	return c
+}
+
+func makePayload(id int, amount int, time string) string {
 	// TODO: make time floor into the latest time e.g (17:15 goes to 17:30) etc.
-	payloadStruct := payload{
-		restaurantId: strconv.Itoa(id),
-		date:         getCurrentDate(),
-		time:         getCurrentTime(),
-		amount:       "1",
-	}
 	// example payload https://s-varaukset.fi/online/reserve/availability/fi/357?date=2022-07-20&slot_id=357&time=12%3A00&amount=1&price_code=&check=1
 	payloadString := fmt.Sprintf(
-		"https://s-varaukset.fi/online/reserve/availability/fi/%s?date=%s&slot_id=%s&time=%s&amount=%s&price_code=&check=1",
-		payloadStruct.restaurantId,
-		payloadStruct.date,
-		payloadStruct.restaurantId,
-		strings.Replace(payloadStruct.time, ":", "%3A", -1), // We replace the ":" in time with "%3A" to fit request format.
-		payloadStruct.amount,
+		"https://s-varaukset.fi/online/reserve/availability/fi/%d?date=%s&slot_id=%d&time=%s&amount=%d&price_code=&check=1",
+		id,
+		getCurrentDate(),
+		id,
+		strings.Replace(time, ":", "%3A", -1), // We replace the ":" in time with "%3A" to fit request format.
+		//strings.Replace(getCurrentTime(), ":", "%3A", -1), // We replace the ":" in time with "%3A" to fit request format.
+		amount,
 	)
 	return payloadString
 }
 
-// This file handles everything related to getting information from restaurants.
-func generateUrls() []string {
-	var urls []string
-	for i := 1; i < 5; i++ {
-		payloadString := makePayload(i)
-		urls = append(urls, payloadString)
+// Hakee kaikki vapaat ravintolat.
+func workerRequest(jobs chan string, resultsChan chan payloadResult) {
+	for job := range jobs {
+		body, err := getRequestBody(&job)
+		if err != nil {
+			log.Fatal("error sending get request")
+		}
+
+		// TODO: parse body.
+		// "Jatka varausta" on sivulla, jos paikka on vapaana.
+		if strings.Contains(body, "Jatka varausta") {
+			result := payloadResult{
+				restaurant: job,
+				available:  true,
+			}
+			resultsChan <- result
+		} else {
+			result := payloadResult{
+				restaurant: job,
+				available:  false,
+			}
+			resultsChan <- result
+		}
 	}
-	return urls
 }
 
-// This will determine if the body contains something and it will return bool
-func stringContains(res *string, substr string) bool {
-	if !strings.Contains(*res, substr) {
-		return false
+func getAvailableTables() {
+	fmt.Println("starting")
+	// 4920 = 82 (pages) x 64 (amount of payloads per page, times)
+	jobs := make(chan string, 5248)
+	resultsChan := make(chan payloadResult, len(jobs))
+	times := getAllPossibleTimes()
+	// Launch 8 workers
+	for i := 0; i < 20; i++ {
+		go workerRequest(jobs, resultsChan)
 	}
-	return true
-}
 
-func getAvailableTables() []string {
-	urls := generateUrls()
-	results := make([]string, len(urls))
-	for i := 0; i < len(urls); i++ {
-		c := make(chan string)
-		go func(url string, channel *chan string) {
-			body, err := getRequestBody(&url)
-			if err != nil {
-				log.Fatalln("error with get request.")
-				return
-			}
-
-			if stringContains(&body, "Jatka varausta") {
-				c <- url
-			}
-			// else use it cuz its valid.
-		}(urls[i], &c)
-		results[i] = <-c
+	// Spawning all the jobs.
+	for i := 1; i <= 82; i++ {
+		for _, time := range times {
+			payloadString := makePayload(i, 1, time)
+			jobs <- payloadString
+		}
 	}
-	return results
+	close(jobs)
+	//results := make([]string, len(jobs))
+	for a := 1; a <= len(jobs); a++ {
+		fmt.Println(<-resultsChan)
+	}
 }
