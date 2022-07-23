@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/gocolly/colly"
 	"log"
 	"strings"
 )
@@ -19,14 +18,6 @@ type payload struct {
 type payloadResult struct {
 	restaurant string
 	available  bool
-}
-
-func initializeColly() *colly.Collector {
-	c := colly.NewCollector(
-		colly.Async(true),
-	)
-	c.Limit(&colly.LimitRule{DomainGlob: "*", Parallelism: 5})
-	return c
 }
 
 func makePayload(id int, amount int, time string) string {

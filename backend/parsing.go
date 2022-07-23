@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -14,25 +17,82 @@ func getCurrentDate() string {
 	return re.FindString(dt)
 }
 
+type timeStruct struct {
+	hour    uint8
+	minutes uint8
+}
+
+// TODO: get all times from the current time onwards.
 func getAllPossibleTimes() []string {
-	return []string{
-		"8:00", "8:15", "8:30", "8:45",
-		"9:00", "9:15", "9:30", "9:45",
-		"10:00", "10:15", "10:30", "10:45",
-		"11:00", "11:15", "11:30", "11:45",
-		"12:00", "12:15", "12:30", "12:45",
-		"13:00", "13:15", "13:30", "13:45",
-		"14:00", "14:15", "14:30", "14:45",
-		"15:00", "15:15", "15:30", "15:45",
-		"16:00", "16:15", "16:30", "16:45",
-		"17:00", "17:15", "17:30", "17:45",
-		"18:00", "18:15", "18:30", "18:45",
-		"19:00", "19:15", "19:30", "19:45",
-		"20:00", "20:15", "20:30", "20:45",
-		"21:00", "21:15", "21:30", "21:45",
-		"22:00", "22:15", "22:30", "22:45",
-		"23:00", "23:15", "23:30", "23:45",
+	// structs so that we can actually work with the times better (can't use larger than etc. on times that are normally treated as strings)
+	times := []timeStruct{
+		{hour: 8, minutes: 00}, {hour: 8, minutes: 15},
+		{hour: 8, minutes: 30}, {hour: 8, minutes: 45},
+		{hour: 9, minutes: 00}, {hour: 9, minutes: 15},
+		{hour: 9, minutes: 30}, {hour: 9, minutes: 45},
+		{hour: 10, minutes: 00}, {hour: 10, minutes: 15},
+		{hour: 10, minutes: 30}, {hour: 10, minutes: 45},
+		{hour: 11, minutes: 00}, {hour: 11, minutes: 15},
+		{hour: 11, minutes: 30}, {hour: 11, minutes: 45},
+		{hour: 12, minutes: 00}, {hour: 12, minutes: 15},
+		{hour: 12, minutes: 30}, {hour: 12, minutes: 45},
+		{hour: 13, minutes: 00}, {hour: 13, minutes: 15},
+		{hour: 13, minutes: 30}, {hour: 13, minutes: 45},
+		{hour: 14, minutes: 00}, {hour: 14, minutes: 15},
+		{hour: 14, minutes: 30}, {hour: 14, minutes: 45},
+		{hour: 15, minutes: 00}, {hour: 15, minutes: 15},
+		{hour: 15, minutes: 30}, {hour: 15, minutes: 45},
+		{hour: 16, minutes: 00}, {hour: 16, minutes: 15},
+		{hour: 16, minutes: 30}, {hour: 16, minutes: 45},
+		{hour: 17, minutes: 00}, {hour: 17, minutes: 15},
+		{hour: 17, minutes: 30}, {hour: 17, minutes: 45},
+		{hour: 18, minutes: 00}, {hour: 18, minutes: 15},
+		{hour: 18, minutes: 30}, {hour: 18, minutes: 45},
+		{hour: 19, minutes: 00}, {hour: 19, minutes: 15},
+		{hour: 19, minutes: 30}, {hour: 19, minutes: 45},
+		{hour: 20, minutes: 00}, {hour: 20, minutes: 15},
+		{hour: 20, minutes: 30}, {hour: 20, minutes: 45},
+		{hour: 21, minutes: 00}, {hour: 21, minutes: 15},
+		{hour: 21, minutes: 30}, {hour: 21, minutes: 45},
+		{hour: 22, minutes: 00}, {hour: 22, minutes: 15},
+		{hour: 22, minutes: 00}, {hour: 22, minutes: 15},
+		{hour: 23, minutes: 30}, {hour: 23, minutes: 45},
+		{hour: 23, minutes: 30}, {hour: 23, minutes: 45},
 	}
+
+	currentTime := strings.Split(getCurrentTime(), ":")
+	currentTimeHours, _ := strconv.Atoi(currentTime[0])
+	currentTimeMinutes, _ := strconv.Atoi(currentTime[1])
+
+	currentTimeStruct := timeStruct{
+		hour:    uint8(currentTimeHours),
+		minutes: uint8(currentTimeMinutes),
+	}
+
+	timesWeWant := make([]string, len(times))
+	for _, t := range times {
+		if t.hour > currentTimeStruct.hour && t.minutes > currentTimeStruct.minutes {
+			// TODO append to array.
+			timeWeWant := fmt.Sprintf("%d:%d", t.hour, t.minutes)
+			timesWeWant = append(timesWeWant, timeWeWant)
+		}
+
+	}
+	return timesWeWant
+}
+
+func ConvertToStructs(times []string, timesFromNow []timeStruct) []timeStruct {
+	for _, t := range times {
+		parsedTime := strings.Split(t, ":")
+		parsedHourInt, _ := strconv.Atoi(parsedTime[0])
+		parsedMinuteInt, _ := strconv.Atoi(parsedTime[1])
+		toStruct := timeStruct{
+			hour:    parsedHourInt,
+			minutes: parsedMinuteInt,
+		}
+		timesFromNow = append(timesFromNow, toStruct)
+	}
+	return timesFromNow
 }
 
 // todo: convert to upper
