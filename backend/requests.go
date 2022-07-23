@@ -19,7 +19,7 @@ func getRequestBody(url *string) (body string, err error) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			log.Fatalln("error defering request body")
+			log.Fatalln("error deferring request body")
 		}
 	}(res.Body)
 
