@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// TODO: add some format check before sending in request.
 type payload struct {
 	// restaurantId is the same as slot_id in payload.
 	restaurantId string
@@ -64,7 +63,7 @@ func workerRequest(jobs chan string, resultsChan chan payloadResult) {
 func getAvailableTables() {
 	fmt.Println("starting")
 	// 4920 = 82 (pages) x 64 (amount of payloads per page, times)
-	jobs := make(chan string, 4800)
+	jobs := make(chan string, 160000)
 	resultsChan := make(chan payloadResult, len(jobs))
 	times := getAllPossibleTimes()
 
@@ -79,7 +78,7 @@ func getAvailableTables() {
 	}
 
 	// Spawning all the jobs.
-	for i := 1; i <= 75; i++ {
+	for i := 1; i <= 1500; i++ {
 		for _, time := range times {
 			payloadString := makePayload(i, 1, time)
 			jobs <- payloadString
@@ -87,7 +86,10 @@ func getAvailableTables() {
 	}
 	close(jobs)
 	//results := make([]string, len(jobs))
-	for a := 1; a <= 5248; a++ {
-		fmt.Println(<-resultsChan)
+	for a := 1; a <= 160000; a++ {
+		result := <-resultsChan
+		if result.available {
+			fmt.Println(result.restaurant)
+		}
 	}
 }
