@@ -69,6 +69,5 @@ func getAllPossibleTimes() []string {
 			break
 		}
 	}
-
 	return timesWeWant
 }

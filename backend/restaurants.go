@@ -64,16 +64,22 @@ func workerRequest(jobs chan string, resultsChan chan payloadResult) {
 func getAvailableTables() {
 	fmt.Println("starting")
 	// 4920 = 82 (pages) x 64 (amount of payloads per page, times)
-	jobs := make(chan string, 5248)
+	jobs := make(chan string, 4800)
 	resultsChan := make(chan payloadResult, len(jobs))
 	times := getAllPossibleTimes()
+
+	// TODO: recover from this some how.
+	if times == nil {
+		log.Fatal("no times available.")
+	}
+
 	// Launch 8 workers
 	for i := 0; i < 20; i++ {
 		go workerRequest(jobs, resultsChan)
 	}
 
 	// Spawning all the jobs.
-	for i := 1; i <= 82; i++ {
+	for i := 1; i <= 75; i++ {
 		for _, time := range times {
 			payloadString := makePayload(i, 1, time)
 			jobs <- payloadString
@@ -81,7 +87,7 @@ func getAvailableTables() {
 	}
 	close(jobs)
 	//results := make([]string, len(jobs))
-	for a := 1; a <= len(jobs); a++ {
+	for a := 1; a <= 5248; a++ {
 		fmt.Println(<-resultsChan)
 	}
 }
