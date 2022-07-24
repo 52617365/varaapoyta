@@ -17,74 +17,58 @@ func getCurrentDate() string {
 	return re.FindString(dt)
 }
 
-type timeStruct struct {
-	hour    uint8
-	minutes uint8
-}
-
-// TODO: get all times from the current time onwards.
-func getAllPossibleTimes() []string {
-	// structs so that we can actually work with the times better (can't use larger than etc. on times that are normally treated as strings)
-	times := []timeStruct{
-		{hour: 8, minutes: 00}, {hour: 8, minutes: 15},
-		{hour: 8, minutes: 30}, {hour: 8, minutes: 45},
-		{hour: 9, minutes: 00}, {hour: 9, minutes: 15},
-		{hour: 9, minutes: 30}, {hour: 9, minutes: 45},
-		{hour: 10, minutes: 00}, {hour: 10, minutes: 15},
-		{hour: 10, minutes: 30}, {hour: 10, minutes: 45},
-		{hour: 11, minutes: 00}, {hour: 11, minutes: 15},
-		{hour: 11, minutes: 30}, {hour: 11, minutes: 45},
-		{hour: 12, minutes: 00}, {hour: 12, minutes: 15},
-		{hour: 12, minutes: 30}, {hour: 12, minutes: 45},
-		{hour: 13, minutes: 00}, {hour: 13, minutes: 15},
-		{hour: 13, minutes: 30}, {hour: 13, minutes: 45},
-		{hour: 14, minutes: 00}, {hour: 14, minutes: 15},
-		{hour: 14, minutes: 30}, {hour: 14, minutes: 45},
-		{hour: 15, minutes: 00}, {hour: 15, minutes: 15},
-		{hour: 15, minutes: 30}, {hour: 15, minutes: 45},
-		{hour: 16, minutes: 00}, {hour: 16, minutes: 15},
-		{hour: 16, minutes: 30}, {hour: 16, minutes: 45},
-		{hour: 17, minutes: 00}, {hour: 17, minutes: 15},
-		{hour: 17, minutes: 30}, {hour: 17, minutes: 45},
-		{hour: 18, minutes: 00}, {hour: 18, minutes: 15},
-		{hour: 18, minutes: 30}, {hour: 18, minutes: 45},
-		{hour: 19, minutes: 00}, {hour: 19, minutes: 15},
-		{hour: 19, minutes: 30}, {hour: 19, minutes: 45},
-		{hour: 20, minutes: 00}, {hour: 20, minutes: 15},
-		{hour: 20, minutes: 30}, {hour: 20, minutes: 45},
-		{hour: 21, minutes: 00}, {hour: 21, minutes: 15},
-		{hour: 21, minutes: 30}, {hour: 21, minutes: 45},
-		{hour: 22, minutes: 00}, {hour: 22, minutes: 15},
-		{hour: 22, minutes: 00}, {hour: 22, minutes: 15},
-		{hour: 23, minutes: 30}, {hour: 23, minutes: 45},
-		{hour: 23, minutes: 30}, {hour: 23, minutes: 45},
-	}
-
-	currentTime := strings.Split(getCurrentTime(), ":")
-	currentTimeHours, _ := strconv.Atoi(currentTime[0])
-	currentTimeMinutes, _ := strconv.Atoi(currentTime[1])
-
-	currentTimeStruct := timeStruct{
-		hour:    uint8(currentTimeHours),
-		minutes: uint8(currentTimeMinutes),
-	}
-
-	timesWeWant := make([]string, len(times))
-	for _, t := range times {
-		if t.hour > currentTimeStruct.hour && t.minutes > currentTimeStruct.minutes {
-			// TODO append to array.
-			timeWeWant := fmt.Sprintf("%d:%d", t.hour, t.minutes)
-			timesWeWant = append(timesWeWant, timeWeWant)
-		}
-
-	}
-	return timesWeWant
-}
-
-// todo: convert to upper
-// 0 15 30 45
 func getCurrentTime() string {
 	var re, _ = regexp.Compile(`\d{2}:\d{2}`)
 	dt := time.Now().String()
 	return re.FindString(dt)
+}
+
+// Numbers after 1000 are 4 digits so check if number is under 1000, if so, add trailing zero.
+func formatTimesToString(times []int) []string {
+	formattedStrings := make([]string, len(times))
+	// This for loop first makes sure that everything is the same length (converts 1000< to 4 digits E.g. 800 is 0800)
+	// This is done to handle them all the same way.
+	for i, t := range times {
+		var formattedString string
+		// AKA if number length is only 3
+		if t < 1000 {
+			formattedString = fmt.Sprintf("0%d", t)
+			// Here formattedString will look like "1230" so we can assume it will always have 3 indices.
+		} else {
+			// AKA if number length is already 4
+			formattedString = strconv.Itoa(t)
+		}
+		hour := formattedString[:2]
+		minutes := formattedString[2:]
+		formattedString = fmt.Sprintf("%s:%s", hour, minutes)
+		formattedStrings[i] = formattedString
+	}
+	return formattedStrings
+}
+
+func getAllPossibleTimes() []string {
+	// Here we have all the possible times when you can reserve a table.
+	times := []int{
+		800, 815, 830, 845, 900, 915, 930, 945, 1000, 1015, 1030,
+		1045, 1100, 1115, 1130, 1145, 1200, 1215, 1230, 1245, 1300,
+		1315, 1330, 1345, 1400, 1415, 1430, 1445, 1500, 1515, 1530,
+		1545, 1600, 1615, 1630, 1645, 1700, 1715, 1730, 1745, 1800,
+		1815, 1830, 1845, 1900, 1915, 1930, 1945, 2000, 2015, 2030,
+		2045, 2100, 2115, 2130, 2145, 2200, 2215, 2230, 2245, 2300,
+		2315, 2330, 2345,
+	}
+
+	// Won't be an error since getCurrentTime returns right value everytime.
+	currentTime, _ := strconv.Atoi(strings.ReplaceAll(getCurrentTime(), ":", ""))
+	var timesWeWant []string
+
+	// Get all the times we want. (List is sorted, so we can assume that if a number is larger, everything after it will be too, so we don't need a branch for that)
+	for i := 0; i < len(times); i++ {
+		if times[i] > currentTime {
+			timesWeWant = formatTimesToString(times[i:])
+			break
+		}
+	}
+
+	return timesWeWant
 }
