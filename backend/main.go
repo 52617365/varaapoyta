@@ -11,6 +11,10 @@ package main
 // @Solution two
 // Find a way to reduce the amount of requests. This could be done by finding an alternative to getting open restaurants', E.g. do something with the graph on site.
 // Or get better checks into the requests to narrow down the amount of requests (for example, if first request does not have the stuff we want, don't do it on the same page but at a different time).
+
+// TODO: fix problem where we're sending 160k requests. maybe only generate the ones in the users region.
 func main() {
-	getAvailableTables()
+	// TODO: take in parameter with the city and get results with that.
+	scrapeRestaurantLocations()
+	//getAvailableTables()
 }

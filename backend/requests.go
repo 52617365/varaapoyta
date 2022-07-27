@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-// This file will handle everything related to requests.
+// This file will handle everything related to request.
 
 // This function will make a get request and return the body.
 func getRequestBody(url *string) (body string, err error) {
@@ -15,7 +15,6 @@ func getRequestBody(url *string) (body string, err error) {
 	if err != nil {
 		return "", errors.New("error sending request")
 	}
-
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {

@@ -62,7 +62,7 @@ func getAllPossibleTimes() []string {
 	currentTime, _ := strconv.Atoi(strings.ReplaceAll(getCurrentTime(), ":", ""))
 	var timesWeWant []string
 
-	// Get all the times we want. (List is sorted, so we can assume that if a number is larger, everything after it will be too, so we don't need a branch for that)
+	// Get all the times we want. (List is sorted, so we can assume that if a number is larger, everything after it will be too, so we don't need a branch for everything after that)
 	for i := 0; i < len(times); i++ {
 		if times[i] > currentTime {
 			timesWeWant = formatTimesToString(times[i:])
