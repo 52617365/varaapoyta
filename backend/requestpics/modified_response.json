@@ -4,6 +4,487 @@
       "totalCount": 470,
       "edges": [
         {
+          "id": "563",
+          "name": {
+            "fi_FI": "Tilausravintola Presidentti"
+          },
+          "urlPath": {
+            "fi_FI": "/fi/ravintola/helsinki/tilausravintola-presidentti"
+          },
+          "address": {
+            "municipality": {
+              "fi_FI": "Helsinki"
+            },
+            "street": {
+              "fi_FI": "Eteläinen Rautatiekatu 4"
+            },
+            "zipCode": "00100"
+          },
+          "features": {
+            "accessible": true
+          },
+          "openingTime": {
+            "restaurantTime": {
+              "ranges": null
+            },
+            "kitchenTime": {
+              "ranges": null
+            }
+          },
+          "links": {
+            "tableReservationLocalized": {
+              "fi_FI": ""
+            },
+            "homepageLocalized": {
+              "fi_FI": "https://www.raflaamo.fi/fi/helsinki/tilausravintola-presidentti"
+            }
+          }
+        },
+        {
+          "id": "182",
+          "name": {
+            "fi_FI": "Bistro Manu"
+          },
+          "urlPath": {
+            "fi_FI": "/fi/ravintola/helsinki/bistro-manu"
+          },
+          "address": {
+            "municipality": {
+              "fi_FI": "Helsinki"
+            },
+            "street": {
+              "fi_FI": "Eteläinen Rautatiekatu 4"
+            },
+            "zipCode": "00100"
+          },
+          "features": {
+            "accessible": true
+          },
+          "openingTime": {
+            "restaurantTime": {
+              "ranges": [
+                {
+                  "start": "16:00",
+                  "end": "23:00",
+                  "endNextDay": false
+                }
+              ]
+            },
+            "kitchenTime": {
+              "ranges": [
+                {
+                  "start": "16:00",
+                  "end": "22:00",
+                  "endNextDay": false
+                }
+              ]
+            }
+          },
+          "links": {
+            "tableReservationLocalized": {
+              "fi_FI": "https://s-varaukset.fi/online/reservation/fi/38?_ga=2.146560948.1092747230.1612503015-489168449.1604043706"
+            },
+            "homepageLocalized": {
+              "fi_FI": "https://www.raflaamo.fi/fi/helsinki/bistro-manu"
+            }
+          }
+        },
+        {
+          "id": "535",
+          "name": {
+            "fi_FI": "Rotterdam"
+          },
+          "urlPath": {
+            "fi_FI": "/fi/ravintola/helsinki/rotterdam"
+          },
+          "address": {
+            "municipality": {
+              "fi_FI": "Helsinki"
+            },
+            "street": {
+              "fi_FI": "Tennispalatsin Aukio 4"
+            },
+            "zipCode": "00100"
+          },
+          "features": {
+            "accessible": true
+          },
+          "openingTime": {
+            "restaurantTime": {
+              "ranges": [
+                {
+                  "start": "11:00",
+                  "end": "01:00",
+                  "endNextDay": true
+                }
+              ]
+            },
+            "kitchenTime": {
+              "ranges": [
+                {
+                  "start": "11:00",
+                  "end": "01:00",
+                  "endNextDay": true
+                }
+              ]
+            }
+          },
+          "links": {
+            "tableReservationLocalized": {
+              "fi_FI": ""
+            },
+            "homepageLocalized": {
+              "fi_FI": "https://www.raflaamo.fi/fi/helsinki/rotterdam"
+            }
+          }
+        },
+        {
+          "id": "290664",
+          "name": {
+            "fi_FI": "Coffee Bar & Wine"
+          },
+          "urlPath": {
+            "fi_FI": "/fi/ravintola/helsinki/coffee-bar-wine"
+          },
+          "address": {
+            "municipality": {
+              "fi_FI": "Helsinki"
+            },
+            "street": {
+              "fi_FI": "Asema-Aukio 2"
+            },
+            "zipCode": "00100"
+          },
+          "features": {
+            "accessible": true
+          },
+          "openingTime": {
+            "restaurantTime": {
+              "ranges": [
+                {
+                  "start": "11:00",
+                  "end": "19:00",
+                  "endNextDay": false
+                }
+              ]
+            },
+            "kitchenTime": {
+              "ranges": [
+                {
+                  "start": "11:00",
+                  "end": "19:00",
+                  "endNextDay": false
+                }
+              ]
+            }
+          },
+          "links": {
+            "tableReservationLocalized": {
+              "fi_FI": ""
+            },
+            "homepageLocalized": {
+              "fi_FI": "https://happyfarmer.fi/fi/coffee-bar-and-wine"
+            }
+          }
+        },
+        {
+          "id": "1",
+          "name": {
+            "fi_FI": "10. Kerros"
+          },
+          "urlPath": {
+            "fi_FI": "/fi/ravintola/helsinki/10-kerros"
+          },
+          "address": {
+            "municipality": {
+              "fi_FI": "Helsinki"
+            },
+            "street": {
+              "fi_FI": "Kaivokatu 3"
+            },
+            "zipCode": "00100"
+          },
+          "features": {
+            "accessible": true
+          },
+          "openingTime": {
+            "restaurantTime": {
+              "ranges": [
+                {
+                  "start": "07:00",
+                  "end": "11:00",
+                  "endNextDay": false
+                },
+                {
+                  "start": "12:00",
+                  "end": "00:00",
+                  "endNextDay": true
+                }
+              ]
+            },
+            "kitchenTime": {
+              "ranges": [
+                {
+                  "start": "12:00",
+                  "end": "22:00",
+                  "endNextDay": false
+                }
+              ]
+            }
+          },
+          "links": {
+            "tableReservationLocalized": {
+              "fi_FI": "https://s-varaukset.fi/online/reservation/fi/72?_ga=2.161416895.382807502.1612853101-189045693.1611044564"
+            },
+            "homepageLocalized": {
+              "fi_FI": "https://www.raflaamo.fi/fi/helsinki/10-kerros"
+            }
+          }
+        },
+        {
+          "id": "450471",
+          "name": {
+            "fi_FI": "Hesburger Helsinki Asema-aukio"
+          },
+          "urlPath": {
+            "fi_FI": "/fi/ravintola/helsinki/hesburger-helsinki-asema-aukio"
+          },
+          "address": {
+            "municipality": {
+              "fi_FI": "Helsinki"
+            },
+            "street": {
+              "fi_FI": "Asema-Aukio 2"
+            },
+            "zipCode": "00100"
+          },
+          "features": {
+            "accessible": false
+          },
+          "openingTime": {
+            "restaurantTime": {
+              "ranges": [
+                {
+                  "start": "11:00",
+                  "end": "23:00",
+                  "endNextDay": false
+                }
+              ]
+            },
+            "kitchenTime": {
+              "ranges": [
+                {
+                  "start": "11:00",
+                  "end": "23:00",
+                  "endNextDay": false
+                }
+              ]
+            }
+          },
+          "links": {
+            "tableReservationLocalized": {
+              "fi_FI": ""
+            },
+            "homepageLocalized": {
+              "fi_FI": ""
+            }
+          }
+        },
+        {
+          "id": "195",
+          "name": {
+            "fi_FI": "Casa Largo"
+          },
+          "urlPath": {
+            "fi_FI": "/fi/ravintola/helsinki/casa-largo"
+          },
+          "address": {
+            "municipality": {
+              "fi_FI": "Helsinki"
+            },
+            "street": {
+              "fi_FI": "Asema-Aukio 2"
+            },
+            "zipCode": "00100"
+          },
+          "features": {
+            "accessible": true
+          },
+          "openingTime": {
+            "restaurantTime": {
+              "ranges": [
+                {
+                  "start": "12:00",
+                  "end": "01:00",
+                  "endNextDay": true
+                }
+              ]
+            },
+            "kitchenTime": {
+              "ranges": [
+                {
+                  "start": "12:00",
+                  "end": "23:00",
+                  "endNextDay": false
+                }
+              ]
+            }
+          },
+          "links": {
+            "tableReservationLocalized": {
+              "fi_FI": "https://s-varaukset.fi/online/reservation/fi/289"
+            },
+            "homepageLocalized": {
+              "fi_FI": "https://www.raflaamo.fi/fi/helsinki/casa-largo"
+            }
+          }
+        },
+        {
+          "id": "586",
+          "name": {
+            "fi_FI": "Vltava"
+          },
+          "urlPath": {
+            "fi_FI": "/fi/ravintola/helsinki/vltava"
+          },
+          "address": {
+            "municipality": {
+              "fi_FI": "Helsinki"
+            },
+            "street": {
+              "fi_FI": "Elielinaukio 2"
+            },
+            "zipCode": "00100"
+          },
+          "features": {
+            "accessible": true
+          },
+          "openingTime": {
+            "restaurantTime": {
+              "ranges": [
+                {
+                  "start": "10:00",
+                  "end": "03:00",
+                  "endNextDay": true
+                }
+              ]
+            },
+            "kitchenTime": {
+              "ranges": [
+                {
+                  "start": "10:00",
+                  "end": "03:00",
+                  "endNextDay": true
+                }
+              ]
+            }
+          },
+          "links": {
+            "tableReservationLocalized": {
+              "fi_FI": "https://s-varaukset.fi/online/reservation/fi/269"
+            },
+            "homepageLocalized": {
+              "fi_FI": "https://www.raflaamo.fi/fi/helsinki/vltava"
+            }
+          }
+        },
+        {
+          "id": "483",
+          "name": {
+            "fi_FI": "Radisson Blu Royal kokous- ja juhlatilat"
+          },
+          "urlPath": {
+            "fi_FI": "/fi/ravintola/helsinki/radisson-blu-royal-kokous-ja-juhlatilat"
+          },
+          "address": {
+            "municipality": {
+              "fi_FI": "Helsinki"
+            },
+            "street": {
+              "fi_FI": "Runeberginkatu 2"
+            },
+            "zipCode": "00100"
+          },
+          "features": {
+            "accessible": true
+          },
+          "openingTime": {
+            "restaurantTime": {
+              "ranges": null
+            },
+            "kitchenTime": {
+              "ranges": null
+            }
+          },
+          "links": {
+            "tableReservationLocalized": {
+              "fi_FI": "https://www.raflaamo.fi/fi/tilavarauslomake?pobid=P3350219"
+            },
+            "homepageLocalized": {
+              "fi_FI": "https://www.radissonhotels.com/fi-fi/hotellit/radisson-blu-helsinki-royal"
+            }
+          }
+        },
+        {
+          "id": "181",
+          "name": {
+            "fi_FI": "Bistro Johan"
+          },
+          "urlPath": {
+            "fi_FI": "/fi/ravintola/helsinki/bistro-johan"
+          },
+          "address": {
+            "municipality": {
+              "fi_FI": "Helsinki"
+            },
+            "street": {
+              "fi_FI": "Runeberginkatu 2"
+            },
+            "zipCode": "00100"
+          },
+          "features": {
+            "accessible": true
+          },
+          "openingTime": {
+            "restaurantTime": {
+              "ranges": [
+                {
+                  "start": "06:30",
+                  "end": "10:00",
+                  "endNextDay": false
+                },
+                {
+                  "start": "14:00",
+                  "end": "23:00",
+                  "endNextDay": false
+                }
+              ]
+            },
+            "kitchenTime": {
+              "ranges": [
+                {
+                  "start": "06:30",
+                  "end": "10:00",
+                  "endNextDay": false
+                },
+                {
+                  "start": "16:00",
+                  "end": "22:00",
+                  "endNextDay": false
+                }
+              ]
+            }
+          },
+          "links": {
+            "tableReservationLocalized": {
+              "fi_FI": "https://s-varaukset.fi/online/reservation/fi/42?_ga=2.29213948.1748276705.1612263132-189045693.1611044564"
+            },
+            "homepageLocalized": {
+              "fi_FI": "https://www.raflaamo.fi/fi/helsinki/bistro-johan"
+            }
+          }
+        },
+        {
           "id": "394",
           "name": {
             "fi_FI": "Ølhus Stockholm"
@@ -665,7 +1146,7 @@
             "restaurantTime": {
               "ranges": [
                 {
-                  "start": "12:00",
+                  "start": "11:00",
                   "end": "00:00",
                   "endNextDay": true
                 }
@@ -674,7 +1155,7 @@
             "kitchenTime": {
               "ranges": [
                 {
-                  "start": "12:00",
+                  "start": "11:00",
                   "end": "00:00",
                   "endNextDay": true
                 }
@@ -4096,7 +4577,7 @@
               "ranges": [
                 {
                   "start": "10:30",
-                  "end": "20:00",
+                  "end": "21:00",
                   "endNextDay": false
                 }
               ]
@@ -4105,7 +4586,7 @@
               "ranges": [
                 {
                   "start": "10:30",
-                  "end": "20:00",
+                  "end": "21:00",
                   "endNextDay": false
                 }
               ]
@@ -4145,7 +4626,7 @@
               "ranges": [
                 {
                   "start": "10:30",
-                  "end": "20:00",
+                  "end": "21:00",
                   "endNextDay": false
                 }
               ]
@@ -4154,7 +4635,7 @@
               "ranges": [
                 {
                   "start": "10:30",
-                  "end": "20:00",
+                  "end": "21:00",
                   "endNextDay": false
                 }
               ]
@@ -5399,7 +5880,7 @@
             "restaurantTime": {
               "ranges": [
                 {
-                  "start": "14:00",
+                  "start": "14:59",
                   "end": "02:00",
                   "endNextDay": true
                 }
@@ -5408,7 +5889,7 @@
             "kitchenTime": {
               "ranges": [
                 {
-                  "start": "14:00",
+                  "start": "14:59",
                   "end": "02:00",
                   "endNextDay": true
                 }
@@ -6551,18 +7032,18 @@
             "restaurantTime": {
               "ranges": [
                 {
-                  "start": "08:00",
-                  "end": "21:00",
-                  "endNextDay": false
+                  "start": "10:00",
+                  "end": "00:00",
+                  "endNextDay": true
                 }
               ]
             },
             "kitchenTime": {
               "ranges": [
                 {
-                  "start": "08:00",
-                  "end": "21:00",
-                  "endNextDay": false
+                  "start": "10:00",
+                  "end": "00:00",
+                  "endNextDay": true
                 }
               ]
             }
@@ -6650,8 +7131,8 @@
               "ranges": [
                 {
                   "start": "10:00",
-                  "end": "21:00",
-                  "endNextDay": false
+                  "end": "00:00",
+                  "endNextDay": true
                 }
               ]
             },
@@ -6659,8 +7140,8 @@
               "ranges": [
                 {
                   "start": "10:00",
-                  "end": "21:00",
-                  "endNextDay": false
+                  "end": "00:00",
+                  "endNextDay": true
                 }
               ]
             }
@@ -10195,7 +10676,7 @@
             "restaurantTime": {
               "ranges": [
                 {
-                  "start": "09:00",
+                  "start": "08:00",
                   "end": "19:00",
                   "endNextDay": false
                 }
@@ -10204,7 +10685,7 @@
             "kitchenTime": {
               "ranges": [
                 {
-                  "start": "09:00",
+                  "start": "08:00",
                   "end": "19:00",
                   "endNextDay": false
                 }
@@ -10953,22 +11434,10 @@
           },
           "openingTime": {
             "restaurantTime": {
-              "ranges": [
-                {
-                  "start": "09:00",
-                  "end": "19:00",
-                  "endNextDay": false
-                }
-              ]
+              "ranges": null
             },
             "kitchenTime": {
-              "ranges": [
-                {
-                  "start": "11:00",
-                  "end": "19:00",
-                  "endNextDay": false
-                }
-              ]
+              "ranges": null
             }
           },
           "links": {
@@ -12243,7 +12712,7 @@
               "ranges": [
                 {
                   "start": "10:00",
-                  "end": "19:00",
+                  "end": "20:00",
                   "endNextDay": false
                 }
               ]
@@ -12252,7 +12721,7 @@
               "ranges": [
                 {
                   "start": "10:00",
-                  "end": "19:00",
+                  "end": "20:00",
                   "endNextDay": false
                 }
               ]
@@ -12390,7 +12859,7 @@
               "ranges": [
                 {
                   "start": "19:00",
-                  "end": "02:00",
+                  "end": "04:00",
                   "endNextDay": true
                 }
               ]
@@ -12399,7 +12868,7 @@
               "ranges": [
                 {
                   "start": "19:00",
-                  "end": "02:00",
+                  "end": "04:00",
                   "endNextDay": true
                 }
               ]
@@ -13935,7 +14404,7 @@
               "ranges": [
                 {
                   "start": "11:00",
-                  "end": "02:00",
+                  "end": "01:00",
                   "endNextDay": true
                 }
               ]
@@ -13944,7 +14413,7 @@
               "ranges": [
                 {
                   "start": "11:00",
-                  "end": "01:30",
+                  "end": "00:30",
                   "endNextDay": true
                 }
               ]
@@ -14401,8 +14870,8 @@
               "ranges": [
                 {
                   "start": "11:00",
-                  "end": "02:00",
-                  "endNextDay": true
+                  "end": "23:00",
+                  "endNextDay": false
                 }
               ]
             },
@@ -14410,7 +14879,7 @@
               "ranges": [
                 {
                   "start": "11:00",
-                  "end": "22:00",
+                  "end": "23:00",
                   "endNextDay": false
                 }
               ]
@@ -16832,7 +17301,7 @@
             "restaurantTime": {
               "ranges": [
                 {
-                  "start": "16:00",
+                  "start": "13:00",
                   "end": "23:00",
                   "endNextDay": false
                 }
@@ -16841,7 +17310,7 @@
             "kitchenTime": {
               "ranges": [
                 {
-                  "start": "16:00",
+                  "start": "13:00",
                   "end": "23:00",
                   "endNextDay": false
                 }
@@ -18264,7 +18733,7 @@
             "restaurantTime": {
               "ranges": [
                 {
-                  "start": "22:00",
+                  "start": "23:00",
                   "end": "04:30",
                   "endNextDay": true
                 }
@@ -18273,7 +18742,7 @@
             "kitchenTime": {
               "ranges": [
                 {
-                  "start": "22:00",
+                  "start": "23:00",
                   "end": "04:30",
                   "endNextDay": true
                 }
@@ -18838,10 +19307,22 @@
           },
           "openingTime": {
             "restaurantTime": {
-              "ranges": null
+              "ranges": [
+                {
+                  "start": "16:00",
+                  "end": "22:00",
+                  "endNextDay": false
+                }
+              ]
             },
             "kitchenTime": {
-              "ranges": null
+              "ranges": [
+                {
+                  "start": "16:00",
+                  "end": "22:00",
+                  "endNextDay": false
+                }
+              ]
             }
           },
           "links": {
@@ -19356,7 +19837,7 @@
               "ranges": [
                 {
                   "start": "10:00",
-                  "end": "21:00",
+                  "end": "17:30",
                   "endNextDay": false
                 }
               ]
@@ -19365,7 +19846,7 @@
               "ranges": [
                 {
                   "start": "10:00",
-                  "end": "21:00",
+                  "end": "17:30",
                   "endNextDay": false
                 }
               ]
@@ -20579,22 +21060,10 @@
           },
           "openingTime": {
             "restaurantTime": {
-              "ranges": [
-                {
-                  "start": "10:30",
-                  "end": "19:00",
-                  "endNextDay": false
-                }
-              ]
+              "ranges": null
             },
             "kitchenTime": {
-              "ranges": [
-                {
-                  "start": "10:30",
-                  "end": "19:00",
-                  "endNextDay": false
-                }
-              ]
+              "ranges": null
             }
           },
           "links": {

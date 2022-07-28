@@ -117,7 +117,7 @@ func scrapeRestaurantLocations( /*city string*/ ) {
 		log.Fatal(err)
 	}
 
-	//Link__Anchor-sc-z5lyog-0 hFnksm ButtonStyles__LinkButton-sc-l1rosc-1 dBCuXR ListItemStyles__ButtonLink-sc-1xaojw6-6 kvKMVN
+	// Link__Anchor-sc-z5lyog-0 hFnksm ButtonStyles__LinkButton-sc-l1rosc-1 dBCuXR ListItemStyles__ButtonLink-sc-1xaojw6-6 kvKMVN
 	// Find the review items
 	doc.Find(".ListItemStyles__RestaurantListItemWrapper-sc-1xaojw6-15.jDtLYn").Each(func(i int, s *goquery.Selection) {
 		// Here we are getting the name of the restaurant. For some reason, there is two classes with the same name
