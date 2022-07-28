@@ -1,12 +1,7 @@
 import React from "react";
 
-function Button({text}: { text: string }) {
-    const [buttonLoading, setButtonLoading] = React.useState(false);
-
-    function setButton() {
-        setButtonLoading(true)
-    }
-
+// TODO: add actual functionality to this function. E.g fetching.
+function Button({text, setButton, buttonLoading}: { text: string, setButton: any, buttonLoading: any }) {
     return (
         <>
             {buttonLoading ? <button className="btn loading">Ladataan...</button> :

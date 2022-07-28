@@ -90,6 +90,11 @@ function useNoInitialEffect(
 }
 
 function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
+    const [buttonLoading, setButtonLoading] = React.useState(false);
+    function setLoadingState() {
+        setButtonLoading(true)
+    }
+
     const [ravintola_lista, lisaaRavintola] = React.useState([])
     const [kaupunki_lista, lisaaKaupunki] = React.useState([])
 
@@ -126,7 +131,7 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
             <div className="relative hero min-h-screen bg-base-200">
                 <Link href={"/varaa"}>
                     <a className={"absolute top-0 right-0"}>
-                        <Button text={"Takaisin varaamaan"}/>
+            <Button text={"Takaisin varaamaan"} setButton={setLoadingState} buttonLoading={buttonLoading}/>
                     </a>
                 </Link>
                 <div className="hero-content text-center">
