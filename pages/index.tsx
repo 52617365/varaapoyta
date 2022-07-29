@@ -21,19 +21,16 @@ function fetchInfo() {
         query: `fragment Locales on LocalizedString {fi_FI\n }\n\nfragment Restaurant on Restaurant {\n  id\n  name {\n    ...Locales\n    }\n  urlPath {\n    ...Locales\n     }\n    address {\n    municipality {\n      ...Locales\n       }\n        street {\n      ...Locales\n       }\n       zipCode\n     }\n    features {\n    accessible\n     }\n  openingTime {\n    restaurantTime {\n      ranges {\n        start\n        end\n        endNextDay\n         }\n             }\n    kitchenTime {\n      ranges {\n        start\n        end\n        endNextDay\n              }\n             }\n    }\n  links {\n    tableReservationLocalized {\n      ...Locales\n        }\n    homepageLocalized {\n      ...Locales\n          }\n   }\n     \n}\n\nquery getRestaurantsByLocation($first: Int, $after: String, $input: ListRestaurantsByLocationInput!) {\n  listRestaurantsByLocation(first: $first, after: $after, input: $input) {\n    totalCount\n      edges {\n      ...Restaurant\n        }\n     }\n}`
     }
 
-    const headers = {
+    // TODO: figure out a way to get through cors.
+    fetch("https://api.raflaamo.fi/query", {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
-            "Content-Type": 'application/json',
-            "client_id": 'jNAWMvWD9rp637RaR',
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0",
+            "content-type": "application/json",
+            "client_id": "jNAWMvWD9rp637RaR",
         },
         body: JSON.stringify(data)
-    }
-
-    console.log(JSON.stringify(data))
-
-    fetch("https://api.raflaamo.fi/query", headers as RequestInit).then(res => console.log(res))
+    }).then(res => console.log(res))
 }
 
 
@@ -41,7 +38,7 @@ function fetchInfo() {
 const Home: NextPage = () => {
     const [buttonLoading, setButtonLoading] = React.useState(false);
 
-    function fetchInformation(event: any) {
+    function fetchInformation() {
         setButtonLoading(true)
         // TODO: fetchInfo should set buttonLoading to false when fetched.
         fetchInfo()

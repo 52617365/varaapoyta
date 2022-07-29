@@ -15,6 +15,6 @@ package main
 // TODO: fix problem where we're sending 160k requests. maybe only generate the ones in the users region.
 func main() {
 	// TODO: take in parameter with the city and get results with that.
-	scrapeRestaurantLocations()
+	getRestaurants()
 	//getAvailableTables()
 }
