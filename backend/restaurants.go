@@ -33,33 +33,37 @@ func getPayload() structure {
 	return data
 }
 
-func getRestaurants() *http.Response {
+func getRestaurants(restaurant_structure interface{}) error {
 	data := getPayload()
 	dataEncoded, _ := json.Marshal(data)
 	resp, err := http.Post("https://api.raflaamo.fi/query", "application/json", bytes.NewBuffer(dataEncoded))
+	resp.Header.Set("client_id", "jNAWMvWD9rp637RaR")
+
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(resp)
+
 	defer resp.Body.Close()
-	return resp
+
+	return json.NewDecoder(resp.Body).Decode(restaurant_structure)
 }
 
 type response_struct struct {
-	id             int         // /data/listRestaurantsByLocation/edges/0/id
-	name           string      // /data/listRestaurantsByLocation/edges/0/name/fi_FI
-	city           string      // /data/listRestaurantsByLocation/edges/0/address/municipality/fi_FI
-	address        string      // /data/listRestaurantsByLocation/edges/0/address/street/fi_FI
-	zip_code       string      // /data/listRestaurantsByLocation/edges/0/address/zipCode
-	accessible     bool        // /data/listRestaurantsByLocation/edges/0/features/accessible
-	opening_hours  interface{} // This will be a tuple containing start and end like (start, end)
-	reserving_url  string      // /data/listRestaurantsByLocation/edges/1/links/tableReservationLocalized/fi_FI
-	restaurant_url string      // /data/listRestaurantsByLocation/edges/1/links/homepageLocalized/fi_FI
+	id            int         // /data/listRestaurantsByLocation/edges/0/id
+	Name          string      // /data/listRestaurantsByLocation/edges/0/name/fi_FI
+	City          string      // /data/listRestaurantsByLocation/edges/0/address/municipality/fi_FI
+	address       string      // /data/listRestaurantsByLocation/edges/0/address/street/fi_FI
+	zipCode       string      // /data/listRestaurantsByLocation/edges/0/address/zipCode
+	Accessible    bool        // /data/listRestaurantsByLocation/edges/0/features/accessible
+	Opening_hours interface{} // This will be a tuple containing start and end like (start, end)
+	// data/listRestaurantsByLocation/edges/1/openingTime/restaurantTime/ranges
+	Reserving_url  string // /data/listRestaurantsByLocation/edges/1/links/tableReservationLocalized/fi_FI
+	Restaurant_url string // /data/listRestaurantsByLocation/edges/1/links/homepageLocalized/fi_FI
 }
 
-func parseRestaurants(city string) {
-	restaurants := getRestaurants()
-
-	//TODO: decode the response here.
-
-	fmt.Println(restaurants)
+func parseRestaurants(city string) map[string]interface{} {
+	var restaurant_struct map[string]interface{}
+	_ = getRestaurants(&restaurant_struct)
+	return restaurant_struct
 }
