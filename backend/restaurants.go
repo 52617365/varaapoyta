@@ -33,12 +33,33 @@ func getPayload() structure {
 	return data
 }
 
-func getRestaurants() {
+func getRestaurants() *http.Response {
 	data := getPayload()
 	dataEncoded, _ := json.Marshal(data)
 	resp, err := http.Post("https://api.raflaamo.fi/query", "application/json", bytes.NewBuffer(dataEncoded))
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(resp)
+	defer resp.Body.Close()
+	return resp
+}
+
+type response_struct struct {
+	id             int         // /data/listRestaurantsByLocation/edges/0/id
+	name           string      // /data/listRestaurantsByLocation/edges/0/name/fi_FI
+	city           string      // /data/listRestaurantsByLocation/edges/0/address/municipality/fi_FI
+	address        string      // /data/listRestaurantsByLocation/edges/0/address/street/fi_FI
+	zip_code       string      // /data/listRestaurantsByLocation/edges/0/address/zipCode
+	accessible     bool        // /data/listRestaurantsByLocation/edges/0/features/accessible
+	opening_hours  interface{} // This will be a tuple containing start and end like (start, end)
+	reserving_url  string      // /data/listRestaurantsByLocation/edges/1/links/tableReservationLocalized/fi_FI
+	restaurant_url string      // /data/listRestaurantsByLocation/edges/1/links/homepageLocalized/fi_FI
+}
+
+func parseRestaurants(city string) {
+	restaurants := getRestaurants()
+
+	//TODO: decode the response here.
+
+	fmt.Println(restaurants)
 }
