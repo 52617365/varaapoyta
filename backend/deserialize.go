@@ -19,7 +19,7 @@ type response_third_level struct {
 }
 
 type response_fields struct {
-	Id          *int             `json:"id"`
+	Id          int              `json:"id"`
 	Name        *string_field    `json:"name"`
 	Urlpath     *string_field    `json:"urlPath"`
 	Address     *address_fields  `json:"address"`
