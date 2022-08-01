@@ -45,7 +45,6 @@ type features_fields struct {
 type opening_fields struct {
 	Restauranttime opening_fields_ranges `json:"restaurantTime"`
 	Kitchentime    opening_fields_ranges `json:"kitchenTime"`
-	Accessible     bool                  `json:"accessible"`
 }
 
 type opening_fields_ranges struct {
@@ -53,11 +52,10 @@ type opening_fields_ranges struct {
 }
 
 type links_fields struct {
-	ReservationLink string_field `json:"tableReservationLocalized"`
-	HomepageLink    string_field `json:"homepageLocalized"`
+	TableReservationLocalized string_field `json:"tableReservationLocalized"`
+	HomepageLocalized         string_field `json:"homepageLocalized"`
 }
 
-// res_body should be indexed to ["data"]["listRestaurantsByLocation"]["edges"] before it's deserialized into a structure.
 func deserialize_response(res **http.Response) *response_top_level {
 	response_decoded := &response_top_level{}
 	err := json.NewDecoder((*res).Body).Decode(response_decoded)
