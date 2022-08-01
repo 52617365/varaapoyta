@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 )
@@ -27,7 +28,9 @@ func getRestaurants() interface{} {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(res.Body)
+
+	response, _ := io.ReadAll(res.Body)
+	fmt.Println(string(response))
 	decoded := deserialize_response(&res)
 	defer res.Body.Close()
 
