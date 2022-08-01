@@ -1,5 +1,8 @@
 package main
 
+import "fmt"
+
 func main() {
-	getRestaurants()
+	data := getRestaurants()
+	fmt.Println(data)
 }
