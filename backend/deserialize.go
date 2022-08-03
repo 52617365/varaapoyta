@@ -48,7 +48,7 @@ type opening_fields struct {
 }
 
 type opening_fields_ranges struct {
-	Ranges []interface{} `json:"ranges"`
+	Ranges interface{} `json:"ranges"`
 }
 
 type links_fields struct {
