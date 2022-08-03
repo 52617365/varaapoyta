@@ -15,11 +15,11 @@ type response_second_level struct {
 }
 
 type response_third_level struct {
-	Edges *response_fields `json:"edges"`
+	Edges []response_fields `json:"edges"`
 }
 
 type response_fields struct {
-	Id          int              `json:"id"`
+	Id          string           `json:"id"`
 	Name        *string_field    `json:"name"`
 	Urlpath     *string_field    `json:"urlPath"`
 	Address     *address_fields  `json:"address"`
@@ -48,7 +48,7 @@ type opening_fields struct {
 }
 
 type opening_fields_ranges struct {
-	Ranges *string `json:"ranges"`
+	Ranges []interface{} `json:"ranges"`
 }
 
 type links_fields struct {
