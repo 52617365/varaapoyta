@@ -46,7 +46,7 @@ func formatTimesToString(times []int) []string {
 	return formattedStrings
 }
 
-func getAllPossibleTimes() []string {
+func getAllPossibleTimes() *[]string {
 	// Here we have all the possible times when you can reserve a table.
 	times := []int{
 		800, 815, 830, 845, 900, 915, 930, 945, 1000, 1015, 1030,
@@ -69,5 +69,15 @@ func getAllPossibleTimes() []string {
 			break
 		}
 	}
-	return timesWeWant
+	return &timesWeWant
+}
+
+func getRestaurantsFromCity(restaurants *[]response_fields, city *string) *[]response_fields {
+	captured_restaurants := []response_fields{}
+	for _, restaurant := range *restaurants {
+		if strings.Contains(strings.ToLower(*restaurant.Address.Municipality.Fi_FI), strings.ToLower(*city)) {
+			captured_restaurants = append(captured_restaurants, restaurant)
+		}
+	}
+	return &captured_restaurants
 }
