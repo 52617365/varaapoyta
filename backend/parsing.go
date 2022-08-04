@@ -73,7 +73,8 @@ func getAllPossibleTimes() *[]string {
 }
 
 func getRestaurantsFromCity(restaurants *[]response_fields, city *string) *[]response_fields {
-	captured_restaurants := []response_fields{}
+	var captured_restaurants []response_fields
+
 	for _, restaurant := range *restaurants {
 		if strings.Contains(strings.ToLower(*restaurant.Address.Municipality.Fi_FI), strings.ToLower(*city)) {
 			captured_restaurants = append(captured_restaurants, restaurant)
