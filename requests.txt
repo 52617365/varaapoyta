@@ -1,0 +1,22 @@
+raflaus requests
+
+/online/reserve/availability/fi/357?date=2022-07-20&slot_id=357&time=12%3A00&amount=1&price_code=&check=1 HTTP/1.1
+
+payload: ?date=2022-07-20&slot_id=357&time=12%3A00&amount=1&price_code=&check=1
+
+
+
+varaa poyta
+GET /api/online/products/products/3469135 HTTP/1.1
+
+POST /api/online/reservation/activate/3469135
+parameters
+captcha=61&time=16%3A00
+
+
+
+POST /online/reserve/reservation/save/fi HTTP/1.1
+_token=5svvfEvBTkLEwKiab3R4cPkkOBYDLmw9kCk94mQ4&time=16%3A00&amount=1&company=&name_code=&first_name=Tuukka&last_name=Koskinen&email=tuukkakoskinen%40gmail.com&countrycode=%2B358&phone=502338223&info_online=&accept_terms=1
+
+
+GET /online/reserve/success/fi HTTP/1.1

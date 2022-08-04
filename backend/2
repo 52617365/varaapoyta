@@ -1,0 +1,80 @@
+package main
+
+import (
+	"bytes"
+	"fmt"
+	"log"
+	"net/http"
+)
+
+type payload_structure struct {
+	Operationname string                 `json:"operationName"`
+	Variables     map[string]variables_structure{} `json:"variables"`
+	Query         string                 `json:"query"`
+}
+type variables_structure struct {
+	First int `json:"first"`
+	Input input_structure{} `json:"input"`
+	After string `json:"after"`
+}
+type input_structure struct {
+	RestaurantType string `json:"restaurantType"`
+	Locationname string `json:"locationName"`
+	Feature map[string]feature_structure{} `json:"feature"`
+}
+type feature_structure struct {
+	Rentablevenues bool `json:"rentableVenues"`
+}
+
+func getPayload() *bytes.Buffer {
+	// Making the post request payload here to raflaamo api.
+	//	data, _ := payload_structure{
+	//		Operationname: "getRestaurantsByLocation",
+	//		Variables: map[string]interface{}{
+	//			"first": 470,
+	//			"input": map[string]interface{}{
+	//				"restaurantType": "ALL",
+	//				"locationName":   "Helsinki",
+	//				"feature": map[string]interface{}{
+	//					"rentableVenues": false,
+	//				},
+	//			},
+	//			"after": "eyJmIjowLCJnIjp7ImEiOjYwLjE3MTE2LC"
+
+	payload := payload_structure {
+		Operationname: "getRestaurantsByLocation",
+			Variables: map[string]variables_structure{
+				First: 470,
+				Input: input_structure{
+					RestaurantType: "ALL",
+					Locationname: "Helsinki",
+					Feature: map[string]feature_structure{
+						Rentablevenues: false,
+					}
+				},
+				After: "eyJmIjowLCJnIjp7ImEiOjYwLjE3MTE2LC",
+			}
+	} 
+	// Turning map into json string thats ready to send here.
+	fmt.Println(string_payload)
+	payloadBuf := bytes.NewBuffer([]byte(string_payload))
+	return payloadBuf
+}
+
+// TODO: make post request work again.
+// TODO: pass city here.
+func getRestaurants() interface{} {
+	var restaurant_struct map[string]interface{}
+	data := getPayload()
+
+	resp, err := http.Post("https://api.raflaamo.fi/query", "application/json", data)
+	resp.Header.Set("client_id", "jNAWMvWD9rp637RaR")
+	resp.Header.Set("Content-Type", "application/json")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(resp)
+	fmt.Println(resp.Body)
+	return restaurant_struct["json"]
+}

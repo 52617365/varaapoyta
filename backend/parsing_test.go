@@ -21,9 +21,7 @@ func TestGetRestaurantsFromCity(t *testing.T) {
 
 // TestGetAllPossibleTimes | Test to see if function returns all possible times forward from current time.
 func TestGetAllPossibleTimes(t *testing.T) {
-	// Regex will get
 	currentTime, _ := strconv.Atoi(strings.ReplaceAll(getCurrentTime(), ":", ""))
-
 	allPossibleTimes := getAllPossibleTimes()
 
 	for _, time := range *allPossibleTimes {
@@ -36,7 +34,6 @@ func TestGetAllPossibleTimes(t *testing.T) {
 
 // TestFormatTimesToString | Test to see if function converts times stored in ints to correctly formatted string times.
 func TestFormatTimesToString(t *testing.T) {
-	// 9:00 and 10:00
 	times_int := []int{900, 1000}
 
 	times_strings := formatTimesToString(times_int)
@@ -47,5 +44,4 @@ func TestFormatTimesToString(t *testing.T) {
 	if times_strings[1] != "10:00" {
 		t.Fatalf(`formatTimesToString() converted 1000 to %s, expected %s.`, times_strings[1], "10:00")
 	}
-
 }

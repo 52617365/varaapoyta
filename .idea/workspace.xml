@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8bbaa836-96d5-4612-93bb-71848b2106a9" name="Changes" comment="Project refactor">
+      <change afterPath="$PROJECT_DIR$/.idea/webResources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.idea/go.imports.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/profiling/speed.PNG" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/request.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/temp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.eslintrc.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.idea/dictionaries/rase.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.idea/git_toolbox_prj.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.idea/varaapoyta.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/Button.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/Checkbox.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/Dropdown.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/FadeInText.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/NavBar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/SaveButton.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/SiteFooter.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/SiteHead.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/SpiceLevel.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/next-env.d.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/next.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/pages/2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/pages/_app.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/pages/api/hello.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/pages/asetukset.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/pages/index.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/pages/varaa.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/postcss.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/favicon.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/pictures/github.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/pictures/gmail.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/pictures/outlook.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/vercel.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/styles/Home.module.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/styles/globals.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/tailwind.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/tsconfig.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/requests.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.eslintrc.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/rase.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/varaapoyta.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/varaapoyta.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/parsing.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/parsing.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/parsing_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/parsing_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Button.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Checkbox.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Dropdown.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/FadeInText.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/NavBar.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/SaveButton.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/SiteFooter.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/SiteHead.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/SpiceLevel.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/next-env.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/_app.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/api/hello.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/asetukset.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/index.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/varaa.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/postcss.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/favicon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/pictures/github.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/pictures/gmail.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/pictures/outlook.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/vercel.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/Home.module.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/globals.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript JSX File" />
+        <option value="Go File" />
+        <option value="HTTP Request" />
+        <option value="HTTP Public Environment File" />
+      </list>
+    </option>
+    <option name="SCHEME" value="Project" />
+  </component>
+  <component name="GOROOT" url="file://$USER_HOME$/sdk/go1.19rc2" />
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="3ae34726413e315d0d3525ec5dd21640d5050725" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="backend" />
+                    <option name="lastUsedInstant" value="1658401157" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1658400492" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="frontend" />
+                    <option name="lastUsedInstant" value="1658400466" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="36a4caa4-f578-43f5-9736-3fbd52cc6b9c" />
+        <option name="url" value="git@github.com:52617365/varaapoyta.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="true" />
+  </component>
+  <component name="HttpClientSelectedEnvironments">
+    <file url="jar://$APPLICATION_HOME_DIR$/plugins/restClient/lib/restClient.jar!/com/intellij/ws/rest/client/requests/collection/post-requests.http" environment="test" />
+    <file url="file://$USER_HOME$/AppData/Local/Temp/whats-new.http.http" environment="test" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectId" id="2BA0RLBACdxnyy0KP0KV5qVglZO" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultGoTemplateProperty": "Go File",
+    "Project.color": "121c0c",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.go.format.on.save.advertiser.fired": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "RunOnceActivity.go.watchers.conflict.with.on.save.actions.check.performed": "true",
+    "ToolWindowCommit.ShowToolbar": "false",
+    "WebServerToolWindowFactoryState": "false",
+    "com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable": "ALL",
+    "configurable..is.expanded": "false",
+    "configurable.GoLibrariesConfigurable.is.expanded": "true",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "js.buildTools.grunt.grunt-cli.package": "",
+    "last_opened_file_path": "C:/Users/rase/dev/varaapoyta/backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "inlay.hints",
+    "ts.external.directory.path": "C:\\Users\\rase\\dev\\varaapoyta\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\rase\dev\varaapoyta\frontend" />
+      <recent name="C:\Users\rase\dev\varaapoyta\backend" />
+      <recent name="C:\Users\rase\dev\varaapoyta\pages" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Test.TestGetAllPossibleTimes in parsing_test.go (1)">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="varaapoyta" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$/backend" />
+      <filePath value="$PROJECT_DIR$/backend" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestGetAllPossibleTimes in parsing_test.go (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="varaapoyta" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$/backend" />
+      <filePath value="$PROJECT_DIR$/backend/parsing_test.go" />
+      <framework value="gotest" />
+      <pattern value="^\QTestGetAllPossibleTimes\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestGetRestaurantsFromCity in backend" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="varaapoyta" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$/backend" />
+      <filePath value="$PROJECT_DIR$/backend/parsing_test.go" />
+      <framework value="gotest" />
+      <pattern value="^\QTestGetRestaurantsFromCity\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go test backend" type="GoTestRunConfiguration" factoryName="Go Test" nameIsGenerated="true">
+      <module name="varaapoyta" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$/backend" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <configuration name="parsing_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="varaapoyta" />
+      <working_directory value="$PROJECT_DIR$/backend" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$/backend" />
+      <filePath value="$PROJECT_DIR$/backend/parsing_test.go" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="js.build_tools.grunt">
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Go Test.TestGetAllPossibleTimes in parsing_test.go" />
+      <item itemvalue="Go Test.go test backend" />
+      <item itemvalue="Go Test.TestGetAllPossibleTimes in parsing_test.go (1)" />
+      <item itemvalue="Go Test.TestGetRestaurantsFromCity in backend" />
+      <item itemvalue="Go Test.parsing_test.go" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Test.TestGetAllPossibleTimes in parsing_test.go (1)" />
+        <item itemvalue="Go Test.TestGetAllPossibleTimes in parsing_test.go" />
+        <item itemvalue="Go Test.parsing_test.go" />
+        <item itemvalue="Go Test.TestGetRestaurantsFromCity in backend" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration>C:\Users\rase\AppData\Roaming\Subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8bbaa836-96d5-4612-93bb-71848b2106a9" name="Changes" comment="" />
+      <created>1656333572252</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1656333572252</updated>
+      <workItem from="1656333573472" duration="1790000" />
+      <workItem from="1656394683286" duration="44000" />
+      <workItem from="1656394733505" duration="158000" />
+      <workItem from="1656394918379" duration="349000" />
+      <workItem from="1656395282421" duration="2065000" />
+      <workItem from="1656397378936" duration="2553000" />
+      <workItem from="1656399954413" duration="9973000" />
+      <workItem from="1656411020381" duration="20880000" />
+      <workItem from="1656574385982" duration="16258000" />
+      <workItem from="1656741217968" duration="17580000" />
+      <workItem from="1656829301203" duration="12115000" />
+      <workItem from="1656921658294" duration="21822000" />
+      <workItem from="1657026808237" duration="135000" />
+      <workItem from="1657042512349" duration="12473000" />
+      <workItem from="1657111868221" duration="3318000" />
+      <workItem from="1657520526974" duration="16000" />
+      <workItem from="1658219249936" duration="12613000" />
+      <workItem from="1658299324731" duration="1639000" />
+      <workItem from="1658385223214" duration="18000" />
+      <workItem from="1659001924115" duration="15079000" />
+    </task>
+    <task id="LOCAL-00021" summary="Varaa sivu tehty, tama tulee sisaltamaan kayttoliittyman, josta pystyy varaamaan poydan.">
+      <created>1656573282453</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1656573282453</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Deleted useless files that just added complexity that was not necessary.">
+      <created>1656588061862</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1656588061862</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Site head added to varaa page.">
+      <created>1656588200238</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1656588200238</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Renamed fading text component, made dropdown reusable, added reusable checkbox component">
+      <created>1656588278123</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1656588278123</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Varaa file now has a button that will in the future redirect to settings page.">
+      <created>1656661113136</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1656661113136</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Refactored checkbox generator into its own function because it will be used countless times in the settings page.">
+      <created>1656661161357</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1656661161357</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Removed redundant event handler that was being passed into dropdown component.">
+      <created>1656661204620</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1656661204620</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Checkbox component now adds the event inside the attribute but it does not yet work.">
+      <created>1656661233464</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1656661233464</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Button now takes in text as props for re-usability instead of hard coding it into the component.">
+      <created>1656661275138</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1656661275138</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Checkboxit pitavat nyt statea tiedossa ravintola kohdassa. Seuraavaksi pitaa lisata loppuihin sama toiminnallisuus.">
+      <created>1656745262961</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1656745262961</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Vaihdoin checkbox componentista event handlerin pois koska todellisuudessa sita ei lainkaan tarvinnut.">
+      <created>1656745300717</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1656745300717</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Tein erikseen submit buttonin.">
+      <created>1656745317563</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1656745317563</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Jotain xml setteja.">
+      <created>1656745787174</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1656745787174</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Button ei ole enaa tyyppia submit koska en halua, etta nettisivu refreshaa silloin, kun esimerkiksi nettisivuja reloadaa.">
+      <created>1656745818580</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1656745818580</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Lisasin TODO:n muistamista varten ja sen lisaksi poistin debuggausta varten olevan console.login, koska tiedamme etta koodi toimii.">
+      <created>1656745864649</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1656745864649</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Emme tarvinnutkaan erillista buttonia submittaamiseen, joten poistin sen kokonaan.">
+      <created>1656745949584</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1656745949584</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Dropdown now opens up to the right to avoid going over other settings.">
+      <created>1656746713847</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1656746713847</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Dropdown avautuu oikealle, koska aijemmin se meni aina muiden asetuksien paalle.">
+      <created>1656746774484</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1656746774484</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Vaihdoin nimen settings -&gt; asetukset, koska tama aplikaatio on suomalaisille suunnattu.">
+      <created>1656746803217</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1656746803217</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Varaa sivulla on nyt painike, josta paasee vaihtamaan asetuksiin mieltymyksia.">
+      <created>1656746827478</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1656746827478</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Vaihdoin asetukset sivun &quot;takaisin varaamaan&quot; painiketta oikeaan ylakulmaan ja varaa sivun asetukset painiketta oikeaan ylanurkkaan.&#10;&#10;Mielestani muutos oli hyva, koska muuten napit olisivat ns sekaisin erilaisten toiminnallisuuksien kanssa.">
+      <created>1656747891936</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1656747891936</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Vaihdoin footerin ja headerin _app.tsx tiedostoon, jottei niita tarvitse joka filussa kutsua uusiksi.">
+      <created>1656766732667</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1656766732667</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Otin headerin pois varaa sivulta, koska ne ovat nyt globaalissa sivu filussa.">
+      <created>1656766816515</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1656766816515</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Lisasin viewportin globaaliin page filun headeriin, jotta sivu resizee itsestaan silloin, kun sita kaytetaan mm. mobilella.">
+      <created>1656772768632</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1656772768632</updated>
+    </task>
+    <task id="LOCAL-00045" summary="Poistin jotain todo's jota olen jo suorittanut.">
+      <created>1656772966026</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1656772966026</updated>
+    </task>
+    <task id="LOCAL-00046" summary="Korjasin ongelman, jossa asetukset sivu ei resizennyt oikein mobilella dropdown menu css takia.">
+      <created>1656834761950</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1656834761950</updated>
+    </task>
+    <task id="LOCAL-00047" summary="Korjasin ongelman, jossa asetukset sivu ei resizennyt oikein mobilella dropdown menu css takia.">
+      <created>1656834807943</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1656834807943</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Asetuksien lisaaminen toimii, mutta niiden poistamisessa on viela ongelmia. commit tassa vaiheessa, koska tama on hyvaa tulosta tahan mennessa.">
+      <created>1656841230016</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1656841230016</updated>
+    </task>
+    <task id="LOCAL-00049" summary="dropdown ottaa nyt sisaansa onchangen, jotta jokainen &quot;menu&quot; tietaa itse omat valintansa.">
+      <created>1656841262207</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1656841262207</updated>
+    </task>
+    <task id="LOCAL-00050" summary="uusi todo laitettu muistamista varten.">
+      <created>1656841275289</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1656841275290</updated>
+    </task>
+    <task id="LOCAL-00051" summary="Noniin, menu toimii, paatin uhrata koodissa, etta toiminnallisuus saadaa kuntoon.">
+      <created>1656847075673</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1656847075673</updated>
+    </task>
+    <task id="LOCAL-00052" summary="New TODO Added.">
+      <created>1656925948531</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1656925948532</updated>
+    </task>
+    <task id="LOCAL-00053" summary="Tein uuden buttonin tallentamista varten.">
+      <created>1656928021093</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1656928021093</updated>
+    </task>
+    <task id="LOCAL-00054" summary="Otin asetuksiin kayttoon uuden buttonin.">
+      <created>1656928057887</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1656928057887</updated>
+    </task>
+    <task id="LOCAL-00055" summary="Laitoin local storage settia vahan eteenpain.">
+      <created>1656935170214</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1656935170214</updated>
+    </task>
+    <task id="LOCAL-00056" summary="TODO: Make local storage load the settings on page load.">
+      <created>1657007245535</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1657007245535</updated>
+    </task>
+    <task id="LOCAL-00057" summary="Adding to local storage works but retrieving them does not.">
+      <created>1657022825245</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1657022825245</updated>
+    </task>
+    <task id="LOCAL-00058" summary="local storagesta hakeminenkin nyt toimii.">
+      <created>1657047271746</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1657047271746</updated>
+    </task>
+    <task id="LOCAL-00059" summary="Lisasin ja poistin pari TODO:ta.">
+      <created>1657047342226</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1657047342226</updated>
+    </task>
+    <task id="LOCAL-00060" summary="Lisasin ihan vitunmoisen purkka hackermen ratkaisun poistamaan duplikaatit local storagesta :DDDDDDDDDDDDDD koska en halunnut lopettaa arrayn kayttamista statessa, koska olisi pitanyt kirjottaa liikaa koodia uudestaan joten en voinut kayttaa objectia, jossa olisi ollut vain unique keys.">
+      <created>1657095243716</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1657095243716</updated>
+    </task>
+    <task id="LOCAL-00061" summary="Aloitus naytossa on nyt kans sitten buttonit asetuksiin ja varaamaan.">
+      <created>1657099680005</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1657099680005</updated>
+    </task>
+    <task id="LOCAL-00062" summary="new todo added for dropboxes.">
+      <created>1657100552870</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1657100552870</updated>
+    </task>
+    <task id="LOCAL-00063" summary="Nyt ei tule duplikaatteja enaan kun latailee sivuja, mutta viela pitaisi saada checkboxeihin checkit nakyviin.">
+      <created>1657113008353</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1657113008353</updated>
+    </task>
+    <task id="LOCAL-00064" summary="Boxit ovat nyt checkatut silloin, kun sivu reloadataan, mutta local storagesta poistamisessa on jokin ongelma.">
+      <created>1657114359298</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1657114359298</updated>
+    </task>
+    <task id="LOCAL-00065" summary="Boxit ovat nyt checkatut silloin, kun sivu reloadataan, mutta local storagesta poistamisessa on jokin ongelma.">
+      <created>1657114367220</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1657114367220</updated>
+    </task>
+    <task id="LOCAL-00066" summary="Commit before I rewrite this whole shit.">
+      <created>1658227803878</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1658227803878</updated>
+    </task>
+    <task id="LOCAL-00067" summary="vitusti todo:ita.">
+      <created>1658233528133</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1658233528133</updated>
+    </task>
+    <task id="LOCAL-00068" summary="Removed useless buttons states from buttons that didn't need it.">
+      <created>1659010480314</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1659010480314</updated>
+    </task>
+    <task id="LOCAL-00069" summary="Started making the fetching on the front-end, currently having problems with it because apparently some headers or something are not correct.">
+      <created>1659010624658</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1659010624658</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="backend" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Lisasin ihan vitunmoisen purkka hackermen ratkaisun poistamaan duplikaatit local storagesta :DDDDDDDDDDDDDD koska en halunnut lopettaa arrayn kayttamista statessa, koska olisi pitanyt kirjottaa liikaa koodia uudestaan joten en voinut kayttaa objectia, jossa olisi ollut vain unique keys." />
+    <MESSAGE value="Aloitus naytossa on nyt kans sitten buttonit asetuksiin ja varaamaan." />
+    <MESSAGE value="new todo added for dropboxes." />
+    <MESSAGE value="Nyt ei tule duplikaatteja enaan kun latailee sivuja, mutta viela pitaisi saada checkboxeihin checkit nakyviin." />
+    <MESSAGE value="Boxit ovat nyt checkatut silloin, kun sivu reloadataan, mutta local storagesta poistamisessa on jokin ongelma." />
+    <MESSAGE value="Commit before I rewrite this whole shit." />
+    <MESSAGE value="vitusti todo:ita." />
+    <MESSAGE value="Frontend, backend koodit." />
+    <MESSAGE value="Refactored stuff into their own files." />
+    <MESSAGE value="Removed useless buttons states from buttons that didn't need it." />
+    <MESSAGE value="Started making the fetching on the front-end, currently having problems with it because apparently some headers or something are not correct." />
+    <MESSAGE value="Started the decoding process of the response json from raflaamo api." />
+    <MESSAGE value="Ok request stopped working, investigate tomorrow or something." />
+    <MESSAGE value="Added own files for deserializing and serializing." />
+    <MESSAGE value="Fixed post request to include client_id." />
+    <MESSAGE value="Renamed some fields to match the response, so it's easier to find what we want once we index into decoded response map" />
+    <MESSAGE value="TODO: make post request payload work, we made it return 200 instead of 40x, but now we want the right result." />
+    <MESSAGE value="Post request now works. Thankfully.&#10;&#10;Replaced the weird serialization overengineered solution with just a plain string literal xD" />
+    <MESSAGE value="Deserialization of response seems to work now." />
+    <MESSAGE value="Deserialization works with printing too now." />
+    <MESSAGE value="Added function that gets all restaurants from a certain city." />
+    <MESSAGE value="We're now capturing the correct restaurants that we need." />
+    <MESSAGE value="Added a lot of unit tests to confirm everything works now and in the future." />
+    <MESSAGE value="deleted useless field from query xd -10k bytes" />
+    <MESSAGE value="Project refactor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Project refactor" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>false</integration-enabled>
+    <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/backend/restaurants.go</url>
+          <line>7</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="JavascriptDebugType">
+        <watch expression="ravintola_lista" language="TypeScript JSX" />
+        <watch expression="kaupunki_lista" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/varaapoyta$go_test_backend.out" NAME="go test backend Coverage Results" MODIFIED="1659604837775" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="GoCoverage" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/varaapoyta$TestGetRestaurants_in_restaurants_test_go.out" NAME="TestGetRestaurants in restaurants_test.go Coverage Results" MODIFIED="1659603316553" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="GoCoverage" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/varaapoyta$TestGetRestaurantsFromCity_in_backend.out" NAME="TestGetRestaurantsFromCity in backend Coverage Results" MODIFIED="1659605196665" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="GoCoverage" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/varaapoyta$TestFormatTimesToString_in_parsing_test_go.out" NAME="TestFormatTimesToString in parsing_test.go Coverage Results" MODIFIED="1659606773414" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="GoCoverage" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/varaapoyta$TestGetAllPossibleTimes_in_parsing_test_go.out" NAME="TestGetAllPossibleTimes in parsing_test.go Coverage Results" MODIFIED="1659604509708" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="GoCoverage" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/varaapoyta$TestGetRestaurantsFromCity_in_parsing_test_go.out" NAME="TestGetRestaurantsFromCity in parsing_test.go Coverage Results" MODIFIED="1659608932143" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="GoCoverage" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/varaapoyta$TestFormatTimesToString_in_backend.out" NAME="TestFormatTimesToString in backend Coverage Results" MODIFIED="1659608220605" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="GoCoverage" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  </component>
+</project>
