@@ -9,8 +9,9 @@ func TestGetRestaurants(t *testing.T) {
 	restaurants := getRestaurants()
 
 	restaurants_length := len(*restaurants)
-	if restaurants_length != 470 {
-		t.Errorf("len(getRestaurants()) = %d, expected %d", restaurants_length, 470)
+	if restaurants_length < 10 {
+		// Can't check against a static number cuz the amount changes.
+		t.Errorf("len(getRestaurants()) = %d, expected %s", restaurants_length, ">10")
 	}
 }
 
