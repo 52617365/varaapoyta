@@ -12,10 +12,11 @@ import (
 // This file handles everything related to parsing shit.
 
 // 2022-07-21 12:45:54.1414084 +0300 EEST m=+0.001537301
-func getCurrentDate() string {
+func getCurrentDate() *string {
 	re, _ := regexp.Compile(`\d{4}-\d{2}-\d{2}`)
 	dt := time.Now().String()
-	return re.FindString(dt)
+	string_formatted := re.FindString(dt)
+	return &string_formatted
 }
 
 func getCurrentTime() string {

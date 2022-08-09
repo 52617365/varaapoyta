@@ -41,7 +41,7 @@ func getPayloads(id *string) *[]string {
 	// Example string: https://s-varaukset.fi/online/reserve/availability/fi/38?date=2022-08-24&slot_id=38&time=12%3A15&amount=1&price_code=&check=1
 	for _, time := range *times {
 		url_formatted_time := strings.Replace(time, ":", "%3A", -1)
-		payload := fmt.Sprintf("https://s-varaukset.fi/online/reserve/availability/fi/%s?date=%s&slot_id=%s&time=%s&amount=1&price_code=&check=1", id, current_date, id, url_formatted_time)
+		payload := fmt.Sprintf("https://s-varaukset.fi/online/reserve/availability/fi/%s?date=%s&slot_id=%s&time=%s&amount=1&price_code=&check=1", *id, *current_date, *id, url_formatted_time)
 		payload_strings = append(payload_strings, payload)
 	}
 	return &payload_strings
