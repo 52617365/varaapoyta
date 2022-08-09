@@ -8,14 +8,26 @@ import (
 
 // TestGetRestaurantsFromCity | Test to see if JSON parsing works correctly.
 func TestGetRestaurantsFromCity(t *testing.T) {
-	restaurant_data := getRestaurants()
 	city := "helsinki"
-	restaurants_from_helsinki := getRestaurantsFromCity(&*restaurant_data, &city)
+	restaurants_from_helsinki, err := getRestaurantsFromCity(&city)
 
+	if err != nil {
+		t.Errorf("Error getting restaurants from city.")
+	}
 	for _, restaurant := range *restaurants_from_helsinki {
 		if !strings.Contains(strings.ToLower(*restaurant.Address.Municipality.Fi_FI), strings.ToLower(city)) {
 			t.Errorf("restaurant.Address.Municipality.Fi_FI = %s, expected %s", *restaurant.Address.Municipality.Fi_FI, "helsinki")
 		}
+	}
+}
+
+// TestGetRestaurantsFromCity | Test to see if JSON parsing works correctly and returns error if nothing found.
+func TestGetRestaurantsFromCityThatDoesNotExist(t *testing.T) {
+	city := "muumilaakso111"
+	restaurants_from_city_that_does_not_exist, err := getRestaurantsFromCity(&city)
+
+	if err == nil && len(*restaurants_from_city_that_does_not_exist) > 1 {
+		t.Errorf("Expected test to fail but it did not.")
 	}
 }
 

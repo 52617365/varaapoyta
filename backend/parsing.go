@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -72,13 +73,18 @@ func getAllPossibleTimes() *[]string {
 	return &timesWeWant
 }
 
-func getRestaurantsFromCity(restaurants *[]response_fields, city *string) *[]response_fields {
-	captured_restaurants := make([]response_fields, 0, 200)
+// Gets the restaurants from the passed in argument. Returns error if nothing is found.
+func getRestaurantsFromCity(city *string) (*[]response_fields, error) {
+	restaurants := getRestaurants()
+	captured_restaurants := make([]response_fields, 0, len(*restaurants))
 
 	for _, restaurant := range *restaurants {
 		if strings.Contains(strings.ToLower(*restaurant.Address.Municipality.Fi_FI), strings.ToLower(*city)) {
 			captured_restaurants = append(captured_restaurants, restaurant)
 		}
 	}
-	return &captured_restaurants
+	if len(captured_restaurants) == 0 {
+		return &captured_restaurants, errors.New("no restaurants found")
+	}
+	return &captured_restaurants, nil
 }
