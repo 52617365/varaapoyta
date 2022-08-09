@@ -6,7 +6,7 @@ import (
 
 // TestGetRestaurants We expect response to be len(470).
 func TestGetRestaurants(t *testing.T) {
-	restaurants := getRestaurants()
+	restaurants := getAllRestaurantsFromRaflaamoApi()
 
 	restaurants_length := len(*restaurants)
 	if restaurants_length < 10 {
@@ -17,6 +17,6 @@ func TestGetRestaurants(t *testing.T) {
 
 func BenchmarkGetRestaurants(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		getRestaurants()
+		getAllRestaurantsFromRaflaamoApi()
 	}
 }
