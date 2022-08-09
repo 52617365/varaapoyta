@@ -94,15 +94,15 @@ func getAvailableTables(restaurants *[]response_fields) *[]available_times {
 	re := regexp.MustCompile(`[^fi/]\d+`)
 
 	for _, restaurant := range *restaurants {
-		// Checking if restaurant contains a reservation page.
-		if len(*restaurant.Links.TableReservationLocalized.Fi_FI) == 0 {
+		if restaurant_does_not_contain_reservation_page(&restaurant) {
 			continue
 		}
-		string_to_match := *restaurant.Links.TableReservationLocalized.Fi_FI
-		id := re.FindString(string_to_match)
+
+		reservation_page_url := *restaurant.Links.TableReservationLocalized.Fi_FI
+		id := re.FindString(reservation_page_url)
 		// @ Use goroutines and channels?
 		available_tables_from_id, err := generatePayloadsFromIdAndSend(&id)
-		if err != nil || len(*available_tables_from_id) == 0 {
+		if id_does_not_contain_open_tables(err, available_tables_from_id) {
 			continue
 		}
 
@@ -114,4 +114,12 @@ func getAvailableTables(restaurants *[]response_fields) *[]available_times {
 		available_tables = append(available_tables, struct_from_available_tables)
 	}
 	return &available_tables
+}
+
+func id_does_not_contain_open_tables(err error, available_tables_from_id *[]string) bool {
+	return (err != nil || len(*available_tables_from_id) == 0)
+}
+
+func restaurant_does_not_contain_reservation_page(restaurant *response_fields) bool {
+	return (len(*restaurant.Links.TableReservationLocalized.Fi_FI) == 0)
 }
