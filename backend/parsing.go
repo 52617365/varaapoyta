@@ -76,7 +76,7 @@ func getAllPossibleTimes() *[]string {
 
 // Gets the restaurants from the passed in argument. Returns error if nothing is found.
 func getRestaurantsFromCity(city *string) (*[]response_fields, error) {
-	restaurants := getRestaurants()
+	restaurants := getAllRestaurantsFromRaflaamoApi()
 	captured_restaurants := make([]response_fields, 0, len(*restaurants))
 
 	for _, restaurant := range *restaurants {

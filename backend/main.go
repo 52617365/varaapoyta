@@ -1,10 +1,22 @@
 package main
 
+import "fmt"
+
 // TODO: Figure out what tables are free to reserve. (Format string correctly and make request and save result.)
 // TODO: Make endpoints and extract restaurants from a certain country passed in as a parameter.
 
 // (value.Address.Municipality.Fi_FI)
 func main() {
+	city := "Rovaniemi"
+	restaurants, err := getRestaurantsFromCity(&city)
+	if err != nil {
+		fmt.Println("Could not find any restaurants.")
+		return
+	}
+	available_ones := getAvailableTables(restaurants)
+	for _, available := range *available_ones {
+		fmt.Println(available)
+	}
 	// city := "muumilaakso"
 	// restaurants, err := getRestaurantsFromCity(&city)
 	// if err != nil {
