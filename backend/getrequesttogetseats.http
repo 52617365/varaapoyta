@@ -1,0 +1,17 @@
+### GET request with a header
+// returns from and to as unix time stamp (time in milliseconds from january 1st 1970 to now)
+// seems to be https://s-varaukset.fi/api/recommendations/slot/{restaurant_id}/{current_date}/{time}/{amount_of_eaters}
+GET https://s-varaukset.fi/api/recommendations/slot/281/2022-08-11/0830/1
+Accept: application/json
+
+###
+GET https://s-varaukset.fi/api/recommendations/slot/159/2022-08-11/0830/1
+Accept: application/json
+
+
+###
+GET https://s-varaukset.fi/api/recommendations/slot/320/2022-08-10/0830/1
+Accept: application/json
+###
+GET https://s-varaukset.fi/api/recommendations/slot/282/2022-08-10/1130/1
+Accept: application/json

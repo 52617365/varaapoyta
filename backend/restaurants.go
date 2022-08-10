@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -44,7 +43,7 @@ func getAllRestaurantsFromRaflaamoApi() *[]response_fields {
 }
 
 // generatePayloadsFromIdAndSend gets all possible payloads from a certain time passed in as an argument and sends all of them.
-// E.g if function is called at 13:00 it generates payloads from 13:30 onwards.
+// E.g. if function is called at 13:00 it generates payloads from 13:30 onwards.
 // @ Use worker pool with goroutines?
 // Returns an array of all available times as string array.
 func generatePayloadsFromIdAndSend(id *string) (*[]string, error) {
@@ -62,24 +61,25 @@ func generatePayloadsFromIdAndSend(id *string) (*[]string, error) {
 		r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
 
 		if err != nil {
-			return &available_tables_from_id, errors.New("error initializing http client")
+			continue
 		}
 
 		client := &http.Client{}
 		res, err := client.Do(r)
 
 		if err != nil {
-			return &available_tables_from_id, errors.New("error sending request")
+			continue
 		}
 
+		// TODO: maybe check resBody length instead of interacting with dom each time?
 		resBody, err := io.ReadAll(res.Body)
 
 		if err != nil {
-			return &available_tables_from_id, errors.New("error reading response body")
+			continue
 		}
-
+		res_body_to_string := string(resBody)
 		// Checking if the table can be reserved and if it can, appending to reservable tables.
-		if strings.Contains(string(resBody), "Varauksen tekeminen hakemallenne ajankohdalle on mahdollista") {
+		if strings.Contains(res_body_to_string, "Jatka varausta") {
 			available_tables_from_id = append(available_tables_from_id, time)
 		}
 	}
@@ -117,9 +117,9 @@ func getAvailableTables(restaurants *[]response_fields) *[]available_times {
 }
 
 func id_does_not_contain_open_tables(err error, available_tables_from_id *[]string) bool {
-	return (err != nil || len(*available_tables_from_id) == 0)
+	return err != nil || len(*available_tables_from_id) == 0
 }
 
 func restaurant_does_not_contain_reservation_page(restaurant *response_fields) bool {
-	return (len(*restaurant.Links.TableReservationLocalized.Fi_FI) == 0)
+	return len(*restaurant.Links.TableReservationLocalized.Fi_FI) == 0
 }
