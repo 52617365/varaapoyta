@@ -81,13 +81,13 @@ func getAvailableTables(restaurants *[]response_fields) *[]available_times {
 			if err != nil {
 				continue
 			}
-			parsed_graph_data := deserialize_graph_response(&res)
-			if time_slot_does_not_contain_open_tables(parsed_graph_data) {
+			deserialized_graph_data := deserialize_graph_response(&res)
+			if time_slot_does_not_contain_open_tables(deserialized_graph_data) {
 				continue
 			}
 			// Here we have some kind of graph (times available for the time_slot)
 			// TODO: figure out how we want to store the available table data.
-			available_times_from_restaurant = append(available_times_from_restaurant, *parsed_graph_data)
+			available_times_from_restaurant = append(available_times_from_restaurant, *deserialized_graph_data)
 		}
 	}
 	return &available_tables
