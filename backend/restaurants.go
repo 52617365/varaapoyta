@@ -3,11 +3,9 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"regexp"
-	"strings"
 )
 
 // Contains the restaurant information and on top of that, all available times you can reserve a table from that restaurant.
@@ -42,20 +40,16 @@ func getAllRestaurantsFromRaflaamoApi() *[]response_fields {
 	return decoded.Data.ListRestaurantsByLocation.Edges
 }
 
-// generatePayloadsFromIdAndSend gets all possible payloads from a certain time passed in as an argument and sends all of them.
-// E.g. if function is called at 13:00 it generates payloads from 13:30 onwards.
-// @ Use worker pool with goroutines?
-// Returns an array of all available times as string array.
-func generatePayloadsFromIdAndSend(id *string) (*[]string, error) {
-	times := getAllPossibleTimes() // all times from current time forward.
+func coverAllAvailableTimeSlots(id *string, amount_of_eaters int) {
 	current_date := getCurrentDate()
+	// Time(Covered time) One time covers a 6h time window in graph.
+	// 02:00(00:00-06:00), 08:00(6:00-12:00), 14:00(12:00-18:00), 20:00(18:00-00:00)
+	all_time_slots := []string{"0200", "0800", "1400", "2000"}
+	time_slot_results := make([]parsed_graph_data, 0, len(all_time_slots))
 
-	available_tables_from_id := make([]string, 0, len(*times))
-
-	for _, time := range *times {
-		// Making the payload we later send get request to.
-		url_formatted_time := strings.Replace(time, ":", "%3A", -1) // Replace ":" with browser equivalent "%3A"
-		payload := fmt.Sprintf("https://s-varaukset.fi/online/reserve/availability/fi/%s?date=%s&slot_id=%s&time=%s&amount=1&price_code=&check=1", *id, *current_date, *id, url_formatted_time)
+	for _, time_slot := range all_time_slots {
+		// https://s-varaukset.fi/api/recommendations/slot/{id}/{date}/{time}/{amount_of_eaters}
+		payload := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", *id, *current_date, time_slot, amount_of_eaters)
 
 		r, err := http.NewRequest("GET", payload, nil)
 		r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
@@ -70,27 +64,17 @@ func generatePayloadsFromIdAndSend(id *string) (*[]string, error) {
 		if err != nil {
 			continue
 		}
-
-		// TODO: maybe check resBody length instead of interacting with dom each time?
-		resBody, err := io.ReadAll(res.Body)
-
-		if err != nil {
-			continue
-		}
-		res_body_to_string := string(resBody)
-		// Checking if the table can be reserved and if it can, appending to reservable tables.
-		if strings.Contains(res_body_to_string, "Jatka varausta") {
-			available_tables_from_id = append(available_tables_from_id, time)
-		}
+		parsed_graph_data := deserialize_graph_response(&res)
+		fmt.Println(parsed_graph_data.Id)
+		time_slot_results = append(time_slot_results, *parsed_graph_data)
 	}
-	return &available_tables_from_id, nil
 }
 
 func getAvailableTables(restaurants *[]response_fields) *[]available_times {
 	available_tables := make([]available_times, 0, len(*restaurants))
 
 	// https://regex101.com/r/NtFMrz/1
-	// This regex gets the first number match from the TableReservationLocalized JSON field.
+	// This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want.
 	re := regexp.MustCompile(`[^fi/]\d+`)
 
 	for _, restaurant := range *restaurants {
@@ -98,24 +82,24 @@ func getAvailableTables(restaurants *[]response_fields) *[]available_times {
 			continue
 		}
 
+		// TODO: use goroutines, its hella slow rn.
 		reservation_page_url := *restaurant.Links.TableReservationLocalized.Fi_FI
 		id := re.FindString(reservation_page_url)
-		// @ Use goroutines and channels?
-		available_tables_from_id, err := generatePayloadsFromIdAndSend(&id)
-		if id_does_not_contain_open_tables(err, available_tables_from_id) {
-			continue
-		}
+		// TODO: capture available table slots from the return value of this function call.
+		coverAllAvailableTimeSlots(&id, 1)
 
+		// TODO: modify this struct into the new coverAllAvailableTimeSlots function result.
 		// Here we can assume that there are available times.
-		struct_from_available_tables := available_times{
-			restaurant: &restaurant,
-			times:      available_tables_from_id,
-		}
-		available_tables = append(available_tables, struct_from_available_tables)
+		// struct_from_available_tables := available_times{
+		// 	restaurant: &restaurant,
+		// 	times:      available_tables_from_id,
+		// }
+		// available_tables = append(available_tables, struct_from_available_tables)
 	}
 	return &available_tables
 }
 
+// mby use this again but with a different check (check "color" field if it exists or something)
 func id_does_not_contain_open_tables(err error, available_tables_from_id *[]string) bool {
 	return err != nil || len(*available_tables_from_id) == 0
 }
