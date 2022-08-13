@@ -47,6 +47,7 @@ func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[
 	current_date := getCurrentDate()
 
 	// Closest to a constant array we can get.
+	// make a check to see if time is in the past, we don't care about the information if it's in the past. Might require we store times as integers and then convert to strings if needed.
 	var all_possible_time_slots = [...]string{"0200", "0800", "1400", "2000"} // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
 
 	// there can be maximum of restaurants * all_possible_time_slots, so we allocate the worst case scenario here to avoid reallocation's.
@@ -70,19 +71,21 @@ func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[
 		}
 
 		for _, time_slot := range all_possible_time_slots {
-			res, err := send_request_to_graph_api(&id_from_reservation_page_url, current_date, &time_slot, amount_of_eaters)
+			deserialized_graph_data, err := get_time_slots_from_graph_api(&id_from_reservation_page_url, current_date, &time_slot, amount_of_eaters)
 			if err != nil {
 				continue
 			}
-			deserialized_graph_data := deserialize_graph_response(&res)
 			if time_slot_does_not_contain_open_tables(deserialized_graph_data) {
 				continue
 			}
+
 			// Here we have some kind of graph visible.
 			unix_timestamp_struct_of_available_table := convert_unix_timestamp_to_finland(deserialized_graph_data)
 
 			restaurant_with_available_times.available_time_slots = append(restaurant_with_available_times.available_time_slots, unix_timestamp_struct_of_available_table)
 		}
+
+		// TODO: don't let the times overlap. Use E.G. a hashmap to see if time already exists, if it does not, insert it.
 		all_restaurants_with_available_times = append(all_restaurants_with_available_times, restaurant_with_available_times)
 	}
 	return &all_restaurants_with_available_times
@@ -100,7 +103,7 @@ func get_id_from_reservation_page_url(restaurant *response_fields, re *regexp.Re
 	return id_from_reservation_page_url
 }
 
-func send_request_to_graph_api(id_from_reservation_page_url *string, current_date *string, time_slot *string, amount_of_eaters int) (*http.Response, error) {
+func get_time_slots_from_graph_api(id_from_reservation_page_url *string, current_date *string, time_slot *string, amount_of_eaters int) (*parsed_graph_data, error) {
 	// Example of an url to send the get request to.
 	// https://s-varaukset.fi/api/recommendations/slot/{id}/{date}/{time}/{amount_of_eaters}
 	request_url := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", *id_from_reservation_page_url, *current_date, *time_slot, amount_of_eaters)
@@ -118,7 +121,10 @@ func send_request_to_graph_api(id_from_reservation_page_url *string, current_dat
 	if err != nil {
 		return nil, errors.New("error sending get request")
 	}
-	return res, nil
+
+	deserialized_graph_data := deserialize_graph_response(&res)
+
+	return deserialized_graph_data, nil
 }
 
 // We determine if there is a time slot with open tables by looking at the "color" field in the response.
