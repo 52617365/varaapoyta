@@ -9,7 +9,7 @@ import (
 // TestGetRestaurantsFromCity | Test to see if JSON parsing works correctly.
 func TestGetRestaurantsFromCity(t *testing.T) {
 	city := "helsinki"
-	restaurants_from_helsinki, err := getRestaurantsFromCity(&city)
+	restaurants_from_helsinki, err := filter_restaurants_from_city(&city)
 
 	if err != nil {
 		t.Errorf("Error getting restaurants from city.")
@@ -24,7 +24,7 @@ func TestGetRestaurantsFromCity(t *testing.T) {
 // TestGetRestaurantsFromCity | Test to see if JSON parsing works correctly and returns error if nothing found.
 func TestGetRestaurantsFromCityThatDoesNotExist(t *testing.T) {
 	city := "muumilaakso111"
-	restaurants_from_city_that_does_not_exist, err := getRestaurantsFromCity(&city)
+	restaurants_from_city_that_does_not_exist, err := filter_restaurants_from_city(&city)
 
 	if err == nil && len(*restaurants_from_city_that_does_not_exist) > 1 {
 		t.Errorf("Expected test to fail but it did not.")
@@ -48,7 +48,7 @@ func TestGetAllPossibleTimes(t *testing.T) {
 func TestFormatTimesToString(t *testing.T) {
 	times_int := []int{900, 1000}
 
-	times_strings := formatTimesToString(times_int)
+	times_strings := convert_times_to_string(times_int)
 
 	if times_strings[0] != "09:00" {
 		t.Fatalf(`formatTimesToString() converted 900 to %s, expected %s.`, times_strings[0], "09:00")

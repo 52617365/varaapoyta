@@ -8,11 +8,6 @@ import (
 	"regexp"
 )
 
-type time_slot struct {
-	start *string
-	end   *string
-}
-
 // Contains the restaurant information and on top of that, all available times you can reserve a table from that restaurant.
 type available_times struct {
 	restaurant          *response_fields
