@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strings"
 )
 
 // Contains the restaurant information and on top of that, all available times you can reserve a table from that restaurant.
@@ -42,7 +43,7 @@ func getAllRestaurantsFromRaflaamoApi() *[]response_fields {
 }
 
 func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[]restaurant_with_available_times_struct {
-	re := regexp.MustCompile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. (https://regex101.com/r/NtFMrz/1)
+	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. (https://regex101.com/r/NtFMrz/1)
 	current_date := getCurrentDate()
 
 	// Closest to a constant array we can get.
@@ -56,8 +57,7 @@ func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[
 		if restaurant_does_not_contain_reservation_page(&restaurant) {
 			continue
 		}
-
-		id_from_reservation_page_url := get_id_from_reservation_page_url(restaurant, re)
+		id_from_reservation_page_url := get_id_from_reservation_page_url(&restaurant, re)
 
 		// If for some reason the reservation page url did not contain an id (regex returns empty string)
 		if id_from_reservation_page_url == "" {
@@ -89,8 +89,13 @@ func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[
 }
 
 // We do this because the id from the "Id" field is not always the same as the id needed in the reservation page.
-func get_id_from_reservation_page_url(restaurant response_fields, re *regexp.Regexp) string {
+func get_id_from_reservation_page_url(restaurant *response_fields, re *regexp.Regexp) string {
 	reservation_page_url := *restaurant.Links.TableReservationLocalized.Fi_FI
+
+	// there are some weird magic strings that will make regex fail so check that it's the link we're interested in.
+	if !strings.Contains(reservation_page_url, "https://s-varaukset.fi/online/reservation/fi") {
+		return ""
+	}
 	id_from_reservation_page_url := re.FindString(reservation_page_url)
 	return id_from_reservation_page_url
 }
