@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,9 +10,9 @@ import (
 )
 
 // Contains the restaurant information and on top of that, all available times you can reserve a table from that restaurant.
-type available_times struct {
-	restaurant          *response_fields
-	available_time_slot *time_slot
+type restaurant_with_available_times_struct struct {
+	restaurant           response_fields
+	available_time_slots []time_slot_struct
 }
 
 // getAllRestaurantsFromRaflaamoApi sends request to raflaamo API and gets all the possible restaurants from all cities from there.
@@ -40,39 +41,36 @@ func getAllRestaurantsFromRaflaamoApi() *[]response_fields {
 	return decoded.Data.ListRestaurantsByLocation.Edges
 }
 
-func getAvailableTables(restaurants *[]response_fields) *[]available_times {
-	available_tables := make([]available_times, 0, len(*restaurants))
+func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[]restaurant_with_available_times_struct {
 	re := regexp.MustCompile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. (https://regex101.com/r/NtFMrz/1)
 	current_date := getCurrentDate()
 
 	// Closest to a constant array we can get.
 	var all_possible_time_slots = [...]string{"0200", "0800", "1400", "2000"} // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
 
+	// there can be maximum of restaurants * all_possible_time_slots, so we allocate the worst case scenario here to avoid reallocation's.
+	total_memory_to_reserve_for_all_restaurants := len(*restaurants) * len(all_possible_time_slots)
+	all_restaurants_with_available_times := make([]restaurant_with_available_times_struct, 0, total_memory_to_reserve_for_all_restaurants)
+
 	for _, restaurant := range *restaurants {
 		if restaurant_does_not_contain_reservation_page(&restaurant) {
 			continue
 		}
 
-		reservation_page_url := *restaurant.Links.TableReservationLocalized.Fi_FI
-		id_from_reservation_page_url := re.FindString(reservation_page_url)
+		id_from_reservation_page_url := get_id_from_reservation_page_url(restaurant, re)
 
-		available_times_from_restaurant := make([]parsed_graph_data, 0, len(all_possible_time_slots))
+		// If for some reason the reservation page url did not contain an id (regex returns empty string)
+		if id_from_reservation_page_url == "" {
+			continue
+		}
 
-		// TODO: use goroutines.
+		restaurant_with_available_times := restaurant_with_available_times_struct{
+			restaurant:           restaurant,
+			available_time_slots: make([]time_slot_struct, 0, len(all_possible_time_slots)),
+		}
+
 		for _, time_slot := range all_possible_time_slots {
-			// https://s-varaukset.fi/api/recommendations/slot/{id}/{date}/{time}/{amount_of_eaters}
-			request_url := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", id_from_reservation_page_url, *current_date, time_slot, 1)
-
-			r, err := http.NewRequest("GET", request_url, nil)
-			r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
-
-			if err != nil {
-				continue
-			}
-
-			client := &http.Client{}
-			res, err := client.Do(r)
-
+			res, err := send_request_to_graph_api(&id_from_reservation_page_url, current_date, &time_slot, amount_of_eaters)
 			if err != nil {
 				continue
 			}
@@ -80,22 +78,50 @@ func getAvailableTables(restaurants *[]response_fields) *[]available_times {
 			if time_slot_does_not_contain_open_tables(deserialized_graph_data) {
 				continue
 			}
-			// Here we have some kind of graph (times available for the time_slot)
-			// TODO: figure out how we want to store the available table data.
-			available_times_from_restaurant = append(available_times_from_restaurant, *deserialized_graph_data)
+			// Here we have some kind of graph visible.
+			unix_timestamp_struct_of_available_table := convert_unix_timestamp_to_finland(deserialized_graph_data)
+
+			restaurant_with_available_times.available_time_slots = append(restaurant_with_available_times.available_time_slots, unix_timestamp_struct_of_available_table)
 		}
+		all_restaurants_with_available_times = append(all_restaurants_with_available_times, restaurant_with_available_times)
 	}
-	return &available_tables
+	return &all_restaurants_with_available_times
 }
 
-// mby use this again but with a different check (check "color" field if it exists or something)
+// We do this because the id from the "Id" field is not always the same as the id needed in the reservation page.
+func get_id_from_reservation_page_url(restaurant response_fields, re *regexp.Regexp) string {
+	reservation_page_url := *restaurant.Links.TableReservationLocalized.Fi_FI
+	id_from_reservation_page_url := re.FindString(reservation_page_url)
+	return id_from_reservation_page_url
+}
+
+func send_request_to_graph_api(id_from_reservation_page_url *string, current_date *string, time_slot *string, amount_of_eaters int) (*http.Response, error) {
+	// Example of an url to send the get request to.
+	// https://s-varaukset.fi/api/recommendations/slot/{id}/{date}/{time}/{amount_of_eaters}
+	request_url := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", *id_from_reservation_page_url, *current_date, *time_slot, amount_of_eaters)
+
+	r, err := http.NewRequest("GET", request_url, nil)
+
+	if err != nil {
+		return nil, errors.New("error constructing get request")
+	}
+	r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+
+	client := &http.Client{}
+	res, err := client.Do(r)
+
+	if err != nil {
+		return nil, errors.New("error sending get request")
+	}
+	return res, nil
+}
+
+// We determine if there is a time slot with open tables by looking at the "color" field in the response.
+// The color field will contain "transparent" if it does not contain a graph (open times), else it contains nil (there are open tables)
 func time_slot_does_not_contain_open_tables(data *parsed_graph_data) bool {
 	// "color" field is included and set to "transparent" if a graph does NOT exist on the page. (No times for restaurant).
 	// Else it's nil.
-	if data.Intervals[0].Color != nil { // Here it's transparent aka there are no free tables.
-		return true
-	}
-	return false
+	return data.Intervals[0].Color != nil
 }
 
 func restaurant_does_not_contain_reservation_page(restaurant *response_fields) bool {
