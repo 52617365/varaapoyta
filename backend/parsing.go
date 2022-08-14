@@ -58,6 +58,47 @@ func getAllPossibleTimes() *[]string {
 	return &timesWeWant
 }
 
+// Binary search algorithm that returns the index of an element in array or -1 if none found.
+func binary_search(a [63]int, x int) int {
+	r := -1 // not found
+	start := 0
+	end := len(a) - 1
+	for start <= end {
+		mid := (start + end) / 2
+		if a[mid] == x {
+			r = mid // found
+			break
+		} else if a[mid] < x {
+			start = mid + 1
+		} else if a[mid] > x {
+			end = mid - 1
+		}
+	}
+	return r
+}
+
+// this will return all the times in between a certain start time and end time.
+func get_time_slot_slice(start int, end int) (*[]int, error) {
+	// Here we have all the possible times when you can reserve a table.
+	times := [...]int{
+		800, 815, 830, 845, 900, 915, 930, 945, 1000, 1015, 1030,
+		1100, 1115, 1130, 1145, 1200, 1215, 1230, 1245, 1300,
+		1315, 1330, 1345, 1400, 1415, 1430, 1445, 1500, 1515, 1530,
+		1545, 1600, 1615, 1630, 1645, 1700, 1715, 1730, 1745, 1800,
+		1815, 1830, 1845, 1900, 1915, 1930, 1945, 2000, 2015, 2030,
+		2045, 2100, 2115, 2130, 2145, 2200, 2215, 2230, 2245, 2300,
+		2315, 2330, 2345,
+	}
+
+	start_pos := binary_search(times, start)
+	end_pos := binary_search(times, end)
+	if start_pos == -1 || end_pos == -1 {
+		return nil, errors.New("could not find the corresponding indices from time slot array")
+	}
+	times_in_between := times[start_pos:end_pos]
+	return &times_in_between, nil
+}
+
 // Gets the restaurants from the passed in argument. Returns error if nothing is found.
 func filter_restaurants_from_city(city *string) (*[]response_fields, error) {
 	restaurants := getAllRestaurantsFromRaflaamoApi()
