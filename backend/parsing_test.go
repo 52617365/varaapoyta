@@ -78,6 +78,23 @@ func TestBinarySearch(t *testing.T) {
 	if expected_index != resulting_index {
 		t.Fatalf(`expected index to be %d but it was %d`, expected_index, resulting_index)
 	}
-	// expected_result_range := [...]int{915, 930, 945, 1000, 1015, 1030, 1045, 1100, 1115, 1130, 1145, 1200, 1215, 1230, 1245}
 
+}
+
+func TestReturnTimeslotsInbetween(t *testing.T) {
+	expected_result_range := [...]int{900, 915, 930, 945, 1000}
+
+	start_time := 900
+	end_time := 1000
+
+	time_slots, err := return_time_slots_in_between(start_time, end_time)
+
+	if err != nil {
+		t.Fatalf(`TestReturn_time_slots_in_between failed completely with start_time: %d and end_time: %d`, start_time, end_time)
+	}
+	for index, time_slot := range *time_slots {
+		if time_slot != expected_result_range[index] {
+			t.Fatalf(`expected time slot to be %d but it was %d`, expected_result_range[index], time_slot)
+		}
+	}
 }
