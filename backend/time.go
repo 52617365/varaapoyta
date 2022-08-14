@@ -11,7 +11,6 @@ type time_slot_struct struct {
 	end_time   string
 }
 
-// FIX: unix time conversion does not yet work correctly; fix it.
 // The data from the raflaamo graph api comes with unix timestamps, but we want them as strings.
 func convert_unix_timestamp_to_finland(deserialized_graph_data *parsed_graph_data) time_slot_struct {
 	time_regex, _ := regexp.Compile(`\d{2}:\d{2}`)
@@ -36,8 +35,8 @@ func getCurrentDate() *string {
 	return &string_formatted
 }
 
-func getCurrentTime() string {
-	var re, _ = regexp.Compile(`\d{2}:\d{2}`)
-	dt := time.Now().String()
-	return re.FindString(dt)
-}
+// func getCurrentTime() string {
+// 	var re, _ = regexp.Compile(`\d{2}:\d{2}`)
+// 	dt := time.Now().String()
+// 	return re.FindString(dt)
+// }
