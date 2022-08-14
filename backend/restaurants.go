@@ -96,11 +96,15 @@ func get_id_from_reservation_page_url(restaurant *response_fields, re *regexp.Re
 	reservation_page_url := *restaurant.Links.TableReservationLocalized.Fi_FI
 
 	// there are some weird magic strings that will make regex fail so check that it's the link we're interested in.
-	if !strings.Contains(reservation_page_url, "https://s-varaukset.fi/online/reservation/fi") {
+	if reservation_page_url_is_not_valid(&reservation_page_url) {
 		return ""
 	}
 	id_from_reservation_page_url := re.FindString(reservation_page_url)
 	return id_from_reservation_page_url
+}
+
+func reservation_page_url_is_not_valid(reservation_page_url *string) bool {
+	return !strings.Contains(*reservation_page_url, "https://s-varaukset.fi/online/reservation/fi")
 }
 
 func get_time_slots_from_graph_api(id_from_reservation_page_url *string, current_date *string, time_slot *string, amount_of_eaters int) (*parsed_graph_data, error) {
