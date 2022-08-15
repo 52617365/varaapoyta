@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -121,9 +120,6 @@ func return_time_slots_in_between(start string, end string) (*[]string, error) {
 		return nil, errors.New("could not find the corresponding indices from time slot array")
 	}
 	times_in_between := all_possible_reservation_times[start_pos:end_pos]
-	for _, time := range times_in_between {
-		fmt.Println(time)
-	}
 	return &times_in_between, nil
 }
 

@@ -55,15 +55,10 @@ func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[
 	// This will contain all the available time slots from all restaurants after loop runs.
 	all_restaurants_with_available_times := make([]restaurant_with_available_times_struct, 0, total_memory_to_reserve_for_all_restaurant_time_slots)
 
-	// @Simplify this function, too much going on.
 	for _, restaurant := range *restaurants {
-		if restaurant_does_not_contain_reservation_page(&restaurant) {
-			continue
-		}
-		id_from_reservation_page_url := get_id_from_reservation_page_url(&restaurant, re)
+		id_from_reservation_page_url, err := get_id_from_reservation_page_url(&restaurant, re)
 
-		// If regex could not match or if url was invalid (happens sometimes cuz API is weird).
-		if id_from_reservation_page_url == "" {
+		if err != nil {
 			continue
 		}
 
@@ -79,17 +74,13 @@ func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[
 			if err != nil {
 				continue
 			}
-			if time_slot_does_not_contain_open_tables(time_slots_from_graph_api) {
-				continue
-			}
 
-			// At this point in the code we have already made all the necessary checks to confirm that a graph is visible for a time slot and we can extract information from it.
+			// At this point in the code we have already made all the necessary checks to confirm that a graph is visible for a time slot, and we can extract information from it.
 
 			unix_timestamp_struct_of_available_table := convert_unix_timestamp_to_finland_time(time_slots_from_graph_api)
 
 			time_slots_in_between_unix_timestamps, err := return_time_slots_in_between(unix_timestamp_struct_of_available_table.start_time, unix_timestamp_struct_of_available_table.end_time)
 
-			// TODO: give this error handling strategy more thought.
 			if err != nil {
 				continue
 			}
@@ -97,6 +88,7 @@ func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[
 			// Checks to see if single_restaurant_with_available_times does not already contain the value we're about to add then adds it.
 			add_non_duplicate_time_slots_into_array(time_slots_in_between_unix_timestamps, single_restaurant_with_available_times)
 		}
+		// Here after iterating over all time slots for the restaurant, we store the results.
 		all_restaurants_with_available_times = append(all_restaurants_with_available_times, single_restaurant_with_available_times)
 	}
 	return &all_restaurants_with_available_times
@@ -112,7 +104,7 @@ func add_non_duplicate_time_slots_into_array(time_slots_in_between_unix_timestam
 	}
 }
 
-// Basic function to see if container contains an element.
+// Basic function to see if a container contains an element.
 func contains(arr *[]string, our_string string) bool {
 	for _, v := range *arr {
 		if v == our_string {
@@ -123,15 +115,22 @@ func contains(arr *[]string, our_string string) bool {
 }
 
 // We do this because the id from the "Id" field is not always the same as the id needed in the reservation page.
-func get_id_from_reservation_page_url(restaurant *response_fields, re *regexp.Regexp) string {
+func get_id_from_reservation_page_url(restaurant *response_fields, re *regexp.Regexp) (string, error) {
 	reservation_page_url := *restaurant.Links.TableReservationLocalized.Fi_FI
-
+	if restaurant_does_not_contain_reservation_page(restaurant) {
+		return "", errors.New("restaurant did not contain reservation page url")
+	}
 	// There are some weird magic strings that will make regex fail so check that it's the link we're interested in.
 	if reservation_page_url_is_not_valid(&reservation_page_url) {
-		return ""
+		return "", errors.New("reservation_page_url_is_not_valid")
 	}
 	id_from_reservation_page_url := re.FindString(reservation_page_url)
-	return id_from_reservation_page_url
+
+	// If regex could not match or if url was invalid (happens sometimes cuz API is weird).
+	if id_from_reservation_page_url == "" {
+		return "", errors.New("regex did not match anything, something wrong with reservation_page_url")
+	}
+	return id_from_reservation_page_url, nil
 }
 
 // Gets timeslots from raflaamo API that is responsible for returning graph data.
@@ -156,6 +155,10 @@ func get_time_slots_from_graph_api(id_from_reservation_page_url string, current_
 	}
 
 	deserialized_graph_data := deserialize_graph_response(&res)
+
+	if time_slot_does_not_contain_open_tables(deserialized_graph_data) {
+		return nil, errors.New("time slot did not contain open tables")
+	}
 
 	return deserialized_graph_data, nil
 }
