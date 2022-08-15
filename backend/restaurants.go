@@ -46,8 +46,7 @@ func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[
 	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. (https://regex101.com/r/NtFMrz/1)
 	current_date := getCurrentDate()
 
-	// Closest to a constant array we can get.
-	// make a check to see if time is in the past, we don't care about the information if it's in the past. Might require we store times as integers and then convert to strings if needed.
+	// TODO: make a check to see if time is in the past, we don't care about the information if it's in the past. (get_current_time)
 	var all_possible_time_slots = [...]string{"0200", "0800", "1400", "2000"} // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
 
 	// there can be maximum of restaurants * all_possible_time_slots, so we allocate the worst case scenario here to avoid reallocation's.
@@ -82,14 +81,14 @@ func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[
 			// Here we have some kind of graph visible.
 			unix_timestamp_struct_of_available_table := convert_unix_timestamp_to_finland(deserialized_graph_data)
 
-			get_time_slots_inbetween, err := return_time_slots_in_between(&unix_timestamp_struct_of_available_table.start_time, &unix_timestamp_struct_of_available_table.end_time)
+			all_available_time_slots, err := return_time_slots_in_between(unix_timestamp_struct_of_available_table.start_time, unix_timestamp_struct_of_available_table.end_time)
 
+			fmt.Println(all_available_time_slots)
 			// TODO: give this error handling strategy more time.
 			if err != nil {
 				continue
 			}
 
-			fmt.Println(get_time_slots_inbetween)
 			// TODO: add the times from get_time_slots_inbetween into an array here but make sure they don't duplicate.
 			// do check if it doesnt contain then add.
 			restaurant_with_available_times.available_time_slots = append(restaurant_with_available_times.available_time_slots, unix_timestamp_struct_of_available_table)

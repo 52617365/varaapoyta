@@ -7,16 +7,17 @@ import (
 )
 
 // Contains the date as a string and the time start and end. Example: start_time: 13:00, end_time: 16:00, date: 2022-08-13
+// @Performance, these could be string references?
 type time_slot_struct struct {
 	start_time string
 	end_time   string
 }
 
-// The data from the raflaamo graph api comes with unix timestamps, but we want them as strings.
+// The data from the raflaamo graph api comes with unix timestamps, but we want them as human readable times in strings.
 func convert_unix_timestamp_to_finland(deserialized_graph_data *parsed_graph_data) time_slot_struct {
 	time_regex, _ := regexp.Compile(`\d{2}:\d{2}`)
 
-	// Adding 7200000 to the time to match utc +2 (corresponds to 2h)
+	// Adding 7200000(ms) to the time to match utc +2 (finnish time) (7200000 ms corresponds to 2h)
 	unix_start_time_in_finnish_time := time.UnixMilli(int64(deserialized_graph_data.Intervals[0].From + 7200000)).UTC()
 	unix_end_time_in_finnish_time := time.UnixMilli(int64(deserialized_graph_data.Intervals[0].To + 7200000)).UTC()
 
@@ -37,8 +38,9 @@ func getCurrentDate() *string {
 	return &string_formatted
 }
 
-// func getCurrentTime() string {
-// 	var re, _ = regexp.Compile(`\d{2}:\d{2}`)
-// 	dt := time.Now().String()
-// 	return re.FindString(dt)
-// }
+// This will be needed later but not yet.
+func getCurrentTime() string {
+	var re, _ = regexp.Compile(`\d{2}:\d{2}`)
+	dt := time.Now().String()
+	return re.FindString(dt)
+}

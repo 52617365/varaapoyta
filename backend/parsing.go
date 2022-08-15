@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 )
 
@@ -34,30 +35,92 @@ func get_all_possible_reservation_times() *[96]string {
 	}
 }
 
+// TODO: get the closest higher even number if passed in number string is uneven before passing it into the binary_search function
+// Examples:
+// Passed in number string is "1114", get the index of "1115".
+// Passed in number string is "0852", get the index of "0900".
+
 // Binary search algorithm that returns the index of an element in array or -1 if none found.
-func binary_search(a *[96]string, x *string) int {
+// In all cases it should find something if we have done the conversion correctly before function call.
+func binary_search(a *[96]string, x string) int {
 	r := -1 // not found
 	start := 0
 	end := len(a) - 1
 	for start <= end {
 		mid := (start + end) / 2
-		if a[mid] == *x {
+		if a[mid] == x {
 			r = mid // found
 			break
-		} else if a[mid] < *x {
+		} else if a[mid] < x {
 			start = mid + 1
-		} else if a[mid] > *x {
+		} else if a[mid] > x {
 			end = mid - 1
 		}
 	}
 	return r
 }
 
-// this will return all the times in between a certain start time and end time.
-func return_time_slots_in_between(start *string, end *string) (*[]string, error) {
+// returns an even number that is supported by the raflaamo site.
+// TODO: handle if number is larger than 45
+func convert_uneven_minutes_to_even(our_number string) string {
+	// Contains all the possible even time slots.
+	// 100 is equivalent to E.g. 17:00 (00).
+	even_time_slot_minutes := [...]string{"15", "30", "45", "60"}
+
+	our_number_length := len(our_number)
+
+	// Numbers are the last 2 characters in all cases.
+	our_number_minutes := our_number[our_number_length-2 : our_number_length]
+	our_number_hours := our_number[:our_number_length-2]
+
+	if our_number_minutes < even_time_slot_minutes[0] {
+		even_number := our_number_hours + even_time_slot_minutes[0]
+		return even_number
+	}
+	if our_number_minutes < even_time_slot_minutes[1] {
+		even_number := our_number_hours + even_time_slot_minutes[1]
+		return even_number
+	}
+	if our_number_minutes < even_time_slot_minutes[2] {
+		even_number := our_number_hours + even_time_slot_minutes[2]
+		return even_number
+	}
+	if our_number_minutes < even_time_slot_minutes[3] {
+		// Checking if its 23 to avoid incrementing it to 24 which would be invalid since 24 is represented as 00 (00:00).
+
+		// FIX: something wrong here if "0848" gets passed into function.
+		if our_number_hours == "23" {
+			return "0000"
+		}
+		our_number_hour_as_integer, err := strconv.Atoi(our_number_hours)
+		if err != nil {
+			return ""
+		}
+		our_number_hour_as_integer++
+
+		// Converting hours back to strings, so we match the original format.
+
+		// Checking if we need to add a 0 before the number because after conversion numbers under 10 will be E.g. "900" when we want it to be "0900".
+		// numbers above 10 will not have this problem cuz they will be E.g. "1000" without doing anything.
+		if our_number_hour_as_integer < 10 {
+			even_number := "0" + strconv.Itoa(our_number_hour_as_integer) + "00"
+			return even_number
+		}
+
+		even_number := strconv.Itoa(our_number_hour_as_integer) + "00"
+		return even_number
+	}
+	return ""
+}
+
+// Used to get all the time slots inbetween the graph start and graph end.
+func return_time_slots_in_between(start string, end string) (*[]string, error) {
 	all_possible_reservation_times := get_all_possible_reservation_times()
-	start_pos := binary_search(all_possible_reservation_times, start)
-	end_pos := binary_search(all_possible_reservation_times, end)
+	start_to_even := convert_uneven_minutes_to_even(start)
+	end_to_even := convert_uneven_minutes_to_even(end)
+	// compare here to make sure start and end are even.
+	start_pos := binary_search(all_possible_reservation_times, start_to_even)
+	end_pos := binary_search(all_possible_reservation_times, end_to_even)
 	if start_pos == -1 || end_pos == -1 {
 		return nil, errors.New("could not find the corresponding indices from time slot array")
 	}
@@ -66,12 +129,12 @@ func return_time_slots_in_between(start *string, end *string) (*[]string, error)
 }
 
 // Gets the restaurants from the passed in argument. Returns error if nothing is found.
-func filter_restaurants_from_city(city *string) (*[]response_fields, error) {
+func filter_restaurants_from_city(city string) (*[]response_fields, error) {
 	restaurants := getAllRestaurantsFromRaflaamoApi()
 	captured_restaurants := make([]response_fields, 0, len(*restaurants))
 
 	for _, restaurant := range *restaurants {
-		if strings.Contains(strings.ToLower(*restaurant.Address.Municipality.Fi_FI), strings.ToLower(*city)) {
+		if strings.Contains(strings.ToLower(*restaurant.Address.Municipality.Fi_FI), strings.ToLower(city)) {
 			captured_restaurants = append(captured_restaurants, restaurant)
 		}
 	}
