@@ -19,7 +19,7 @@ type response_third_level struct {
 }
 
 type response_fields struct {
-	Id          *string          `json:"id"`
+	Id          string           `json:"id"`
 	Name        *string_field    `json:"name"`
 	Urlpath     *string_field    `json:"urlPath"`
 	Address     *address_fields  `json:"address"`
@@ -29,13 +29,13 @@ type response_fields struct {
 }
 
 type string_field struct {
-	Fi_FI *string `json:"fi_FI"`
+	Fi_FI string `json:"fi_FI"`
 }
 
 type address_fields struct {
 	Municipality *string_field `json:"municipality"`
 	Street       *string_field `json:"street"`
-	Zipcode      *string       `json:"zipCode"`
+	Zipcode      string        `json:"zipCode"`
 }
 
 type features_fields struct {

@@ -15,8 +15,8 @@ func TestGetRestaurantsFromCity(t *testing.T) {
 		t.Errorf("Error getting restaurants from city.")
 	}
 	for _, restaurant := range *restaurants_from_helsinki {
-		if !strings.Contains(strings.ToLower(*restaurant.Address.Municipality.Fi_FI), strings.ToLower(city)) {
-			t.Errorf("restaurant.Address.Municipality.Fi_FI = %s, expected %s", *restaurant.Address.Municipality.Fi_FI, "helsinki")
+		if !strings.Contains(strings.ToLower(restaurant.Address.Municipality.Fi_FI), strings.ToLower(city)) {
+			t.Errorf("restaurant.Address.Municipality.Fi_FI = %s, expected %s", restaurant.Address.Municipality.Fi_FI, "helsinki")
 		}
 	}
 }

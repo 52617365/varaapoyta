@@ -129,7 +129,7 @@ func filter_restaurants_from_city(city string) (*[]response_fields, error) {
 	captured_restaurants := make([]response_fields, 0, len(*restaurants))
 
 	for _, restaurant := range *restaurants {
-		if strings.Contains(strings.ToLower(*restaurant.Address.Municipality.Fi_FI), strings.ToLower(city)) {
+		if strings.Contains(strings.ToLower(restaurant.Address.Municipality.Fi_FI), strings.ToLower(city)) {
 			captured_restaurants = append(captured_restaurants, restaurant)
 		}
 	}

@@ -116,7 +116,7 @@ func contains(arr *[]string, our_string string) bool {
 
 // We do this because the id from the "Id" field is not always the same as the id needed in the reservation page.
 func get_id_from_reservation_page_url(restaurant *response_fields, re *regexp.Regexp) (string, error) {
-	reservation_page_url := *restaurant.Links.TableReservationLocalized.Fi_FI
+	reservation_page_url := restaurant.Links.TableReservationLocalized.Fi_FI
 	if restaurant_does_not_contain_reservation_page(restaurant) {
 		return "", errors.New("restaurant did not contain reservation page url")
 	}
@@ -178,5 +178,5 @@ func time_slot_does_not_contain_open_tables(data *parsed_graph_data) bool {
 
 // Some restaurants don't even contain a reservation page url, these restaurants are useless to us so we make sure to check it.
 func restaurant_does_not_contain_reservation_page(restaurant *response_fields) bool {
-	return len(*restaurant.Links.TableReservationLocalized.Fi_FI) == 0
+	return len(restaurant.Links.TableReservationLocalized.Fi_FI) == 0
 }
