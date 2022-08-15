@@ -19,7 +19,6 @@ func TestGetRestaurants(t *testing.T) {
 // Honestly, I don't know a better way to test this function.
 // maybe test the individual functions that this function uses?
 func TestGetAvailableTables(t *testing.T) {
-	//func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[]restaurant_with_available_times_struct
 	amount_of_eaters := 1
 	city := "Rovaniemi"
 	restaurants, _ := filter_restaurants_from_city(city)

@@ -113,6 +113,9 @@ func return_time_slots_in_between(start string, end string) (*[]string, error) {
 	all_possible_reservation_times := get_all_possible_reservation_times()
 	start_to_even := convert_uneven_minutes_to_even(start)
 	end_to_even := convert_uneven_minutes_to_even(end)
+	if start_to_even == "" || end_to_even == "" {
+		return nil, errors.New("error converting uneven minutes to even minutes")
+	}
 	// compare here to make sure start and end are even.
 	start_pos := binary_search(all_possible_reservation_times, start_to_even)
 	end_pos := binary_search(all_possible_reservation_times, end_to_even)

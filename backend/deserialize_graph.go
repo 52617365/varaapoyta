@@ -2,11 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
-// todo deserialize into an array instead of a struct.
 type parsed_graph_data struct {
 	Name      string                 `json:"name"`
 	Intervals []parsed_interval_data `json:"intervals"` // were only interested in the first index.
@@ -26,7 +24,7 @@ func deserialize_graph_response(res **http.Response) *parsed_graph_data {
 	var response_decoded []parsed_graph_data
 	err := json.NewDecoder((*res).Body).Decode(&response_decoded)
 	if err != nil {
-		log.Fatal(err)
+		return nil
 	}
 	return &response_decoded[0]
 }

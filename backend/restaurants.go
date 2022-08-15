@@ -42,8 +42,12 @@ func getAllRestaurantsFromRaflaamoApi() *[]response_fields {
 	return decoded.Data.ListRestaurantsByLocation.Edges
 }
 
+// TODO: use goroutines for requests
 func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[]restaurant_with_available_times_struct {
-	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
+	re, err := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
+	if err != nil {
+		log.Fatal("why the fuck did this fail?")
+	}
 	current_date := getCurrentDate()
 
 	// TODO: make a check to see if time is in the past, we don't care about the information if it's in the past. (get_current_time)
@@ -135,6 +139,7 @@ func get_id_from_reservation_page_url(restaurant *response_fields, re *regexp.Re
 
 // Gets timeslots from raflaamo API that is responsible for returning graph data.
 // Instead of drawing a graph with it, we convert it into time to determine which table is open or not.
+
 func get_time_slots_from_graph_api(id_from_reservation_page_url string, current_date string, time_slot string, amount_of_eaters int) (*parsed_graph_data, error) {
 
 	// https://s-varaukset.fi/api/recommendations/slot/{id}/{date}/{time}/{amount_of_eaters}
@@ -150,11 +155,17 @@ func get_time_slots_from_graph_api(id_from_reservation_page_url string, current_
 	client := &http.Client{}
 	res, err := client.Do(r)
 
-	if err != nil {
+	// Will throw if we call deserialize_graph_response with a status code other than 200 so we handle it here.
+	if err != nil || res.StatusCode != 200 {
 		return nil, errors.New("error sending get request")
 	}
 
 	deserialized_graph_data := deserialize_graph_response(&res)
+
+	// most likely wont jump into this branch but check regardless.
+	if deserialized_graph_data == nil {
+		return nil, errors.New("there was an error deserializing the data returned from endpoint")
+	}
 
 	if time_slot_does_not_contain_open_tables(deserialized_graph_data) {
 		return nil, errors.New("time slot did not contain open tables")
