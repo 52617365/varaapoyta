@@ -82,6 +82,16 @@ func getAvailableTables(restaurants *[]response_fields, amount_of_eaters int) *[
 			// Here we have some kind of graph visible.
 			unix_timestamp_struct_of_available_table := convert_unix_timestamp_to_finland(deserialized_graph_data)
 
+			get_time_slots_inbetween, err := return_time_slots_in_between(&unix_timestamp_struct_of_available_table.start_time, &unix_timestamp_struct_of_available_table.end_time)
+
+			// TODO: give this error handling strategy more time.
+			if err != nil {
+				continue
+			}
+
+			fmt.Println(get_time_slots_inbetween)
+			// TODO: add the times from get_time_slots_inbetween into an array here but make sure they don't duplicate.
+			// do check if it doesnt contain then add.
 			restaurant_with_available_times.available_time_slots = append(restaurant_with_available_times.available_time_slots, unix_timestamp_struct_of_available_table)
 		}
 

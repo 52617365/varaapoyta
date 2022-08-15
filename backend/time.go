@@ -2,6 +2,7 @@ package main
 
 import (
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -19,9 +20,10 @@ func convert_unix_timestamp_to_finland(deserialized_graph_data *parsed_graph_dat
 	unix_start_time_in_finnish_time := time.UnixMilli(int64(deserialized_graph_data.Intervals[0].From + 7200000)).UTC()
 	unix_end_time_in_finnish_time := time.UnixMilli(int64(deserialized_graph_data.Intervals[0].To + 7200000)).UTC()
 
+	// @Performance, maybe we can get the numbers into the correct format with regex only instead of having to replace ":" with an empty string?
 	timestamp_struct_of_available_table := time_slot_struct{
-		start_time: time_regex.FindString(unix_start_time_in_finnish_time.String()),
-		end_time:   time_regex.FindString(unix_end_time_in_finnish_time.String()),
+		start_time: strings.Replace(time_regex.FindString(unix_start_time_in_finnish_time.String()), ":", "", -1),
+		end_time:   strings.Replace(time_regex.FindString(unix_end_time_in_finnish_time.String()), ":", "", -1),
 	}
 
 	return timestamp_struct_of_available_table
