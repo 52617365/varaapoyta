@@ -13,13 +13,14 @@ type time_slot_struct struct {
 	end_time   string
 }
 
-// The data from the raflaamo graph api comes with unix timestamps, but we want them as human readable times in strings.
-func convert_unix_timestamp_to_finland(deserialized_graph_data *parsed_graph_data) time_slot_struct {
+// The data from the raflaamo graph api comes as unix timestamps, but we want them as human readable times in strings so we
+// convert the unix ms timestamps into utc +2 (finnish time).
+func convert_unix_timestamp_to_finland_time(time_slot_in_unix *parsed_graph_data) time_slot_struct {
 	time_regex, _ := regexp.Compile(`\d{2}:\d{2}`)
 
 	// Adding 7200000(ms) to the time to match utc +2 (finnish time) (7200000 ms corresponds to 2h)
-	unix_start_time_in_finnish_time := time.UnixMilli(int64(deserialized_graph_data.Intervals[0].From + 7200000)).UTC()
-	unix_end_time_in_finnish_time := time.UnixMilli(int64(deserialized_graph_data.Intervals[0].To + 7200000)).UTC()
+	unix_start_time_in_finnish_time := time.UnixMilli(int64(time_slot_in_unix.Intervals[0].From + 7200000)).UTC()
+	unix_end_time_in_finnish_time := time.UnixMilli(int64(time_slot_in_unix.Intervals[0].To + 7200000)).UTC()
 
 	// @Performance, maybe we can get the numbers into the correct format with regex only instead of having to replace ":" with an empty string?
 	timestamp_struct_of_available_table := time_slot_struct{

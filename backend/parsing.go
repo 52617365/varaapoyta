@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -35,11 +36,6 @@ func get_all_possible_reservation_times() *[96]string {
 	}
 }
 
-// TODO: get the closest higher even number if passed in number string is uneven before passing it into the binary_search function
-// Examples:
-// Passed in number string is "1114", get the index of "1115".
-// Passed in number string is "0852", get the index of "0900".
-
 // Binary search algorithm that returns the index of an element in array or -1 if none found.
 // In all cases it should find something if we have done the conversion correctly before function call.
 func binary_search(a *[96]string, x string) int {
@@ -61,7 +57,6 @@ func binary_search(a *[96]string, x string) int {
 }
 
 // returns an even number that is supported by the raflaamo site.
-// TODO: handle if number is larger than 45
 func convert_uneven_minutes_to_even(our_number string) string {
 	// Contains all the possible even time slots.
 	// 100 is equivalent to E.g. 17:00 (00).
@@ -113,7 +108,8 @@ func convert_uneven_minutes_to_even(our_number string) string {
 	return ""
 }
 
-// Used to get all the time slots inbetween the graph start and graph end.
+// Used to get all the time slots in between the graph start and graph end.
+// E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 func return_time_slots_in_between(start string, end string) (*[]string, error) {
 	all_possible_reservation_times := get_all_possible_reservation_times()
 	start_to_even := convert_uneven_minutes_to_even(start)
@@ -125,6 +121,9 @@ func return_time_slots_in_between(start string, end string) (*[]string, error) {
 		return nil, errors.New("could not find the corresponding indices from time slot array")
 	}
 	times_in_between := all_possible_reservation_times[start_pos:end_pos]
+	for _, time := range times_in_between {
+		fmt.Println(time)
+	}
 	return &times_in_between, nil
 }
 
