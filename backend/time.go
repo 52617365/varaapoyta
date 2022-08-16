@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -32,11 +34,11 @@ func convert_unix_timestamp_to_finland_time(time_slot_in_unix *parsed_graph_data
 }
 
 // 2022-07-21 12:45:54.1414084 +0300 EEST m=+0.001537301
-func getCurrentDate() *string {
+func get_current_date() string {
 	re, _ := regexp.Compile(`\d{4}-\d{2}-\d{2}`)
 	dt := time.Now().String()
 	string_formatted := re.FindString(dt)
-	return &string_formatted
+	return string_formatted
 }
 
 // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
