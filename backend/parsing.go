@@ -58,22 +58,16 @@ func binary_search(a [96]string, x string) int {
 	return r
 }
 
-// Checks if array contains an element.
-func contains(s [5]string, str string) bool {
-	for _, v := range s {
-		if v == str {
-			return true
-		}
-	}
-	return false
-}
+/*
+	TODO: Check if the restaurants closing time and avoid checks that are in the last hour of the restaurant closing.
+	This is because the restaurants don't take table reservations in the last hour.
+*/
 
-// TODO: if end time gets passed in here, it should not convert to the even number after it since the restaurant could already be closed then.
-// returns an even number that is supported by the raflaamo site.
+// Returns an even number that is supported by the raflaamo site.
 func convert_uneven_minutes_to_even(our_number string) string {
 	// Contains all the possible even time slots.
 	// 100 is equivalent to E.g. 17:00 (00).
-	even_time_slot_minutes := [...]string{"15", "30", "45", "60", "00"}
+	even_time_slot_minutes := [...]string{"15", "30", "45", "00"}
 
 	our_number_length := len(our_number)
 
@@ -97,22 +91,26 @@ func convert_uneven_minutes_to_even(our_number string) string {
 		even_number := our_number_hours + even_time_slot_minutes[2]
 		return even_number
 	}
-	if our_number_minutes < even_time_slot_minutes[3] {
+	if our_number_minutes > even_time_slot_minutes[2] {
 		// Checking if its 23 to avoid incrementing it to 24 which would be invalid since 24 is represented as 00 (00:00).
 
 		if our_number_hours == "23" {
 			return "0000"
 		}
+
+		// Converting to integer so we can increment it.
 		our_number_hour_as_integer, err := strconv.Atoi(our_number_hours)
 		if err != nil {
 			return ""
 		}
-		our_number_hour_as_integer++
 
 		// Converting hours back to strings, so we match the original format.
 
-		// Checking if we need to add a 0 before the number because after conversion numbers under 10 will be E.g. "900" when we want it to be "0900".
-		// numbers above 10 will not have this problem cuz they will be E.g. "1000" without doing anything.
+		/*
+			Checking if we need to add a 0 before the number because after conversion numbers under 10 will be
+			E.g. "900" when we want it to be "0900".
+			Numbers above 10 will not have this problem cuz they will be E.g. "1000" without doing anything.
+		*/
 		if our_number_hour_as_integer < 10 {
 			even_number := "0" + strconv.Itoa(our_number_hour_as_integer) + "00"
 			return even_number
@@ -125,12 +123,19 @@ func convert_uneven_minutes_to_even(our_number string) string {
 }
 
 // Checks to see if the time passed in has minutes that we consider even (00, 15, 30, 45).
-func time_is_already_even(even_time_slot_minutes [5]string, our_number_minutes string) bool {
-	return contains(even_time_slot_minutes, our_number_minutes)
+func time_is_already_even(even_time_slot_minutes [4]string, our_number_minutes string) bool {
+	for _, even_time_slot := range even_time_slot_minutes {
+		if even_time_slot == our_number_minutes {
+			return true
+		}
+	}
+	return false
 }
 
-// Used to get all the time slots in between the graph start and graph end.
-// E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
+/*
+Used to get all the time slots in between the graph start and graph end.
+E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
+*/
 func return_time_slots_in_between(start string, end string) ([]string, error) {
 	all_possible_reservation_times := get_all_possible_reservation_times()
 	start_to_even := convert_uneven_minutes_to_even(start)
@@ -145,10 +150,11 @@ func return_time_slots_in_between(start string, end string) ([]string, error) {
 		return nil, errors.New("could not find the corresponding indices from time slot array")
 	}
 
-	// FIX: Takes branch if start_pos is "1800" and end_pos is "0000".
-	// if end_pos > start_pos {
-	// 	log.Fatalln("this should not happen")
-	// }
+	/*
+		Handle the case where end_pos is E.g. 23:49 and therefore converts to 0000, goes back to index 0
+		which will result in the index in start_pos being bigger than the index in end_pos
+		resulting in out of index error.
+	*/
 	if end_pos < start_pos {
 		times_till_end := all_possible_reservation_times[start_pos:]
 		times_from_start := all_possible_reservation_times[:end_pos+1]
@@ -162,10 +168,6 @@ func return_time_slots_in_between(start string, end string) ([]string, error) {
 
 		return times_in_between, nil
 	}
-
-	// Here we're checking start the start_pos is not larger than the end_pos because making a slice from that range is going to result in a panic.
-	// (It's something related to the sequence of times in the return value of get_all_possible_reservation_times)
-	// @Solution, we're going to store the times in the reverse order.
 
 	times_in_between := all_possible_reservation_times[start_pos:end_pos]
 	return times_in_between, nil
