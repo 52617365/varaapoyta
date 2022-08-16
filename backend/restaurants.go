@@ -42,10 +42,26 @@ func getAllRestaurantsFromRaflaamoApi() *[]response_fields {
 	return decoded.Data.ListRestaurantsByLocation.Edges
 }
 
+// 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
+func get_time_slots_from_current_point_forward(all_possible_time_slots [4]string) []string {
+	current_time, err := get_current_time()
+	if err != nil {
+		return nil
+	}
+
+	// TODO: make sure to cover the timeslots they cover too, -2 and +4 in this loop.
+	for index, possible_time_slot := range all_possible_time_slots {
+		if possible_time_slot > current_time {
+			return all_possible_time_slots[index:]
+		}
+	}
+	return nil
+}
+
 // TODO: use goroutines for requests
 func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []restaurant_with_available_times_struct {
 	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
-	current_date := getCurrentDate()
+	current_date := get_current_date()
 
 	// TODO: make a check to see if time is in the past, we don't care about the information if it's in the past. (get_current_time)
 	var all_possible_time_slots = [...]string{"0200", "0800", "1400", "2000"} // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
