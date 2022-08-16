@@ -1,19 +1,29 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
-// FIX: Make checking of available tables work.
-// TODO: Make endpoints and extract restaurants from a certain country passed in as a parameter.
+// TODO: Make endpoints.
+// TODO: Restaurant often don't take reservations in the 1h time slot before they close. Check the closing time and don't include reservation times that are in the 1h window before closing.
 
 func main() {
-	city := "Helsinki"
-	restaurants, err := getRestaurantsFromCity(&city)
+	city := "helsinki"
+	amount_of_eaters := 1
+	restaurants, err := filter_restaurants_from_city(city)
 	if err != nil {
-		fmt.Println("Could not find any restaurants.")
-		return
+		log.Fatal("Could not find any restaurants.")
 	}
-	getAvailableTables(restaurants)
-	fmt.Println(restaurants)
+	results := getAvailableTables(restaurants, amount_of_eaters)
+	for _, result := range results {
+		for _, time_slot := range result.available_time_slots {
+			fmt.Println(time_slot)
+		}
+	}
 }
 
-// *value.Id, *value.Name.Fi_FI, *value.Urlpath.Fi_FI, *value.Address.Municipality.Fi_FI, *value.Address.Street.Fi_FI, *value.Address.Zipcode, value.Features.Accessible, *value.Links.TableReservationLocalized.Fi_FI, *value.Links.HomepageLocalized.Fi_FI
+// type restaurant_with_available_times_struct struct {
+// 	restaurant           response_fields
+// 	available_time_slots []string
+// }
