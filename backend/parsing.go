@@ -67,8 +67,6 @@ func binary_search(a [96]string, x string) int {
 func convert_uneven_minutes_to_even(our_number string) string {
 	// Contains all the possible even time slots.
 	// 100 is equivalent to E.g. 17:00 (00).
-	even_time_slot_minutes := [...]string{"15", "30", "45", "00"}
-
 	our_number_length := len(our_number)
 
 	// Numbers are the last 2 characters in all cases.
@@ -76,22 +74,22 @@ func convert_uneven_minutes_to_even(our_number string) string {
 
 	our_number_hours := our_number[:our_number_length-2]
 
-	if time_is_already_even(even_time_slot_minutes, our_number_minutes) {
+	if time_is_already_even([...]string{"15", "30", "45", "00"}, our_number_minutes) {
 		return our_number
 	}
-	if our_number_minutes < even_time_slot_minutes[0] {
-		even_number := our_number_hours + even_time_slot_minutes[0]
+	if our_number_minutes < "15" {
+		even_number := our_number_hours + "15"
 		return even_number
 	}
-	if our_number_minutes < even_time_slot_minutes[1] {
-		even_number := our_number_hours + even_time_slot_minutes[1]
+	if our_number_minutes < "30" {
+		even_number := our_number_hours + "30"
 		return even_number
 	}
-	if our_number_minutes < even_time_slot_minutes[2] {
-		even_number := our_number_hours + even_time_slot_minutes[2]
+	if our_number_minutes < "45" {
+		even_number := our_number_hours + "45"
 		return even_number
 	}
-	if our_number_minutes > even_time_slot_minutes[2] {
+	if our_number_minutes > "45" {
 		// Checking if its 23 to avoid incrementing it to 24 which would be invalid since 24 is represented as 00 (00:00).
 
 		if our_number_hours == "23" {
