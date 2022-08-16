@@ -39,9 +39,48 @@ func getCurrentDate() *string {
 	return &string_formatted
 }
 
-// This will be needed later but not yet.
-func getCurrentTime() string {
+// 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
+// The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
+func get_time_slots_from_current_point_forward(all_possible_time_slots [4]string) []string {
+	current_time, err := get_current_time()
+	if err != nil {
+		return nil
+	}
+
+	// TODO: make sure to cover the timeslots they cover too, -2 and +4 in this loop.
+	for index, possible_time_slot := range all_possible_time_slots {
+		if possible_time_slot > current_time {
+			return all_possible_time_slots[index:]
+		}
+	}
+	return nil
+}
+
+/*
+Gets current time then calls convert_current_time_to_hours_and_minutes to convert it into a struct which separated hours and
+minutes	so that we can work with the time easily.
+*/
+func get_current_time() (string, error) {
+	// TODO: change this regex to not include ":" so we don't have to replace anything ":" with "".
 	var re, _ = regexp.Compile(`\d{2}:\d{2}`)
 	dt := time.Now().String()
-	return re.FindString(dt)
+	incorrectly_formatted_time := re.FindString(dt)
+
+	// empty if you can't find a match with regex.
+	if incorrectly_formatted_time == "" {
+		return "", errors.New("error matching regex in function get_current_hour_and_minutes")
+	}
+
+	// Will contain the end result.
+	var formatted_time string
+
+	// Add trailing zero if under 1000 because "900" is invalid, we want 0900 instead.
+	if len(incorrectly_formatted_time) < 5 {
+		formatted_time = fmt.Sprintf("0%s", incorrectly_formatted_time)
+	}
+
+	// Reformat E.g. 10:00 to 1000.
+	formatted_time = strings.Replace(incorrectly_formatted_time, ":", "", -1)
+
+	return formatted_time, nil
 }
