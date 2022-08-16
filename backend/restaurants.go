@@ -86,9 +86,7 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 				continue
 			}
 
-			// Checks to see if single_restaurant_with_available_times does not already contain the value we're about to add then adds it.
 			single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time_slots_in_between_unix_timestamps...)
-			//add_non_duplicate_time_slots_into_array(time_slots_in_between_unix_timestamps, single_restaurant_with_available_times)
 		}
 		// Here after iterating over all time slots for the restaurant, we store the results.
 		all_restaurants_with_available_times = append(all_restaurants_with_available_times, single_restaurant_with_available_times)
