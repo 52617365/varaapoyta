@@ -25,8 +25,8 @@ func TestGetAvailableTables(t *testing.T) {
 
 	results := getAvailableTables(restaurants, amount_of_eaters)
 
-	if len(*results) == 0 {
-		t.Errorf("unexpected results length: %d", len(*results))
+	if len(results) == 0 {
+		t.Errorf("unexpected results length: %d", len(results))
 	}
 }
 
@@ -49,7 +49,7 @@ func TestGetIdFromReservationPageUrl(t *testing.T) {
 		},
 	}
 
-	id, err := get_id_from_reservation_page_url(&placeholder_restaurant, re)
+	id, err := get_id_from_reservation_page_url(placeholder_restaurant, re)
 
 	if err != nil {
 		t.Errorf("get_id_from_reservation_page_url threw when we did not expect it to.")
@@ -76,7 +76,7 @@ func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
 		},
 	}
 
-	_, err := get_id_from_reservation_page_url(&placeholder_restaurant, re)
+	_, err := get_id_from_reservation_page_url(placeholder_restaurant, re)
 
 	if err == nil {
 		t.Errorf("we expected get_id_from_reservation_page_url to throw but it did not.")
