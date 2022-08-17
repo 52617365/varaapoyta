@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -30,6 +31,28 @@ func TestTimeSlotsFromCurrentPointForward(t *testing.T) {
 		}
 		if time_slot_window.time_window_end != expected_time_slot_windows[time_slot_window_index].time_window_end {
 			t.Errorf("Expected time window end time to be %s but it was %s", expected_time_slot_windows[time_slot_window_index].time_window_end, time_slot_window.time_window_end)
+		}
+	}
+}
+
+// TODO: make this test pass.
+func TestGetLastPossibleTimeBeforeClosing(t *testing.T) {
+	current_time := "2300"
+	end_time := "0100"
+
+	reservation_times, _ := time_slots_in_between(current_time, end_time)
+
+	closing_time := "0015"
+	expected_results := []string{"2300", "2315", "2330"}
+
+	times := get_last_possible_time_slot_before_closing(reservation_times, closing_time)
+
+	for _, v := range times {
+		fmt.Println(v)
+	}
+	for index, expected_result := range expected_results {
+		if expected_result != times[index] {
+			t.Errorf("Expected result to be %s but it was %s", expected_result, times[index])
 		}
 	}
 }
