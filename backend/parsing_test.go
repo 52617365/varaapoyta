@@ -32,7 +32,7 @@ func TestGetRestaurantsFromCityThatDoesNotExist(t *testing.T) {
 
 // TestReverseBinarySearch | Test to see if binary search algorithm works correctly.
 func TestBinarySearch(t *testing.T) {
-	times := get_all_possible_reservation_times()
+	times := get_all_reservation_times()
 	expected_index := 4
 	element_to_find := "0100"
 	resulting_index := binary_search(times, element_to_find)
@@ -43,11 +43,12 @@ func TestBinarySearch(t *testing.T) {
 }
 
 func TestReturnTimeslotsInbetween(t *testing.T) {
-	expected_result_range := [...]string{"0015", "0030", "0045", "0100"}
+	expected_result_range := [...]string{"0015", "0030", "0045", "0100", "0115"}
 
 	start_time := "0015"
-	end_time := "0100"
-	time_slots, err := time_slots_in_between(start_time, end_time)
+	end_time := "0200"
+	closing_time := "0200"
+	time_slots, err := time_slots_in_between(start_time, end_time, closing_time)
 
 	if err != nil {
 		t.Errorf(`TestReturn_time_slots_in_between failed completely with start_time: %s and end_time: %s`, start_time, end_time)
@@ -61,17 +62,20 @@ func TestReturnTimeslotsInbetween(t *testing.T) {
 }
 
 func TestReturnTimeslotsInbetween2(t *testing.T) {
-	expected_result_range := [...]string{"0000", "1800", "1815", "1830", "1845",
+	expected_result_range := [...]string{"0000", "0015", "0030", "1800", "1815", "1830", "1845",
 		"1900", "1915", "1930", "1945",
 		"2000", "2015", "2030", "2045",
 		"2100", "2115", "2130", "2145",
 		"2200", "2215", "2230", "2245",
-		"2300", "2315", "2330", "2345"}
+		"2300", "2315", "2330", "2345",
+	}
 
 	start_time := "1800"
-	end_time := "2359"
+	end_time := "0100"
+	// empty cuz its not relevant to this test.
+	closing_time := "0115" // last time is therefore 0030
 
-	time_slots, err := time_slots_in_between(start_time, end_time)
+	time_slots, err := time_slots_in_between(start_time, end_time, closing_time)
 
 	if err != nil {
 		t.Errorf(`TestReturn_time_slots_in_between failed completely with start_time: %s and end_time: %s`, start_time, end_time)
