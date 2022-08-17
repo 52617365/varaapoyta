@@ -17,7 +17,7 @@ type restaurant_with_available_times_struct struct {
 }
 
 // getAllRestaurantsFromRaflaamoApi sends request to raflaamo API and gets all the possible restaurants from all cities from there.
-func getAllRestaurantsFromRaflaamoApi() *[]response_fields {
+func getAllRestaurantsFromRaflaamoApi() []response_fields {
 	data := []byte(`{"operationName":"getRestaurantsByLocation","variables":{"first":1000,"input":{"restaurantType":"ALL","locationName":"Helsinki","feature":{"rentableVenues":false}},"after":"eyJmIjowLCJnIjp7ImEiOjYwLjE3MTE2LCJvIjoyNC45MzI1OH19"},"query":"fragment Locales on LocalizedString {fi_FI }fragment Restaurant on Restaurant {  id  name {    ...Locales    }  urlPath {    ...Locales     }    address {    municipality {      ...Locales       }        street {      ...Locales       }       zipCode     }    features {    accessible     }  openingTime {    restaurantTime {      ranges {        start        end             }             }    kitchenTime {      ranges {        start        end        endNextDay              }             }    }  links {    tableReservationLocalized {      ...Locales        }    homepageLocalized {      ...Locales          }   }     }query getRestaurantsByLocation($first: Int, $after: String, $input: ListRestaurantsByLocationInput!) {  listRestaurantsByLocation(first: $first, after: $after, input: $input) {    totalCount      edges {      ...Restaurant        }     }}"}`)
 
 	r, err := http.NewRequest("POST", "https://api.raflaamo.fi/query", bytes.NewBuffer(data))
@@ -44,7 +44,7 @@ func getAllRestaurantsFromRaflaamoApi() *[]response_fields {
 
 // TODO: use goroutines for requests
 func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []restaurant_with_available_times_struct {
-	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
+	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex101.com/r/NtFMrz/1
 	current_date := get_current_date()
 	current_time, err := get_current_time()
 
@@ -84,13 +84,16 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 
 			unix_timestamp_struct_of_available_table := convert_unix_timestamp_to_finland_time(time_slots_from_graph_api)
 
-			// time_slots_in_between_unix_timestamps, err := time_slots_in_between(unix_timestamp_struct_of_available_table.start_time, unix_timestamp_struct_of_available_table.end_time, current_time)
-			time_slots_in_between_unix_timestamps, err := time_slots_in_between(current_time, unix_timestamp_struct_of_available_table.end_time)
+			// @Maybe some error checking here IDK?, think about it
+			restaurant_closing_time := restaurant.Openingtime.Restauranttime.Ranges[0].End
+
+			time_slots_in_between_unix_timestamps, err := time_slots_in_between(current_time, unix_timestamp_struct_of_available_table.end_time, restaurant_closing_time)
 
 			if err != nil {
 				continue
 			}
 
+			// TODO: Restaurant often don't take reservations in the 45 minute time slot before they close. Check the closing time and don't include reservation times that are in the 45 min window before closing.
 			single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time_slots_in_between_unix_timestamps...)
 		}
 		// Here after iterating over all time slots for the restaurant, we store the results.

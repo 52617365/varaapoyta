@@ -1,29 +1,18 @@
 package main
 
-import (
-	"fmt"
-	"log"
-)
+import "fmt"
 
 // TODO: Make endpoints.
-// TODO: Restaurant often don't take reservations in the 1h time slot before they close. Check the closing time and don't include reservation times that are in the 1h window before closing.
-
+// The line must be drawn somewhere - Jonathan Blow.
 func main() {
-	city := "helsinki"
-	amount_of_eaters := 1
-	restaurants, err := filter_restaurants_from_city(city)
-	if err != nil {
-		log.Fatal("Could not find any restaurants.")
-	}
-	results := getAvailableTables(restaurants, amount_of_eaters)
-	for _, result := range results {
-		for _, time_slot := range result.available_time_slots {
-			fmt.Println(time_slot)
-		}
+
+	current_time := "0000"
+	end_time := "0300"
+	closing_time := "01:15"
+
+	reservation_times, _ := time_slots_in_between(current_time, end_time, closing_time)
+
+	for _, reservation_time := range reservation_times {
+		fmt.Println(reservation_time)
 	}
 }
-
-// type restaurant_with_available_times_struct struct {
-// 	restaurant           response_fields
-// 	available_time_slots []string
-// }
