@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func get_all_possible_reservation_times() [96]string {
+func get_all_reservation_times() [96]string {
 	return [...]string{
 		"0000", "0015", "0030", "0045",
 		"0100", "0115", "0130", "0145",
@@ -119,36 +119,43 @@ func time_is_already_even(our_number_minutes string) bool {
 	}
 	return false
 }
+func end_pos_is_in_closing_window(end_pos int, restaurant_closing_time_pos int) bool {
+	// -3 because restaurants don't take reservations 45 mins before restaurant closes so we check that we're not in that time window.
+	// one pos index is 15 minutes.
+	return end_pos > restaurant_closing_time_pos-3
+}
 
 /*
 Used to get all the time slots in between the graph start and graph end.
 E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 */
-
-func time_slots_in_between(start string, end string) ([]string, error) {
-	all_possible_reservation_times := get_all_possible_reservation_times()
-	start_to_even := convert_uneven_minutes_to_even(start)
-	end_to_even := convert_uneven_minutes_to_even(end)
-	if start_to_even == "" || end_to_even == "" {
+func time_slots_in_between(start_time string, end_time string, restaurant_closing_time string) ([]string, error) {
+	all_reservation_times := get_all_reservation_times() // in reality it's not all because we need to consider restaurants closing time.
+	start_time = convert_uneven_minutes_to_even(start_time)
+	end_time = convert_uneven_minutes_to_even(end_time)
+	if start_time == "" || end_time == "" {
 		return nil, errors.New("error converting uneven minutes to even minutes")
 	}
 
-	start_pos := binary_search(all_possible_reservation_times, start_to_even)
-	end_pos := binary_search(all_possible_reservation_times, end_to_even)
+	start_pos := binary_search(all_reservation_times, start_time)
+	end_pos := binary_search(all_reservation_times, end_time)
+	var restaurant_closing_time_pos int = -1 // -1 = not found.
+
+	if restaurant_closing_time != "" {
+		// if restaurant_closing_time exists, get it's index with binary search, else leave it as -1.
+		restaurant_closing_time_pos = binary_search(all_reservation_times, restaurant_closing_time)
+	}
 	if start_pos == -1 || end_pos == -1 {
 		return nil, errors.New("could not find the corresponding indices from time slot array")
 	}
 
-	// TODO: handle get_last_possible_time_slot_before_closing here instead.
-
-	/*
-		Handle the case where end_pos is E.g. 23:49 and therefore converts to 0000, goes back to index 0
-		which will result in the index in start_pos being bigger than the index in end_pos
-		resulting in out of index error.
-	*/
+	if end_pos_is_in_closing_window(end_pos, restaurant_closing_time_pos) {
+		// If it's in the closing time window, get the last possible time which is 45 minutes before closing.
+		end_pos = restaurant_closing_time_pos - 3
+	}
 	if end_pos < start_pos {
-		times_till_end := all_possible_reservation_times[start_pos:]
-		times_from_start := all_possible_reservation_times[:end_pos+1]
+		times_till_end := all_reservation_times[start_pos:]
+		times_from_start := all_reservation_times[:end_pos+1]
 
 		space_to_allocate := len(times_from_start) + len(times_till_end)
 
@@ -160,7 +167,7 @@ func time_slots_in_between(start string, end string) ([]string, error) {
 		return times_in_between, nil
 	}
 
-	times_in_between := all_possible_reservation_times[start_pos:end_pos]
+	times_in_between := all_reservation_times[start_pos:end_pos]
 	return times_in_between, nil
 }
 
