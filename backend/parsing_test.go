@@ -71,7 +71,6 @@ func TestReturnTimeslotsInbetween2(t *testing.T) {
 	start_time := "1800"
 	end_time := "2359"
 
-	// FIX: it gets stuck in this function.
 	time_slots, err := time_slots_in_between(start_time, end_time)
 
 	if err != nil {

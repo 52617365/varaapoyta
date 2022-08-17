@@ -64,7 +64,7 @@ func convert_uneven_minutes_to_even(our_number string) string {
 
 	our_number_hours := our_number[:our_number_length-2]
 
-	if time_is_already_even([...]string{"15", "30", "45", "00"}, our_number_minutes) {
+	if time_is_already_even(our_number_minutes) {
 		return our_number
 	}
 	if our_number_minutes < "15" {
@@ -113,11 +113,9 @@ func convert_uneven_minutes_to_even(our_number string) string {
 }
 
 // Checks to see if the time passed in has minutes that we consider even (00, 15, 30, 45).
-func time_is_already_even(even_time_slot_minutes [4]string, our_number_minutes string) bool {
-	for _, even_time_slot := range even_time_slot_minutes {
-		if even_time_slot == our_number_minutes {
-			return true
-		}
+func time_is_already_even(our_number_minutes string) bool {
+	if our_number_minutes == "45" || our_number_minutes == "30" || our_number_minutes == "15" || our_number_minutes == "00" {
+		return true
 	}
 	return false
 }
@@ -127,8 +125,6 @@ Used to get all the time slots in between the graph start and graph end.
 E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 */
 
-// TODO: Restaurant often don't take reservations in the 1h time slot before they close. Check the closing time and don't include reservation times that are in the 1h window before closing.
-// TODO: Don't include the times that are before the current time.
 func time_slots_in_between(start string, end string) ([]string, error) {
 	all_possible_reservation_times := get_all_possible_reservation_times()
 	start_to_even := convert_uneven_minutes_to_even(start)
@@ -169,9 +165,9 @@ func time_slots_in_between(start string, end string) ([]string, error) {
 // Gets the restaurants from the passed in argument. Returns error if nothing is found.
 func filter_restaurants_from_city(city string) ([]response_fields, error) {
 	restaurants := getAllRestaurantsFromRaflaamoApi()
-	captured_restaurants := make([]response_fields, 0, len(*restaurants))
+	captured_restaurants := make([]response_fields, 0, len(restaurants))
 
-	for _, restaurant := range *restaurants {
+	for _, restaurant := range restaurants {
 		if strings.Contains(strings.ToLower(restaurant.Address.Municipality.Fi_FI), strings.ToLower(city)) {
 			captured_restaurants = append(captured_restaurants, restaurant)
 		}
