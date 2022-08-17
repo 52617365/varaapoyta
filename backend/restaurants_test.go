@@ -9,7 +9,7 @@ import (
 func TestGetRestaurants(t *testing.T) {
 	restaurants := getAllRestaurantsFromRaflaamoApi()
 
-	restaurants_length := len(*restaurants)
+	restaurants_length := len(restaurants)
 	if restaurants_length < 10 {
 		// Can't check against a static number cuz the amount changes.
 		t.Errorf("len(getRestaurants()) = %d, expected %s", restaurants_length, ">10")
@@ -38,15 +38,12 @@ func TestGetIdFromReservationPageUrl(t *testing.T) {
 	expected_id := "38"
 	placeholder_restaurant := response_fields{
 		Id:          "",
-		Name:        nil,
-		Urlpath:     nil,
-		Address:     nil,
-		Features:    nil,
-		Openingtime: nil,
-		Links: &links_fields{
-			TableReservationLocalized: &string_field{Fi_FI: restaurant_url},
-			HomepageLocalized:         nil,
-		},
+		Name:        string_field{Fi_FI: ""},
+		Urlpath:     string_field{Fi_FI: ""},
+		Address:     address_fields{Municipality: string_field{Fi_FI: ""}},
+		Features:    features_fields{Accessible: false},
+		Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},
+		Links:       links_fields{TableReservationLocalized: string_field{Fi_FI: restaurant_url}, HomepageLocalized: string_field{Fi_FI: ""}},
 	}
 
 	id, err := get_id_from_reservation_page_url(placeholder_restaurant, re)
@@ -65,15 +62,12 @@ func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
 
 	placeholder_restaurant := response_fields{
 		Id:          "",
-		Name:        nil,
-		Urlpath:     nil,
-		Address:     nil,
-		Features:    nil,
-		Openingtime: nil,
-		Links: &links_fields{
-			TableReservationLocalized: &string_field{Fi_FI: restaurant_url},
-			HomepageLocalized:         nil,
-		},
+		Name:        string_field{Fi_FI: ""},
+		Urlpath:     string_field{Fi_FI: ""},
+		Address:     address_fields{Municipality: string_field{Fi_FI: ""}},
+		Features:    features_fields{Accessible: false},
+		Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},
+		Links:       links_fields{TableReservationLocalized: string_field{Fi_FI: restaurant_url}, HomepageLocalized: string_field{Fi_FI: ""}},
 	}
 
 	_, err := get_id_from_reservation_page_url(placeholder_restaurant, re)
