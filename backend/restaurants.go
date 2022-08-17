@@ -47,8 +47,7 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
 	current_date := get_current_date()
 
-	// TODO: make a check to see if time is in the past, we don't care about the information if it's in the past. (get_current_time)
-	var all_possible_time_slots = [...]string{"0200", "0800", "1400", "2000"} // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
+	var all_possible_time_slots = get_all_time_windows()
 
 	// There can be maximum of restaurants * all_possible_time_slots, so we allocate the worst case scenario here to avoid reallocation's.
 	total_memory_to_reserve_for_all_restaurant_time_slots := len(restaurants) * len(all_possible_time_slots)
@@ -71,7 +70,7 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 
 		// Iterating over all possible time slots (0200, 0800, 1400, 2000) to cover the whole 24h window (each time slot covers a 6h window.)
 		for _, time_slot := range all_possible_time_slots {
-			time_slots_from_graph_api, err := get_time_slots_from_graph_api(id_from_reservation_page_url, current_date, time_slot, amount_of_eaters)
+			time_slots_from_graph_api, err := get_time_slots_from_graph_api(id_from_reservation_page_url, current_date, time_slot.time, amount_of_eaters)
 			if err != nil {
 				continue
 			}
