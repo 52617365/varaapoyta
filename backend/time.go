@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -38,7 +37,7 @@ type graph_time_slot struct {
 
 // The data from the raflaamo graph api comes as unix timestamps, but we want them as human-readable times in strings, so we
 // convert the unix ms timestamps into utc +2 (finnish time).
-func convert_unix_timestamp_to_finland_time(time_slot_in_unix *parsed_graph_data) time_slot_struct {
+func convert_unix_timestamp_to_finland_time(time_slot_in_unix *parsed_graph_data) graph_time_slot {
 	time_regex, _ := regexp.Compile(`\d{2}:\d{2}`)
 
 	// Adding 7200000(ms) to the time to match utc +2 (finnish time) (7200000 ms corresponds to 2h)
@@ -46,7 +45,7 @@ func convert_unix_timestamp_to_finland_time(time_slot_in_unix *parsed_graph_data
 	unix_end_time_in_finnish_time := time.UnixMilli(int64(time_slot_in_unix.Intervals[0].To + 10800000)).UTC()
 
 	// @Performance, maybe we can get the numbers into the correct format with regex only instead of having to replace ":" with an empty string?
-	timestamp_struct_of_available_table := time_slot_struct{
+	timestamp_struct_of_available_table := graph_time_slot{
 		start_time: strings.Replace(time_regex.FindString(unix_start_time_in_finnish_time.String()), ":", "", -1),
 		end_time:   strings.Replace(time_regex.FindString(unix_end_time_in_finnish_time.String()), ":", "", -1),
 	}
@@ -78,7 +77,6 @@ Gets current time then calls convert_current_time_to_hours_and_minutes to conver
 minutes	so that we can work with the time easily.
 */
 func get_current_time() (string, error) {
-	// TODO: change this regex to not include ":" so we don't have to replace anything ":" with "".
 	var re, _ = regexp.Compile(`\d{2}:\d{2}`)
 	dt := time.Now().String()
 	incorrectly_formatted_time := re.FindString(dt)
@@ -88,16 +86,8 @@ func get_current_time() (string, error) {
 		return "", errors.New("error matching regex in function get_current_hour_and_minutes")
 	}
 
-	// Will contain the end result.
-	var formatted_time string
-
-	// Add trailing zero if under 1000 because "900" is invalid, we want 0900 instead.
-	if len(incorrectly_formatted_time) < 5 {
-		formatted_time = fmt.Sprintf("0%s", incorrectly_formatted_time)
-	}
-
 	// Reformat E.g. 10:00 to 1000.
-	formatted_time = strings.Replace(incorrectly_formatted_time, ":", "", -1)
+	formatted_time := strings.Replace(incorrectly_formatted_time, ":", "", -1)
 
 	return formatted_time, nil
 }
