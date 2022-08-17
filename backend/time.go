@@ -8,9 +8,30 @@ import (
 	"time"
 )
 
-// Contains the date as a string and the time start and end. Example: start_time: 13:00, end_time: 16:00, date: 2022-08-13
-// @Performance, these could be string references?
-type time_slot_struct struct {
+type time_slot_window struct {
+	time              string
+	time_window_start string
+	time_window_end   string
+}
+
+// 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
+func get_all_time_windows() []time_slot_window {
+	time_windows := [...]time_slot_window{
+		{time: "0200", time_window_start: "0000", time_window_end: "0600"},
+		{time: "0800", time_window_start: "0600", time_window_end: "1200"},
+		{time: "1400", time_window_start: "1200", time_window_end: "1800"},
+		{time: "2000", time_window_start: "1800", time_window_end: "0000"},
+	}
+	current_time, err := get_current_time()
+	if err != nil {
+		return nil
+	}
+	time_windows_from_current_forward := get_time_slots_from_current_point_forward(time_windows, current_time)
+	return time_windows_from_current_forward
+}
+
+// Contains the date as a string and the time start and end. Example: start_time: 13:00, end_time: 16:00
+type graph_time_slot struct {
 	start_time string
 	end_time   string
 }
@@ -41,18 +62,12 @@ func get_current_date() string {
 	return string_formatted
 }
 
-// 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
+// 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
 // The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
-func get_time_slots_from_current_point_forward(all_possible_time_slots [4]string) []string {
-	current_time, err := get_current_time()
-	if err != nil {
-		return nil
-	}
-
-	// TODO: make sure to cover the timeslots they cover too, -2 and +4 in this loop.
-	for index, possible_time_slot := range all_possible_time_slots {
-		if possible_time_slot > current_time {
-			return all_possible_time_slots[index:]
+func get_time_slots_from_current_point_forward(all_possible_time_slots [4]time_slot_window, current_time string) []time_slot_window {
+	for time_slot_index, time_slot := range all_possible_time_slots {
+		if current_time < time_slot.time_window_end {
+			return all_possible_time_slots[time_slot_index:]
 		}
 	}
 	return nil
