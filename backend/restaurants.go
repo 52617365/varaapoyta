@@ -46,8 +46,13 @@ func getAllRestaurantsFromRaflaamoApi() *[]response_fields {
 func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []restaurant_with_available_times_struct {
 	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
 	current_date := get_current_date()
+	current_time, err := get_current_time()
 
-	var all_possible_time_slots = get_all_time_windows()
+	if err != nil {
+		return nil
+	}
+
+	var all_possible_time_slots = get_all_time_windows(current_time)
 
 	// There can be maximum of restaurants * all_possible_time_slots, so we allocate the worst case scenario here to avoid reallocation's.
 	total_memory_to_reserve_for_all_restaurant_time_slots := len(restaurants) * len(all_possible_time_slots)
@@ -79,7 +84,8 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 
 			unix_timestamp_struct_of_available_table := convert_unix_timestamp_to_finland_time(time_slots_from_graph_api)
 
-			time_slots_in_between_unix_timestamps, err := return_time_slots_in_between(unix_timestamp_struct_of_available_table.start_time, unix_timestamp_struct_of_available_table.end_time)
+			// time_slots_in_between_unix_timestamps, err := time_slots_in_between(unix_timestamp_struct_of_available_table.start_time, unix_timestamp_struct_of_available_table.end_time, current_time)
+			time_slots_in_between_unix_timestamps, err := time_slots_in_between(current_time, unix_timestamp_struct_of_available_table.end_time)
 
 			if err != nil {
 				continue

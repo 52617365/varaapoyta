@@ -14,16 +14,12 @@ type time_slot_window struct {
 }
 
 // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
-func get_all_time_windows() []time_slot_window {
+func get_all_time_windows(current_time string) []time_slot_window {
 	time_windows := [...]time_slot_window{
 		{time: "0200", time_window_start: "0000", time_window_end: "0600"},
 		{time: "0800", time_window_start: "0600", time_window_end: "1200"},
 		{time: "1400", time_window_start: "1200", time_window_end: "1800"},
 		{time: "2000", time_window_start: "1800", time_window_end: "0000"},
-	}
-	current_time, err := get_current_time()
-	if err != nil {
-		return nil
 	}
 	time_windows_from_current_forward := get_time_slots_from_current_point_forward(time_windows, current_time)
 	return time_windows_from_current_forward
