@@ -93,7 +93,6 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 				continue
 			}
 
-			// TODO: Restaurant often don't take reservations in the 45 minute time slot before they close. Check the closing time and don't include reservation times that are in the 45 min window before closing.
 			single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time_slots_in_between_unix_timestamps...)
 		}
 		// Here after iterating over all time slots for the restaurant, we store the results.
