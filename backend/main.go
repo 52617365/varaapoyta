@@ -5,7 +5,6 @@ import "fmt"
 // TODO: Make endpoints.
 // The line must be drawn somewhere - Jonathan Blow.
 func main() {
-
 	current_time := "0000"
 	end_time := "0300"
 	closing_time := "01:15"

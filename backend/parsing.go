@@ -129,8 +129,9 @@ func end_pos_is_in_closing_window(end_pos int, restaurant_closing_time_pos int) 
 Used to get all the time slots in between the graph start and graph end.
 E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 */
+// TODO: make sure this actually works.
 func time_slots_in_between(start_time string, end_time string, restaurant_closing_time string) ([]string, error) {
-	all_reservation_times := get_all_reservation_times() // in reality it's not all because we need to consider restaurants closing time.
+	all_reservation_times := get_all_reservation_times() // in reality, it's not all because we need to consider restaurants closing time.
 	start_time = convert_uneven_minutes_to_even(start_time)
 	end_time = convert_uneven_minutes_to_even(end_time)
 	if start_time == "" || end_time == "" {
@@ -139,32 +140,37 @@ func time_slots_in_between(start_time string, end_time string, restaurant_closin
 
 	start_pos := binary_search(all_reservation_times, start_time)
 	end_pos := binary_search(all_reservation_times, end_time)
-	var restaurant_closing_time_pos int = -1 // -1 = not found.
+	restaurant_closing_time_pos := binary_search(all_reservation_times, restaurant_closing_time)
 
-	if restaurant_closing_time != "" {
-		// if restaurant_closing_time exists, get it's index with binary search, else leave it as -1.
-		restaurant_closing_time_pos = binary_search(all_reservation_times, restaurant_closing_time)
-	}
 	if start_pos == -1 || end_pos == -1 {
 		return nil, errors.New("could not find the corresponding indices from time slot array")
 	}
 
-	if end_pos_is_in_closing_window(end_pos, restaurant_closing_time_pos) {
-		// If it's in the closing time window, get the last possible time which is 45 minutes before closing.
-		end_pos = restaurant_closing_time_pos - 3
-	}
-	if end_pos < start_pos {
-		times_till_end := all_reservation_times[start_pos:]
-		times_from_start := all_reservation_times[:end_pos+1]
+	if restaurant_closing_time_pos != -1 {
 
-		space_to_allocate := len(times_from_start) + len(times_till_end)
+		if end_pos_is_in_closing_window(end_pos, restaurant_closing_time_pos) {
+			// If it's in the closing time window, get the last possible time which is 45 minutes before closing.
+			end_pos = restaurant_closing_time_pos - 3
+		}
+		if end_pos < start_pos {
+			times_till_end := all_reservation_times[start_pos:]
+			/*
+			*	TODO: FIX: This panics with slice bounds out of range [:-3] with
+			*	current_time := "0000"
+			*	end_time := "0300"
+			*	closing_time := "01:15"
+			 */
+			times_from_start := all_reservation_times[:end_pos+1]
 
-		times_in_between := make([]string, 0, space_to_allocate)
+			space_to_allocate := len(times_from_start) + len(times_till_end)
 
-		times_in_between = append(times_in_between, times_from_start...)
-		times_in_between = append(times_in_between, times_till_end...)
+			times_in_between := make([]string, 0, space_to_allocate)
 
-		return times_in_between, nil
+			times_in_between = append(times_in_between, times_from_start...)
+			times_in_between = append(times_in_between, times_till_end...)
+
+			return times_in_between, nil
+		}
 	}
 
 	times_in_between := all_reservation_times[start_pos:end_pos]
