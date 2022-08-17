@@ -37,7 +37,7 @@ func get_all_possible_reservation_times() [96]string {
 
 // Binary search algorithm that returns the index of an element in array or -1 if none found.
 // In all cases it should find something if we have done the conversion correctly before function call.
-func binary_search(a [96]string, x string) int {
+func binary_search[R [96]string | []string](a R, x string) int {
 	r := -1 // not found
 	start := 0
 	end := len(a) - 1
@@ -138,6 +138,8 @@ func time_slots_in_between(start string, end string) ([]string, error) {
 	if start_pos == -1 || end_pos == -1 {
 		return nil, errors.New("could not find the corresponding indices from time slot array")
 	}
+
+	// TODO: handle get_last_possible_time_slot_before_closing here instead.
 
 	/*
 		Handle the case where end_pos is E.g. 23:49 and therefore converts to 0000, goes back to index 0
