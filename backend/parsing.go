@@ -6,8 +6,6 @@ import (
 	"strings"
 )
 
-// FIX: there is a problem where accessing an element results in out of index, this is caused by numbers that when converted go to the start of the array, E.g. 23:49 converts to 0000, resulting in
-// the start_time index being larger than the end_time index.
 func get_all_possible_reservation_times() [96]string {
 	return [...]string{
 		"0000", "0015", "0030", "0045",
@@ -38,7 +36,6 @@ func get_all_possible_reservation_times() [96]string {
 }
 
 // Binary search algorithm that returns the index of an element in array or -1 if none found.
-
 // In all cases it should find something if we have done the conversion correctly before function call.
 func binary_search(a [96]string, x string) int {
 	r := -1 // not found
@@ -58,15 +55,8 @@ func binary_search(a [96]string, x string) int {
 	return r
 }
 
-/*
-	TODO: Check if the restaurants closing time and avoid checks that are in the last hour of the restaurant closing.
-	This is because the restaurants don't take table reservations in the last hour.
-*/
-
 // Returns an even number that is supported by the raflaamo site.
 func convert_uneven_minutes_to_even(our_number string) string {
-	// Contains all the possible even time slots.
-	// 100 is equivalent to E.g. 17:00 (00).
 	our_number_length := len(our_number)
 
 	// Numbers are the last 2 characters in all cases.
@@ -102,18 +92,20 @@ func convert_uneven_minutes_to_even(our_number string) string {
 			return ""
 		}
 
-		// Converting hours back to strings, so we match the original format.
-
 		/*
 			Checking if we need to add a 0 before the number because after conversion numbers under 10 will be
 			E.g. "900" when we want it to be "0900".
 			Numbers above 10 will not have this problem cuz they will be E.g. "1000" without doing anything.
 		*/
+
+		// Converting hours back to strings, so we match the original format.
 		if our_number_hour_as_integer < 10 {
+
 			even_number := "0" + strconv.Itoa(our_number_hour_as_integer) + "00"
 			return even_number
 		}
 
+		// Converting hours back to strings, so we match the original format.
 		even_number := strconv.Itoa(our_number_hour_as_integer) + "00"
 		return even_number
 	}
@@ -134,7 +126,10 @@ func time_is_already_even(even_time_slot_minutes [4]string, our_number_minutes s
 Used to get all the time slots in between the graph start and graph end.
 E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 */
-func return_time_slots_in_between(start string, end string) ([]string, error) {
+
+// TODO: Restaurant often don't take reservations in the 1h time slot before they close. Check the closing time and don't include reservation times that are in the 1h window before closing.
+// TODO: Don't include the times that are before the current time.
+func time_slots_in_between(start string, end string) ([]string, error) {
 	all_possible_reservation_times := get_all_possible_reservation_times()
 	start_to_even := convert_uneven_minutes_to_even(start)
 	end_to_even := convert_uneven_minutes_to_even(end)

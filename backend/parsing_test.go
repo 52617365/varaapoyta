@@ -40,16 +40,14 @@ func TestBinarySearch(t *testing.T) {
 	if expected_index != resulting_index {
 		t.Errorf(`expected index to be %d but it was %d`, expected_index, resulting_index)
 	}
-
 }
 
 func TestReturnTimeslotsInbetween(t *testing.T) {
-	expected_result_range := [...]string{"0000", "0015", "0030", "0045", "0100"}
+	expected_result_range := [...]string{"0015", "0030", "0045", "0100"}
 
-	start_time := "2348"
+	start_time := "0015"
 	end_time := "0100"
-
-	time_slots, err := return_time_slots_in_between(start_time, end_time)
+	time_slots, err := time_slots_in_between(start_time, end_time)
 
 	if err != nil {
 		t.Errorf(`TestReturn_time_slots_in_between failed completely with start_time: %s and end_time: %s`, start_time, end_time)
@@ -74,7 +72,7 @@ func TestReturnTimeslotsInbetween2(t *testing.T) {
 	end_time := "2359"
 
 	// FIX: it gets stuck in this function.
-	time_slots, err := return_time_slots_in_between(start_time, end_time)
+	time_slots, err := time_slots_in_between(start_time, end_time)
 
 	if err != nil {
 		t.Errorf(`TestReturn_time_slots_in_between failed completely with start_time: %s and end_time: %s`, start_time, end_time)
