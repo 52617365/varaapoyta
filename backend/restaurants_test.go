@@ -7,7 +7,8 @@ import (
 
 // TestGetRestaurants We expect response to be len(470).
 func TestGetRestaurants(t *testing.T) {
-	restaurants := getAllRestaurantsFromRaflaamoApi()
+	t.Parallel()
+	restaurants := get_all_restaurants_from_raflaamo_api()
 
 	restaurants_length := len(restaurants)
 	if restaurants_length < 10 {
@@ -19,6 +20,7 @@ func TestGetRestaurants(t *testing.T) {
 // Honestly, I don't know a better way to test this function.
 // maybe test the individual functions that this function uses?
 func TestGetAvailableTables(t *testing.T) {
+	t.Parallel()
 	amount_of_eaters := 1
 	city := "Rovaniemi"
 	restaurants, _ := filter_restaurants_from_city(city)
@@ -32,6 +34,7 @@ func TestGetAvailableTables(t *testing.T) {
 
 // reservation_page_url := restaurant.Links.TableReservationLocalized.Fi_FI
 func TestGetIdFromReservationPageUrl(t *testing.T) {
+	t.Parallel()
 	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
 	restaurant_url := "https://s-varaukset.fi/online/reservation/fi/38?_ga=2.146560948.1092747230.1612503015-489168449.1604043706"
 
@@ -57,6 +60,7 @@ func TestGetIdFromReservationPageUrl(t *testing.T) {
 	}
 }
 func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
+	t.Parallel()
 	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
 	restaurant_url := "sitethatshouldnotwork.fi"
 
@@ -78,6 +82,6 @@ func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
 }
 func BenchmarkGetRestaurants(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		getAllRestaurantsFromRaflaamoApi()
+		get_all_restaurants_from_raflaamo_api()
 	}
 }

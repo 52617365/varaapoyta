@@ -1,58 +1,18 @@
 package main
 
 import (
-	"bytes"
 	"errors"
-	"fmt"
-	"log"
-	"net/http"
 	"regexp"
 	"strings"
 )
 
-// Contains the restaurant information and on top of that, all available times you can reserve a table from that restaurant.
-type restaurant_with_available_times_struct struct {
-	restaurant           response_fields
-	available_time_slots []string
-}
-
-// getAllRestaurantsFromRaflaamoApi sends request to raflaamo API and gets all the possible restaurants from all cities from there.
-func getAllRestaurantsFromRaflaamoApi() []response_fields {
-	data := []byte(`{"operationName":"getRestaurantsByLocation","variables":{"first":1000,"input":{"restaurantType":"ALL","locationName":"Helsinki","feature":{"rentableVenues":false}},"after":"eyJmIjowLCJnIjp7ImEiOjYwLjE3MTE2LCJvIjoyNC45MzI1OH19"},"query":"fragment Locales on LocalizedString {fi_FI }fragment Restaurant on Restaurant {  id  name {    ...Locales    }  urlPath {    ...Locales     }    address {    municipality {      ...Locales       }        street {      ...Locales       }       zipCode     }    features {    accessible     }  openingTime {    restaurantTime {      ranges {        start        end             }             }    kitchenTime {      ranges {        start        end        endNextDay              }             }    }  links {    tableReservationLocalized {      ...Locales        }    homepageLocalized {      ...Locales          }   }     }query getRestaurantsByLocation($first: Int, $after: String, $input: ListRestaurantsByLocationInput!) {  listRestaurantsByLocation(first: $first, after: $after, input: $input) {    totalCount      edges {      ...Restaurant        }     }}"}`)
-
-	r, err := http.NewRequest("POST", "https://api.raflaamo.fi/query", bytes.NewBuffer(data))
-	r.Header.Add("Content-Type", "application/json")
-	r.Header.Add("client_id", "jNAWMvWD9rp637RaR")
-	r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	client := &http.Client{}
-	res, err := client.Do(r)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	decoded := deserialize_response(&res)
-	defer res.Body.Close()
-
-	// Returning the start of the data, this will be an array.
-	return decoded.Data.ListRestaurantsByLocation.Edges
-}
-
 // TODO: use goroutines for requests
 func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []restaurant_with_available_times_struct {
 	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex101.com/r/NtFMrz/1
-	current_date := get_current_date()
-	current_time, err := get_current_time()
 
-	if err != nil {
-		return nil
-	}
+	current_date := get_current_date_and_time()
 
-	var all_possible_time_slots = get_all_time_windows(current_time)
+	all_possible_time_slots := get_all_time_windows(current_date.time)
 
 	// There can be maximum of restaurants * all_possible_time_slots, so we allocate the worst case scenario here to avoid reallocation's.
 	total_memory_to_reserve_for_all_restaurant_time_slots := len(restaurants) * len(all_possible_time_slots)
@@ -75,7 +35,7 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 
 		// Iterating over all possible time slots (0200, 0800, 1400, 2000) to cover the whole 24h window (each time slot covers a 6h window.)
 		for _, time_slot := range all_possible_time_slots {
-			time_slots_from_graph_api, err := get_time_slots_from_graph_api(id_from_reservation_page_url, current_date, time_slot.time, amount_of_eaters)
+			time_slots_from_graph_api, err := get_time_slots_from_graph_api(id_from_reservation_page_url, current_date.date, time_slot.time, amount_of_eaters)
 			if err != nil {
 				continue
 			}
@@ -87,13 +47,14 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 			// @Maybe some error checking here IDK?, think about it
 			restaurant_closing_time := restaurant.Openingtime.Restauranttime.Ranges[0].End
 
-			time_slots_in_between_unix_timestamps, err := time_slots_in_between(current_time, unix_timestamp_struct_of_available_table.end_time, restaurant_closing_time)
+			all_reservation_times := get_all_reservation_times(restaurant_closing_time) // in reality, it's not all because we need to consider restaurants closing time.
+			time_slots_in_between, err := time_slots_in_between(current_date.time, unix_timestamp_struct_of_available_table.time_window_end, all_reservation_times)
 
 			if err != nil {
 				continue
 			}
 
-			single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time_slots_in_between_unix_timestamps...)
+			single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time_slots_in_between...)
 		}
 		// Here after iterating over all time slots for the restaurant, we store the results.
 		all_restaurants_with_available_times = append(all_restaurants_with_available_times, single_restaurant_with_available_times)
@@ -107,7 +68,6 @@ func get_id_from_reservation_page_url(restaurant response_fields, re *regexp.Reg
 	if restaurant_does_not_contain_reservation_page(restaurant) {
 		return "", errors.New("restaurant did not contain reservation page url")
 	}
-	// There are some weird magic strings that will make regex fail so check that it's the link we're interested in.
 	if reservation_page_url_is_not_valid(reservation_page_url) {
 		return "", errors.New("reservation_page_url_is_not_valid")
 	}
@@ -118,43 +78,6 @@ func get_id_from_reservation_page_url(restaurant response_fields, re *regexp.Reg
 		return "", errors.New("regex did not match anything, something wrong with reservation_page_url")
 	}
 	return id_from_reservation_page_url, nil
-}
-
-// Gets timeslots from raflaamo API that is responsible for returning graph data.
-// Instead of drawing a graph with it, we convert it into time to determine which table is open or not.
-
-func get_time_slots_from_graph_api(id_from_reservation_page_url string, current_date string, time_slot string, amount_of_eaters int) (*parsed_graph_data, error) {
-
-	// https://s-varaukset.fi/api/recommendations/slot/{id}/{date}/{time}/{amount_of_eaters}
-	request_url := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", id_from_reservation_page_url, current_date, time_slot, amount_of_eaters)
-
-	r, err := http.NewRequest("GET", request_url, nil)
-
-	if err != nil {
-		return nil, errors.New("error constructing get request")
-	}
-	r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
-
-	client := &http.Client{}
-	res, err := client.Do(r)
-
-	// Will throw if we call deserialize_graph_response with a status code other than 200 so we handle it here.
-	if err != nil || res.StatusCode != 200 {
-		return nil, errors.New("error sending get request")
-	}
-
-	deserialized_graph_data := deserialize_graph_response(&res)
-
-	// most likely won't jump into this branch but check regardless.
-	if deserialized_graph_data == nil {
-		return nil, errors.New("there was an error deserializing the data returned from endpoint")
-	}
-
-	if time_slot_does_not_contain_open_tables(deserialized_graph_data) {
-		return nil, errors.New("time slot did not contain open tables")
-	}
-
-	return deserialized_graph_data, nil
 }
 
 // Checks to see if reservation_page_url contains the correct url, sometimes the url is something related to renting a table

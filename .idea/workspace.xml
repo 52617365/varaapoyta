@@ -4,95 +4,28 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8bbaa836-96d5-4612-93bb-71848b2106a9" name="Changes" comment="Project refactor">
-      <change afterPath="$PROJECT_DIR$/.idea/webResources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/.idea/go.imports.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/profiling/speed.PNG" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/request.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/temp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.eslintrc.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.idea/dictionaries/rase.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.idea/git_toolbox_prj.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.idea/varaapoyta.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/components/Button.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/components/Checkbox.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/components/Dropdown.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/components/FadeInText.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/components/NavBar.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/components/SaveButton.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/components/SiteFooter.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/components/SiteHead.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/components/SpiceLevel.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/next-env.d.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/next.config.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/pages/2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/pages/_app.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/pages/api/hello.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/pages/asetukset.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/pages/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/pages/varaa.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/postcss.config.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/public/favicon.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/public/pictures/github.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/public/pictures/gmail.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/public/pictures/outlook.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/public/vercel.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/styles/Home.module.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/styles/globals.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/tailwind.config.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/tsconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requests.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.eslintrc.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/rase.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/varaapoyta.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/varaapoyta.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+    <list default="true" id="8bbaa836-96d5-4612-93bb-71848b2106a9" name="Changes" comment="added check to parsing.go to see if closing hours exists in time slot array.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/deserialize.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/deserialize_graph.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/getrequesttogetseats.http" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/parsing.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/parsing.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/parsing_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/parsing_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Button.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Checkbox.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Dropdown.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/FadeInText.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/NavBar.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/SaveButton.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/SiteFooter.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/SiteHead.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/SpiceLevel.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/next-env.d.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/next.config.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/_app.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/api/hello.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/asetukset.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/index.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/varaa.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/postcss.config.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/favicon.ico" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/pictures/github.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/pictures/gmail.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/pictures/outlook.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/vercel.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/Home.module.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/globals.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/raflaamo.http" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/raflaamo_modified.http" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/raflaamo_test.http" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/request.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/requestpics/modified_response.PNG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/requestpics/modified_response.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/requestpics/original_response.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/requestpics/original_response_size.PNG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/requests.http" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/restaurants.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/restaurants.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/restaurants_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/restaurants_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/temp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/time.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/time.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/time_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/time_test.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,8 +37,8 @@
       <list>
         <option value="TypeScript JSX File" />
         <option value="Go File" />
-        <option value="HTTP Request" />
         <option value="HTTP Public Environment File" />
+        <option value="HTTP Request" />
       </list>
     </option>
     <option name="SCHEME" value="Project" />
@@ -160,9 +93,13 @@
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="true" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/sdk/go1.19rc2/src/runtime/panic.go" root0="SKIP_INSPECTION" />
+  </component>
   <component name="HttpClientSelectedEnvironments">
     <file url="jar://$APPLICATION_HOME_DIR$/plugins/restClient/lib/restClient.jar!/com/intellij/ws/rest/client/requests/collection/post-requests.http" environment="test" />
     <file url="file://$USER_HOME$/AppData/Local/Temp/whats-new.http.http" environment="test" />
+    <file url="jar://$APPLICATION_HOME_DIR$/plugins/restClient/lib/restClient.jar!/com/intellij/ws/rest/client/requests/collection/get-requests.http" environment="test" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -195,12 +132,12 @@
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
     "js.buildTools.grunt.grunt-cli.package": "",
-    "last_opened_file_path": "C:/Users/rase/dev/varaapoyta/backend",
+    "last_opened_file_path": "C:/Users/rase/dev/gotest",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "inlay.hints",
+    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.Color Scheme Font",
     "ts.external.directory.path": "C:\\Users\\rase\\dev\\varaapoyta\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
@@ -212,7 +149,7 @@
       <recent name="C:\Users\rase\dev\varaapoyta\pages" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestGetAllPossibleTimes in parsing_test.go (1)">
+  <component name="RunManager" selected="Go Test.go test backend">
     <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="varaapoyta" />
       <working_directory value="$PROJECT_DIR$/backend" />
@@ -221,42 +158,35 @@
       <filePath value="$PROJECT_DIR$/backend" />
       <method v="2" />
     </configuration>
-    <configuration name="TestGetAllPossibleTimes in parsing_test.go (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="go build backend/" type="GoApplicationRunConfiguration" factoryName="Go Application" singleton="false" nameIsGenerated="true">
       <module name="varaapoyta" />
       <working_directory value="$PROJECT_DIR$/backend" />
       <kind value="DIRECTORY" />
       <directory value="$PROJECT_DIR$/backend" />
-      <filePath value="$PROJECT_DIR$/backend/parsing_test.go" />
-      <framework value="gotest" />
-      <pattern value="^\QTestGetAllPossibleTimes\E$" />
+      <filePath value="$PROJECT_DIR$/backend" />
       <method v="2" />
     </configuration>
-    <configuration name="TestGetRestaurantsFromCity in backend" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="go build backend/" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="varaapoyta" />
       <working_directory value="$PROJECT_DIR$/backend" />
       <kind value="DIRECTORY" />
       <directory value="$PROJECT_DIR$/backend" />
-      <filePath value="$PROJECT_DIR$/backend/parsing_test.go" />
-      <framework value="gotest" />
-      <pattern value="^\QTestGetRestaurantsFromCity\E$" />
+      <filePath value="$PROJECT_DIR$/backend/main.go" />
       <method v="2" />
     </configuration>
-    <configuration name="go test backend" type="GoTestRunConfiguration" factoryName="Go Test" nameIsGenerated="true">
-      <module name="varaapoyta" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="DIRECTORY" />
-      <directory value="$PROJECT_DIR$/backend" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
-      <method v="2" />
-    </configuration>
-    <configuration name="parsing_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="go test backend" type="GoTestRunConfiguration" factoryName="Go Test" singleton="false" nameIsGenerated="true">
       <module name="varaapoyta" />
       <working_directory value="$PROJECT_DIR$/backend" />
       <kind value="DIRECTORY" />
       <directory value="$PROJECT_DIR$/backend" />
-      <filePath value="$PROJECT_DIR$/backend/parsing_test.go" />
+      <filePath value="$PROJECT_DIR$/backend" />
       <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <configuration name="getrequesttogetseats | #2" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/backend/getrequesttogetseats.http" index="2" requestIdentifier="#2" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="raflaamo_modified | #1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/backend/raflaamo_modified.http" requestIdentifier="#1" runType="Run single request">
       <method v="2" />
     </configuration>
     <configuration default="true" type="js.build_tools.grunt">
@@ -265,18 +195,15 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Go Test.TestGetAllPossibleTimes in parsing_test.go" />
+      <item itemvalue="Go Build.go build backend/" />
       <item itemvalue="Go Test.go test backend" />
-      <item itemvalue="Go Test.TestGetAllPossibleTimes in parsing_test.go (1)" />
-      <item itemvalue="Go Test.TestGetRestaurantsFromCity in backend" />
-      <item itemvalue="Go Test.parsing_test.go" />
+      <item itemvalue="HTTP Request.getrequesttogetseats | #2" />
+      <item itemvalue="HTTP Request.raflaamo_modified | #1" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Test.TestGetAllPossibleTimes in parsing_test.go (1)" />
-        <item itemvalue="Go Test.TestGetAllPossibleTimes in parsing_test.go" />
-        <item itemvalue="Go Test.parsing_test.go" />
-        <item itemvalue="Go Test.TestGetRestaurantsFromCity in backend" />
+        <item itemvalue="HTTP Request.raflaamo_modified | #1" />
+        <item itemvalue="HTTP Request.getrequesttogetseats | #2" />
       </list>
     </recent_temporary>
   </component>
@@ -685,32 +612,32 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Lisasin ihan vitunmoisen purkka hackermen ratkaisun poistamaan duplikaatit local storagesta :DDDDDDDDDDDDDD koska en halunnut lopettaa arrayn kayttamista statessa, koska olisi pitanyt kirjottaa liikaa koodia uudestaan joten en voinut kayttaa objectia, jossa olisi ollut vain unique keys." />
-    <MESSAGE value="Aloitus naytossa on nyt kans sitten buttonit asetuksiin ja varaamaan." />
-    <MESSAGE value="new todo added for dropboxes." />
-    <MESSAGE value="Nyt ei tule duplikaatteja enaan kun latailee sivuja, mutta viela pitaisi saada checkboxeihin checkit nakyviin." />
-    <MESSAGE value="Boxit ovat nyt checkatut silloin, kun sivu reloadataan, mutta local storagesta poistamisessa on jokin ongelma." />
-    <MESSAGE value="Commit before I rewrite this whole shit." />
-    <MESSAGE value="vitusti todo:ita." />
-    <MESSAGE value="Frontend, backend koodit." />
-    <MESSAGE value="Refactored stuff into their own files." />
-    <MESSAGE value="Removed useless buttons states from buttons that didn't need it." />
-    <MESSAGE value="Started making the fetching on the front-end, currently having problems with it because apparently some headers or something are not correct." />
-    <MESSAGE value="Started the decoding process of the response json from raflaamo api." />
-    <MESSAGE value="Ok request stopped working, investigate tomorrow or something." />
-    <MESSAGE value="Added own files for deserializing and serializing." />
-    <MESSAGE value="Fixed post request to include client_id." />
-    <MESSAGE value="Renamed some fields to match the response, so it's easier to find what we want once we index into decoded response map" />
-    <MESSAGE value="TODO: make post request payload work, we made it return 200 instead of 40x, but now we want the right result." />
-    <MESSAGE value="Post request now works. Thankfully.&#10;&#10;Replaced the weird serialization overengineered solution with just a plain string literal xD" />
-    <MESSAGE value="Deserialization of response seems to work now." />
-    <MESSAGE value="Deserialization works with printing too now." />
-    <MESSAGE value="Added function that gets all restaurants from a certain city." />
-    <MESSAGE value="We're now capturing the correct restaurants that we need." />
-    <MESSAGE value="Added a lot of unit tests to confirm everything works now and in the future." />
-    <MESSAGE value="deleted useless field from query xd -10k bytes" />
-    <MESSAGE value="Project refactor" />
-    <option name="LAST_COMMIT_MESSAGE" value="Project refactor" />
+    <MESSAGE value="    Tests are passing - Ditched the idea of storing times in reverse order, also ditched idea of reverse binary search.&#10;&#10;     It was too complicated for absolutely zero benefit, was a mis calculation by me." />
+    <MESSAGE value="    Deleted dead commented code from restaurants.go" />
+    <MESSAGE value="    Updated TODO's in main.go" />
+    <MESSAGE value="    Merged contains function into time_is_already_even and added better comments." />
+    <MESSAGE value="    Started making get_time_slots_from_current_point_forward &#10;    &#10;    The function gets all the time windows we need to check to avoid checking redundant time windows from the past." />
+    <MESSAGE value="    get_current_time now gets and formats current time correctly." />
+    <MESSAGE value="    Refactored get_time_slots_from_current_point_forward to time.go&#10;    &#10;    IMO it fitted there instead of in restaurants.go which is already hella big." />
+    <MESSAGE value="refactored parsing to use str8 strings instead of magical indices when matching time minutes." />
+    <MESSAGE value="We can now get the time windows from current time forward&#10;&#10;- Added a function that gets all the time windows from current time forward. This is a thing because we don't want to test time windows from the past.&#10; - time_slots are now represented as a struct which contains the time and the time window the time covers (-2 and +4 from the time)." />
+    <MESSAGE value="changed getAvailableTables to test only necessary time windows.&#10;&#10;This is done by using our new function, get_all_time_windows()&#10;which filters the time windows from the past." />
+    <MESSAGE value="Test for get_time_slots_from_current_point_forward" />
+    <MESSAGE value="Deleted the formatting check in get_current_time&#10;&#10;Deleted because I thought golang time.Now() would return &quot;9:00&quot; instead of &quot;09:00&quot; but apparently it returns &quot;09:00&quot; which means we can treat all the times the same, whereas it did not use to be like this, &quot;9:00&quot; vs &quot;10:00&quot;, (len 4 and 5)" />
+    <MESSAGE value="Modified our time_tests to be simpler." />
+    <MESSAGE value="Added some comments to parsing.go" />
+    <MESSAGE value="Changed code to only get time slots from current time forward.&#10;&#10;This is done to avoid redundant time slots which were open but were in the past." />
+    <MESSAGE value="Deserialize.go now deserialized the time range into Start and End." />
+    <MESSAGE value="Changed parsing check from loop to branches." />
+    <MESSAGE value="Binary search is now generic. It will accept an array and a slice." />
+    <MESSAGE value="restaurant test now has proper dummy data, fix: make the last test work from time_test.go next." />
+    <MESSAGE value="restaurant test now has proper dummy data, fix: make the last test work next." />
+    <MESSAGE value="We now handle the restaurant closing time inside time_slots_in_between because it was smarter that way." />
+    <MESSAGE value="everything uses new time_slots_in_between function prologue now." />
+    <MESSAGE value="Tests passing." />
+    <MESSAGE value="Deleted dead code." />
+    <MESSAGE value="added check to parsing.go to see if closing hours exists in time slot array." />
+    <option name="LAST_COMMIT_MESSAGE" value="added check to parsing.go to see if closing hours exists in time slot array." />
   </component>
   <component name="VgoProject">
     <integration-enabled>false</integration-enabled>
@@ -719,14 +646,35 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+        <line-breakpoint type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/backend/restaurants.go</url>
-          <line>7</line>
-          <option name="timeStamp" value="1" />
+          <line>12</line>
+          <option name="timeStamp" value="157" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/backend/restaurants.go</url>
+          <line>17</line>
+          <option name="timeStamp" value="158" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/backend/main.go</url>
+          <line>13</line>
+          <option name="timeStamp" value="172" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/backend/main.go</url>
+          <line>16</line>
+          <option name="timeStamp" value="173" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <watches-manager>
+      <configuration name="GoApplicationRunConfiguration">
+        <watch expression="single_restaurant_with_available_times" language="go" />
+        <watch expression="*(*&quot;main.response_fields&quot;)(824638013440)" />
+        <watch expression="start_pos" />
+        <watch expression="index_to_stop_on" />
+      </configuration>
       <configuration name="JavascriptDebugType">
         <watch expression="ravintola_lista" language="TypeScript JSX" />
         <watch expression="kaupunki_lista" />
