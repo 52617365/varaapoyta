@@ -11,7 +11,7 @@ import (
 func main() {
 	current_time := "2359"
 	end_time := "0259"
-	closing_time := "01:15"
+	closing_time := "01:30"
 
 	// all reservation_times works as intended.
 	all_reservation_times := get_all_reservation_times(closing_time)
