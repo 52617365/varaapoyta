@@ -71,7 +71,7 @@ func convert_uneven_minutes_to_even(our_number string) string {
 
 		// Converting hours back to strings, so we match the original format.
 		if our_number_hour_as_integer < 10 {
-
+			our_number_hour_as_integer++
 			even_number := "0" + strconv.Itoa(our_number_hour_as_integer) + "00"
 			return even_number
 		}

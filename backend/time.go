@@ -8,22 +8,25 @@ import (
 	"time"
 )
 
+// error in this function, 87300 returns "0001" when it should return "00:15"
 func get_string_time_from_unix(unix_time int64) string {
 	time_regex, _ := regexp.Compile(`\d{2}:\d{2}`)
 
 	// Adding 10800000(ms) to the time to match utc +2 or +3 (finnish time) (10800000 ms corresponds to 3h)
-	raw_string := time.UnixMilli(unix_time).String()
+	raw_string := time.Unix(unix_time, 0).UTC().String()
 
 	get_time_from_string := time_regex.FindString(raw_string)
 	get_time_from_string = strings.Replace(get_time_from_string, ":", "", -1)
 	return get_time_from_string
 }
 func get_unix_from_time(hour int, minutes int) int64 {
+	// if hour is 0-8 it sets day to 2
 	if hour < 8 {
 		t := time.Date(1970, time.January, 2, hour, minutes, 00, 0, time.UTC)
 		return t.Unix()
 	}
-	if hour > 8 {
+	// if hour is 8-23 it sets day to 1
+	if hour >= 8 {
 		t := time.Date(1970, time.January, 1, hour, minutes, 00, 0, time.UTC)
 		return t.Unix()
 	}
@@ -32,13 +35,12 @@ func get_unix_from_time(hour int, minutes int) int64 {
 
 // Returns all reservation times taking into consideration the restaurants closing time.
 // This matters because the restaurants don't take reservations 45 minutes before closing.
-// TODO: Convert these to unix timestamps.
-func get_all_reservation_times(restaurant_closing_time string) []string {
+func get_all_reservation_times(restaurant_closing_time string) []int64 {
 	all_times := populate_all_times()
 
 	// last 2 letters.
 	mins := restaurant_closing_time[len(restaurant_closing_time)-2:]
-	hours := restaurant_closing_time[:len(restaurant_closing_time)-2]
+	hours := restaurant_closing_time[:len(restaurant_closing_time)-3]
 
 	mins_int, err := strconv.Atoi(mins)
 	if err != nil {
@@ -55,13 +57,10 @@ func get_all_reservation_times(restaurant_closing_time string) []string {
 
 	restaurant_closing_time_to_unix := get_unix_from_time(hour_int, mins_int)
 
-	captured_times := make([]string, 0, len(all_times))
-	// if restaurant_closing_time - 45 minutes in unix (2 700) is larger than current then capture.
-	for _, time := range all_times {
-		if unix_time_in_not_in_closing_time_slot(restaurant_closing_time_to_unix, time) {
-			// TODO: Woohoo valid time, convert to string so we don't break the whole program.
-			string_time := get_string_time_from_unix(time)
-			captured_times = append(captured_times, string_time)
+	captured_times := make([]int64, 0, len(all_times))
+	for _, individual_time := range all_times {
+		if unix_time_in_not_in_closing_time_slot(restaurant_closing_time_to_unix, individual_time) {
+			captured_times = append(captured_times, individual_time)
 		}
 	}
 	return captured_times
@@ -69,8 +68,8 @@ func get_all_reservation_times(restaurant_closing_time string) []string {
 
 // Check to see if the unix timestamp provided is in the time zone where you can't reserve tables (45 minutes before closing) aka 2700 in unix.
 func unix_time_in_not_in_closing_time_slot(restaurant_closing_time_to_unix int64, unix_time int64) bool {
-	var forty_five_minutes int64 = 2700
-	return restaurant_closing_time_to_unix-forty_five_minutes > unix_time
+	const forty_five_minutes int64 = 2700
+	return restaurant_closing_time_to_unix-forty_five_minutes >= unix_time
 }
 
 func populate_all_times() []int64 {
@@ -166,39 +165,67 @@ func get_time_slots_from_current_point_forward(all_possible_time_slots [4]covere
 Used to get all the time slots in between the graph start and graph end.
 E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 */
-func time_slots_in_between(start_time string, end_time string, reservation_times []string) ([]string, error) {
+// this throws for some reason.
+// TODO: just compare timestamps instead of doing hacky binary search solution.
+func time_slots_in_between(start_time string, end_time string, reservation_times []int64) ([]string, error) {
 	start_time = convert_uneven_minutes_to_even(start_time)
-
 	end_time = convert_uneven_minutes_to_even(end_time)
 
 	if start_time == "" || end_time == "" {
 		return nil, errors.New("error converting uneven minutes to even minutes")
 	}
 
-	start_pos := binary_search(reservation_times, start_time)
-	end_pos := binary_search(reservation_times, end_time)
-	// TODO: handle if end_pos is bigger than len(reservation_times).
+	start_time_minutes, err := strconv.Atoi(start_time[len(start_time)-2:])
+	if err != nil {
+		return nil, errors.New("error converting start time minutes to int")
+	}
+	start_time_hours, err := strconv.Atoi(start_time[:len(start_time)-2])
+	if err != nil {
+		return nil, errors.New("error converting start time hours to int")
+	}
+	end_time_minutes, err := strconv.Atoi(end_time[len(end_time)-2:])
+	if err != nil {
+		return nil, errors.New("error converting end time minutes to int")
+	}
+	end_time_hours, err := strconv.Atoi(end_time[:len(end_time)-2])
+	if err != nil {
+		return nil, errors.New("error converting end time hours to int")
+	}
+
+	start_time_unix := get_unix_from_time(start_time_hours, start_time_minutes)
+	end_time_unix := get_unix_from_time(end_time_hours, end_time_minutes)
+
+	var times_we_want []string
+	for _, reservation_time := range reservation_times {
+		if reservation_time > start_time_unix && reservation_time <= end_time_unix {
+			times_we_want = append(times_we_want, get_string_time_from_unix(reservation_time))
+		}
+	}
+
+	return times_we_want, nil
+
+	// start_pos := binary_search(reservation_times, start_time)
+	// end_pos := binary_search(reservation_times, end_time)
 	// this means that closing time of restaurant was before the end_time.
 	// assign end_time to the last index of reservation times if end_pos is larger than len of reservation times.
 
-	if start_pos == -1 || end_pos == -1 {
-		return nil, errors.New("could not find the corresponding indices from time slot array")
-	}
+	// if start_pos == -1 || end_pos == -1 {
+	// 	return nil, errors.New("could not find the corresponding indices from time slot array")
+	// }
 
-	if end_pos < start_pos {
-		times_till_end := reservation_times[start_pos:]
-		times_from_start := reservation_times[:end_pos+1]
+	// if end_pos < start_pos {
+	// 	times_till_end := reservation_times[start_pos:]
+	// 	times_from_start := reservation_times[:end_pos+1]
 
-		space_to_allocate := len(times_from_start) + len(times_till_end)
+	// 	space_to_allocate := len(times_from_start) + len(times_till_end)
 
-		times_in_between := make([]string, 0, space_to_allocate)
+	// 	times_in_between := make([]string, 0, space_to_allocate)
 
-		times_in_between = append(times_in_between, times_from_start...)
-		times_in_between = append(times_in_between, times_till_end...)
+	// 	times_in_between = append(times_in_between, times_from_start...)
+	// 	times_in_between = append(times_in_between, times_till_end...)
 
-		return times_in_between, nil
-	}
+	// 	return times_in_between, nil
+	// }
 
-	times_in_between := reservation_times[start_pos:end_pos]
-	return times_in_between, nil
+	// times_in_between := reservation_times[start_pos:end_pos]
 }

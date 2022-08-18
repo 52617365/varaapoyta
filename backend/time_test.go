@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -37,10 +38,10 @@ func TestTimeSlotsFromCurrentPointForward(t *testing.T) {
 
 func TestReturnTimeslotsInbetween(t *testing.T) {
 	t.Parallel()
-	expected_result_range := [...]string{"0015", "0030", "0045", "0100", "0115"}
+	expected_result_range := [...]string{"0015", "0030", "0045", "0100"}
 
 	start_time := "0015"
-	end_time := "0200"
+	end_time := "0100"
 	closing_time := "0200"
 
 	all_available_time_slots := get_all_reservation_times(closing_time)
@@ -51,7 +52,7 @@ func TestReturnTimeslotsInbetween(t *testing.T) {
 		t.Errorf(`TestReturn_time_slots_in_between failed completely with start_time: %s and end_time: %s`, start_time, end_time)
 	}
 
-	for index, _ := range time_slots {
+	for index := range time_slots {
 		if time_slots[index] != expected_result_range[index] {
 			t.Errorf(`expected time slot to be %s but it was %s`, time_slots[index], expected_result_range[index])
 		}
@@ -78,13 +79,19 @@ func TestConvert_uneven_minutes_to_even(t *testing.T) {
 		t.Fatalf(`expected even number to be %s but it was %s`, expected_even_number2, even_number2)
 	}
 }
+
+// doesnt pass
 func TestGetAllReservationTimes(t *testing.T) {
 	times := get_all_reservation_times("2300")
-
+	for _, time := range times {
+		fmt.Println(time)
+	}
 	if len(times) != 96 {
 		t.Fatalf(`expected len to be %d but it was %d`, 96, len(times))
 	}
 }
+
+// doesnt pass
 func TestReturnTimeslotsInbetween2(t *testing.T) {
 	t.Parallel()
 	expected_result_range := [...]string{"0000", "0015", "0030", "1800", "1815", "1830", "1845",
@@ -97,7 +104,6 @@ func TestReturnTimeslotsInbetween2(t *testing.T) {
 
 	start_time := "1800"
 	end_time := "0100"
-	// empty cuz its not relevant to this test.
 	closing_time := "0115" // last time is therefore 0030
 	all_available_time_slots := get_all_reservation_times(closing_time)
 
@@ -107,7 +113,7 @@ func TestReturnTimeslotsInbetween2(t *testing.T) {
 		t.Errorf(`TestReturn_time_slots_in_between failed completely with start_time: %s and end_time: %s`, start_time, end_time)
 	}
 
-	for index, _ := range time_slots {
+	for index := range time_slots {
 		if time_slots[index] != expected_result_range[index] {
 			t.Errorf(`expected time slot to be %s but it was %s`, time_slots[index], expected_result_range[index])
 		}
