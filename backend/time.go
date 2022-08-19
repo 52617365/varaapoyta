@@ -259,9 +259,10 @@ func get_time_slots_from_current_point_forward(current_time string) []covered_ti
 		{time: "1400", time_window_start: "1200", time_window_end: "1800"},
 		{time: "2000", time_window_start: "1800", time_window_end: "0000"},
 	}
-	for time_slot_index, time_slot := range all_possible_time_slots {
+	time_slots_we_want := make([]covered_times, 0, len(all_possible_time_slots))
+	for _, time_slot := range all_possible_time_slots {
 		if current_time < time_slot.time_window_end {
-			return all_possible_time_slots[time_slot_index:]
+			time_slots_we_want = append(time_slots_we_want, time_slot)
 		}
 	}
 	return nil
@@ -273,6 +274,12 @@ E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 
 */
 // this throws for some reason.
 func time_slots_in_between(start_time string, end_time string, reservation_times []int64) ([]string, error) {
+	if len(start_time) < 4 {
+		return nil, errors.New("no start_time provided")
+	}
+	if len(end_time) < 4 {
+		return nil, errors.New("no end_time provided")
+	}
 	start_time = convert_uneven_minutes_to_even(start_time)
 	end_time = convert_uneven_minutes_to_even(end_time)
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -15,6 +16,27 @@ func TestGetRestaurants(t *testing.T) {
 		// Can't check against a static number cuz the amount changes.
 		t.Errorf("len(getRestaurants()) = %d, expected %s", restaurants_length, ">10")
 	}
+}
+
+func FuzzGetIdFromReservationId(f *testing.F) {
+	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
+
+	f.Add("helsinki", "https://s-varaukset.fi/online/reservation/fi/38?_ga=2.146560948.1092747230.1612503015-489168449.1604043706")
+	f.Fuzz(func(t *testing.T, city string, url string) {
+		placeholder_restaurant := response_fields{
+			Id:          "",
+			Name:        string_field{Fi_FI: ""},
+			Urlpath:     string_field{Fi_FI: ""},
+			Address:     address_fields{Municipality: string_field{Fi_FI: ""}},
+			Features:    features_fields{Accessible: false},
+			Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},
+			Links:       links_fields{TableReservationLocalized: string_field{Fi_FI: url}, HomepageLocalized: string_field{Fi_FI: ""}},
+		}
+		_, err := get_id_from_reservation_page_url(placeholder_restaurant, re)
+		if !strings.Contains(placeholder_restaurant.Links.TableReservationLocalized.Fi_FI, "https://s-varaukset.fi/online/reservation/fi") && err == nil {
+			t.Errorf("expected error")
+		}
+	})
 }
 
 // Honestly, I don't know a better way to test this function.

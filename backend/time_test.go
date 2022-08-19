@@ -14,7 +14,7 @@ func Fuzz_get_string_time_from_unix(f *testing.F) {
 	f.Fuzz(func(t *testing.T, unix_time int64) {
 		string_time := get_string_time_from_unix(unix_time)
 
-		if string_time == "" {
+		if len(string_time) < 4 {
 			t.Errorf("could not get string_time correctly")
 		}
 	})
@@ -36,6 +36,12 @@ func Fuzz_time_slots_inbetween(f *testing.F) {
 		reservation_times, _ := get_all_reservation_times("1500", "1800")
 		results, err := time_slots_in_between(current_time, end_time, reservation_times)
 
+		if len(current_time) < 4 && err == nil {
+			t.Errorf("expected an error but we did not get one.")
+		}
+		if len(end_time) < 4 && err == nil {
+			t.Errorf("expected an error but we did not get one.")
+		}
 		if results == nil && err == nil {
 			t.Errorf("uncaught error in time_slots_inbetween")
 		}
@@ -87,7 +93,7 @@ func Fuzz_times_from_current_point_forward(f *testing.F) {
 	f.Fuzz(func(t *testing.T, current_time string) {
 		time_slot_windows := get_time_slots_from_current_point_forward(current_time)
 		for _, time_slot := range time_slot_windows {
-			if time_slot.time == current_time || time_slot.time_window_start == current_time || time_slot.time_window_end == current_time {
+			if time_slot.time_window_end < current_time {
 				t.Errorf(`Did not expect %s to be in the time_slot but it was.`, current_time)
 			}
 		}
@@ -160,6 +166,7 @@ func TestReturnTimeslotsInbetween(t *testing.T) {
 		{"1800", "0200", "1900", "0000", []string{"1915", "1930", "1945", "2000", "2015", "2030", "2045", "2100", "2115", "2130", "2145", "2200", "2215", "2230", "2245", "2300", "2315"}},
 		{"1500", "0300", "1700", "2300", []string{"1715", "1730", "1745", "1800", "1815", "1830", "1845", "1900", "1915", "1930", "1945", "2000", "2015", "2030", "2045", "2100", "2115", "2130", "2145", "2200", "2215"}},
 		{"1700", "0300", "1300", "2300", []string{"1715", "1730", "1745", "1800", "1815", "1830", "1845", "1900", "1915", "1930", "1945", "2000", "2015", "2030", "2045", "2100", "2115", "2130", "2145", "2200", "2215"}},
+		{"", "", "", "", nil},
 	}
 
 	for _, test := range tests {
@@ -167,13 +174,12 @@ func TestReturnTimeslotsInbetween(t *testing.T) {
 		t.Run(testname, func(t *testing.T) {
 			all_available_time_slots, _ := get_all_reservation_times(test.restaurant_opening_time, test.restaurant_closing_time)
 			result, err := time_slots_in_between(test.start_time, test.end_time, all_available_time_slots)
-			if err != nil {
-				t.Errorf(`time_slots had err: %s`, err)
+			if test.start_time == "" && result == nil && err == nil {
+				t.Errorf(`expected an error with start_time: %s`, test.start_time)
 			}
-			for _, timeslot := range result {
-				fmt.Println(timeslot)
-			}
-			fmt.Println("--")
+			//if err != nil {
+			//	t.Errorf(`time_slots had err: %s`, err)
+			//}
 			if !reflect.DeepEqual(result, test.want) {
 				t.Errorf(`result len: %d, expected len: %d`, len(result), len(test.want))
 			}
