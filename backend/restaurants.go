@@ -12,7 +12,7 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 
 	current_date := get_current_date_and_time()
 
-	all_possible_time_slots := get_all_time_windows(current_date.time)
+	all_possible_time_slots := get_time_slots_from_current_point_forward(current_date.time)
 
 	// There can be maximum of restaurants * all_possible_time_slots, so we allocate the worst case scenario here to avoid reallocation's.
 	total_memory_to_reserve_for_all_restaurant_time_slots := len(restaurants) * len(all_possible_time_slots)

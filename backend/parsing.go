@@ -8,6 +8,9 @@ import (
 
 // Returns an even number that is supported by the raflaamo site.
 func convert_uneven_minutes_to_even(our_number string) string {
+	if len(our_number) < 4 {
+		return ""
+	}
 	our_number_length := len(our_number)
 
 	// Numbers are the last 2 characters in all cases.

@@ -31,16 +31,3 @@ func TestGetRestaurantsFromCityThatDoesNotExist(t *testing.T) {
 		t.Errorf("Expected test to fail but it did not.")
 	}
 }
-
-// // TestReverseBinarySearch | Test to see if binary search algorithm works correctly.
-// func TestBinarySearch(t *testing.T) {
-// 	t.Parallel()
-// 	times := get_all_reservation_times("0200") // in reality, it's not all because we need to consider restaurants closing time.
-// 	expected_index := 4
-// 	element_to_find := "0100"
-// 	resulting_index := binary_search(times, element_to_find)
-
-// 	if expected_index != resulting_index {
-// 		t.Errorf(`expected index to be %d but it was %d`, expected_index, resulting_index)
-// 	}
-// }

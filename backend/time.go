@@ -20,7 +20,6 @@ func get_string_time_from_unix(unix_time int64) string {
 	return get_time_from_string
 }
 
-// TODO: round this to the next even number and not the previous.
 func get_unix_from_time(hour int, minutes int) int64 {
 	// if hour is 0-5 it sets day to 2
 	if hour < 5 {
@@ -104,18 +103,6 @@ type covered_times struct {
 	time_window_end   string
 }
 
-// 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00)
-func get_all_time_windows(current_time string) []covered_times {
-	time_windows := [...]covered_times{
-		{time: "0200", time_window_start: "0000", time_window_end: "0600"},
-		{time: "0800", time_window_start: "0600", time_window_end: "1200"},
-		{time: "1400", time_window_start: "1200", time_window_end: "1800"},
-		{time: "2000", time_window_start: "1800", time_window_end: "0000"},
-	}
-	time_windows_from_current_forward := get_time_slots_from_current_point_forward(time_windows, current_time)
-	return time_windows_from_current_forward
-}
-
 // The data from the raflaamo graph api comes as unix timestamps, but we want them as human-readable times in strings, so we
 // convert the unix ms timestamps into utc +2 (finnish time).
 func convert_unix_timestamp_to_finland_time(time_slot_in_unix *parsed_graph_data) covered_times {
@@ -157,7 +144,13 @@ func get_current_date_and_time() date_and_time {
 
 // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
 // The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
-func get_time_slots_from_current_point_forward(all_possible_time_slots [4]covered_times, current_time string) []covered_times {
+func get_time_slots_from_current_point_forward(current_time string) []covered_times {
+	all_possible_time_slots := [...]covered_times{
+		{time: "0200", time_window_start: "0000", time_window_end: "0600"},
+		{time: "0800", time_window_start: "0600", time_window_end: "1200"},
+		{time: "1400", time_window_start: "1200", time_window_end: "1800"},
+		{time: "2000", time_window_start: "1800", time_window_end: "0000"},
+	}
 	for time_slot_index, time_slot := range all_possible_time_slots {
 		if current_time < time_slot.time_window_end {
 			return all_possible_time_slots[time_slot_index:]
@@ -178,7 +171,9 @@ func time_slots_in_between(start_time string, end_time string, reservation_times
 	if start_time == "" || end_time == "" {
 		return nil, errors.New("error converting uneven minutes to even minutes")
 	}
-
+	if start_time == end_time {
+		return nil, errors.New("trying to get a time_slot with 2 identical timestamps")
+	}
 	start_time_minutes, err := strconv.Atoi(start_time[len(start_time)-2:])
 	if err != nil {
 		return nil, errors.New("error converting start time minutes to int")
@@ -198,6 +193,10 @@ func time_slots_in_between(start_time string, end_time string, reservation_times
 
 	start_time_unix := get_unix_from_time(start_time_hours, start_time_minutes)
 	end_time_unix := get_unix_from_time(end_time_hours, end_time_minutes)
+
+	if start_time_unix > end_time_unix {
+		return nil, errors.New("start_time_unix was larger than end_time_unix")
+	}
 
 	var times_we_want []string
 	for _, reservation_time := range reservation_times {
