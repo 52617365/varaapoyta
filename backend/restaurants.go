@@ -44,17 +44,20 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 
 			unix_timestamp_struct_of_available_table := convert_unix_timestamp_to_finland_time(time_slots_from_graph_api)
 
-			// @Maybe some error checking here IDK?, think about it
+			restaurant_starting_time := restaurant.Openingtime.Restauranttime.Ranges[0].Start
 			restaurant_closing_time := restaurant.Openingtime.Restauranttime.Ranges[0].End
 
-			all_reservation_times := get_all_reservation_times(restaurant_closing_time) // in reality, it's not all because we need to consider restaurants closing time.
-			time_slots_in_between, err := time_slots_in_between(current_date.time, unix_timestamp_struct_of_available_table.time_window_end, all_reservation_times)
+			all_reservation_times, err := get_all_reservation_times(restaurant_starting_time, restaurant_closing_time) // in reality, it's not all because we need to consider restaurants closing time.
+			if err != nil {
+				continue
+			}
+			time_slots, err := time_slots_in_between(current_date.time, unix_timestamp_struct_of_available_table.time_window_end, all_reservation_times)
 
 			if err != nil {
 				continue
 			}
 
-			single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time_slots_in_between...)
+			single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time_slots...)
 		}
 		// Here after iterating over all time slots for the restaurant, we store the results.
 		all_restaurants_with_available_times = append(all_restaurants_with_available_times, single_restaurant_with_available_times)
