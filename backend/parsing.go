@@ -6,26 +6,6 @@ import (
 	"strings"
 )
 
-// Binary search algorithm that returns the index of an element in array or -1 if none found.
-// In all cases it should find something if we have done the conversion correctly before function call.
-func binary_search[R [96]string | []string](a R, x string) int {
-	r := -1 // not found
-	start := 0
-	end := len(a) - 1
-	for start <= end {
-		mid := (start + end) / 2
-		if a[mid] == x { // checks if middle is equal to
-			r = mid // found
-			break
-		} else if a[mid] < x { // checks if middle is smaller than the thing we're trying to find
-			start = mid + 1
-		} else if a[mid] > x { // checks if middle is larger than the thing we're trying to find
-			end = mid - 1
-		}
-	}
-	return r
-}
-
 // Returns an even number that is supported by the raflaamo site.
 func convert_uneven_minutes_to_even(our_number string) string {
 	our_number_length := len(our_number)
@@ -89,11 +69,6 @@ func time_is_already_even(our_number_minutes string) bool {
 		return true
 	}
 	return false
-}
-func end_pos_is_in_closing_window(end_pos int, restaurant_closing_time_pos int) bool {
-	// -3 because restaurants don't take reservations 45 mins before restaurant closes so we check that we're not in that time window.
-	// one pos index is 15 minutes.
-	return end_pos > restaurant_closing_time_pos-3
 }
 
 // Gets the restaurants from the passed in argument. Returns error if nothing is found.

@@ -9,7 +9,7 @@ import (
 // Fuck times stored in strings.
 // The line must be drawn here - Jonathan Blow.
 func main() {
-	current_time := "2359"
+	current_time := "2330"
 	end_time := "0259"
 	closing_time := "01:30"
 

@@ -19,14 +19,16 @@ func get_string_time_from_unix(unix_time int64) string {
 	get_time_from_string = strings.Replace(get_time_from_string, ":", "", -1)
 	return get_time_from_string
 }
+
+// TODO: round this to the next even number and not the previous.
 func get_unix_from_time(hour int, minutes int) int64 {
-	// if hour is 0-8 it sets day to 2
-	if hour < 8 {
+	// if hour is 0-5 it sets day to 2
+	if hour < 5 {
 		t := time.Date(1970, time.January, 2, hour, minutes, 00, 0, time.UTC)
 		return t.Unix()
 	}
-	// if hour is 8-23 it sets day to 1
-	if hour >= 8 {
+	// if hour is 5-23 it sets day to 1
+	if hour >= 5 {
 		t := time.Date(1970, time.January, 1, hour, minutes, 00, 0, time.UTC)
 		return t.Unix()
 	}
@@ -35,12 +37,15 @@ func get_unix_from_time(hour int, minutes int) int64 {
 
 // Returns all reservation times taking into consideration the restaurants closing time.
 // This matters because the restaurants don't take reservations 45 minutes before closing.
+
+// TODO: handle opening time too on top of closing_time. (Don't take times from before the opening time.)
+// TODO: fix problem where restaurant_closing_time set to 0115 returns times until 2330 when it should be 0030.
 func get_all_reservation_times(restaurant_closing_time string) []int64 {
 	all_times := populate_all_times()
 
 	// last 2 letters.
 	mins := restaurant_closing_time[len(restaurant_closing_time)-2:]
-	hours := restaurant_closing_time[:len(restaurant_closing_time)-3]
+	hours := restaurant_closing_time[:len(restaurant_closing_time)-2]
 
 	mins_int, err := strconv.Atoi(mins)
 	if err != nil {
@@ -76,7 +81,7 @@ func populate_all_times() []int64 {
 	all_times := make([]int64, 0, 96)
 	hour := 0
 	minutes := 0
-	for i := 0; i <= 96; i++ {
+	for {
 		if hour == 24 {
 			break
 		}
@@ -166,7 +171,6 @@ Used to get all the time slots in between the graph start and graph end.
 E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 */
 // this throws for some reason.
-// TODO: just compare timestamps instead of doing hacky binary search solution.
 func time_slots_in_between(start_time string, end_time string, reservation_times []int64) ([]string, error) {
 	start_time = convert_uneven_minutes_to_even(start_time)
 	end_time = convert_uneven_minutes_to_even(end_time)
@@ -203,29 +207,4 @@ func time_slots_in_between(start_time string, end_time string, reservation_times
 	}
 
 	return times_we_want, nil
-
-	// start_pos := binary_search(reservation_times, start_time)
-	// end_pos := binary_search(reservation_times, end_time)
-	// this means that closing time of restaurant was before the end_time.
-	// assign end_time to the last index of reservation times if end_pos is larger than len of reservation times.
-
-	// if start_pos == -1 || end_pos == -1 {
-	// 	return nil, errors.New("could not find the corresponding indices from time slot array")
-	// }
-
-	// if end_pos < start_pos {
-	// 	times_till_end := reservation_times[start_pos:]
-	// 	times_from_start := reservation_times[:end_pos+1]
-
-	// 	space_to_allocate := len(times_from_start) + len(times_till_end)
-
-	// 	times_in_between := make([]string, 0, space_to_allocate)
-
-	// 	times_in_between = append(times_in_between, times_from_start...)
-	// 	times_in_between = append(times_in_between, times_till_end...)
-
-	// 	return times_in_between, nil
-	// }
-
-	// times_in_between := reservation_times[start_pos:end_pos]
 }
