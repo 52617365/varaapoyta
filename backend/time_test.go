@@ -59,7 +59,7 @@ func Fuzz_times_from_current_point_forward(f *testing.F) {
 }
 func TestReturnTimeslotsInbetween(t *testing.T) {
 	t.Parallel()
-	expected_result_range := [...]string{"0015", "0030", "0045", "0100"}
+	expected_result_range := [...]string{"0030", "0045", "0100"}
 
 	start_time := "0015"
 	end_time := "0100"
@@ -115,8 +115,8 @@ func Fuzz_convert_uneven_minutes_to_even(f *testing.F) {
 
 func TestGetAllReservationTimes(t *testing.T) {
 	times := get_all_reservation_times("0100")
-	if len(times) != 62 {
-		t.Fatalf(`expected len to be %d but it was %d`, 62, len(times))
+	if len(times) != 78 {
+		t.Fatalf(`expected len to be %d but it was %d`, 78, len(times))
 	}
 }
 
@@ -141,11 +141,6 @@ func TestReturnTimeslotsInbetween2(t *testing.T) {
 			if err != nil {
 				t.Errorf(`time_slots had err: %s`, err)
 			}
-			for _, v := range result {
-				fmt.Println(v)
-			}
-			fmt.Println("___")
-
 			if !reflect.DeepEqual(result, test.want) {
 				t.Errorf(`result len: %d, expected len: %d`, len(result), len(test.want))
 			}
