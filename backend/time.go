@@ -158,38 +158,59 @@ func unix_time_in_not_in_closed_time_slot(restaurant_closing_time_to_unix int64,
 	return restaurant_closing_time_to_unix-forty_five_minutes >= unix_time
 }
 
-// TODO: This does not return all times correctly E.g. 07:00 is missing. (25200)
-func populate_all_times() []int64 {
+func populate_all_times() ([]int64, error) {
 	all_times := make([]int64, 0, 96)
-	minutes := 0
-	hour := 0
-	for hour < 24 {
-		if minutes <= 45 {
-			minutes = minutes + 15
-		}
-		// need to format because number would be "900" instead of "0900".
+	for hour := 0; hour < 24; hour++ {
 		if hour < 10 {
-			// same thing with minutes
-			if minutes < 10 {
-				time_to_string := fmt.Sprintf("0%d0%d", hour, minutes)
-				all_times = append(all_times, get_unix_from_time(time_to_string))
+			formatted_time_slot_one, err := get_unix_from_time(fmt.Sprintf("0%d00", hour))
+			if err != nil {
+				return nil, err
 			}
-			if minutes >= 10 {
-				time_to_string := fmt.Sprintf("0%d%d", hour, minutes)
-				all_times = append(all_times, get_unix_from_time(time_to_string))
+			all_times = append(all_times, formatted_time_slot_one)
+			formatted_time_slot_two, err := get_unix_from_time(fmt.Sprintf("0%d15", hour))
+			if err != nil {
+				return nil, err
 			}
+			all_times = append(all_times, formatted_time_slot_two)
+
+			formatted_time_slot_three, err := get_unix_from_time(fmt.Sprintf("0%d30", hour))
+			if err != nil {
+				return nil, err
+			}
+			all_times = append(all_times, formatted_time_slot_three)
+
+			formatted_time_slot_four, err := get_unix_from_time(fmt.Sprintf("0%d45", hour))
+			if err != nil {
+				return nil, err
+			}
+			all_times = append(all_times, formatted_time_slot_four)
 		}
-		// no need to format.
 		if hour >= 10 {
-			time_to_string := strconv.Itoa(hour + minutes)
-			all_times = append(all_times, get_unix_from_time(time_to_string))
-		}
-		if minutes == 60 {
-			hour++
-			minutes = 0
+			formatted_time_slot_one, err := get_unix_from_time(fmt.Sprintf("%d00", hour))
+			if err != nil {
+				return nil, err
+			}
+			all_times = append(all_times, formatted_time_slot_one)
+			formatted_time_slot_two, err := get_unix_from_time(fmt.Sprintf("%d15", hour))
+			if err != nil {
+				return nil, err
+			}
+			all_times = append(all_times, formatted_time_slot_two)
+
+			formatted_time_slot_three, err := get_unix_from_time(fmt.Sprintf("%d30", hour))
+			if err != nil {
+				return nil, err
+			}
+			all_times = append(all_times, formatted_time_slot_three)
+
+			formatted_time_slot_four, err := get_unix_from_time(fmt.Sprintf("%d45", hour))
+			if err != nil {
+				return nil, err
+			}
+			all_times = append(all_times, formatted_time_slot_four)
 		}
 	}
-	return all_times
+	return all_times, nil
 }
 
 // This struct contains the time you check the graph api with, and the corresponding start and end time window that the response covers.
