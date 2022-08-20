@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
-
-	"golang.org/x/exp/slices"
 )
 
 func Fuzz_get_string_time_from_unix(f *testing.F) {
@@ -31,16 +29,21 @@ func Fuzz_get_unix_from_time(f *testing.F) {
 }
 
 func Fuzz_time_slots_inbetween(f *testing.F) {
-	f.Add("1200", "0900")
-	f.Fuzz(func(t *testing.T, current_time string, end_time string) {
-		reservation_times, _ := get_all_reservation_times("1500", "1800")
+	var number_one int64 = 9882912392
+	var number_two int64 = 98812398123
+	f.Add(number_one, number_two)
+	f.Fuzz(func(t *testing.T, current_time int64, end_time int64) {
+		reservation_times, _ := get_all_reservation_times(get_unix_from_time("1500"), get_unix_from_time("1800"))
 		results, err := time_slots_in_between(current_time, end_time, reservation_times)
 
-		if len(current_time) < 4 && err == nil {
-			t.Errorf("expected an error but we did not get one.")
+		if current_time == -1 || end_time == -1 && err == nil {
+			t.Errorf("expected an error but got none")
 		}
-		if len(end_time) < 4 && err == nil {
-			t.Errorf("expected an error but we did not get one.")
+		if current_time == end_time && err == nil {
+			t.Errorf("expected an error but got none")
+		}
+		if current_time > end_time && err == nil {
+			t.Errorf("expected an error but got none")
 		}
 		if results == nil && err == nil {
 			t.Errorf("uncaught error in time_slots_inbetween")
@@ -49,14 +52,17 @@ func Fuzz_time_slots_inbetween(f *testing.F) {
 }
 
 func Fuzz_get_all_reservation_times(f *testing.F) {
-	f.Add("3000", "2000")
-	f.Fuzz(func(t *testing.T, starting_time string, closing_time string) {
+	var number_one int64 = 18281991
+	var number_two int64 = 92288128
+	f.Add(number_one, number_two)
+	f.Fuzz(func(t *testing.T, starting_time int64, closing_time int64) {
 		reservation_times, err := get_all_reservation_times(starting_time, closing_time)
-		if time_formats_are_not_correct(starting_time, closing_time) && err == nil {
-			t.Errorf("expected an error with starting_time: %s and closing_time: %s", starting_time, closing_time)
+
+		if starting_time > closing_time && err == nil {
+			t.Errorf("expected an error with starting_time: %d and closing_time: %d", starting_time, closing_time)
 		}
-		if !time_formats_are_not_correct(starting_time, closing_time) && err != nil {
-			t.Errorf("unexpected error with starting_time: %s and closing_time: %s", starting_time, closing_time)
+		if !(starting_time > closing_time) && err != nil {
+			t.Errorf("unexpected error with starting_time: %d and closing_time: %d", starting_time, closing_time)
 		}
 		if reservation_times == nil && err == nil {
 			t.Errorf("unexpected nil value in Fuzz_get_all_reservation_times")
@@ -100,59 +106,61 @@ func Fuzz_times_from_current_point_forward(f *testing.F) {
 		}
 	})
 }
-func TestConvert_uneven_minutes_to_even(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		time string
-		want string
-	}{
-		{"1938", "1945"},
-		{"1228", "1230"},
-	}
 
-	for _, test := range tests {
-		testname := fmt.Sprintf("time: %s, wanted: %s", test.time, test.want)
-		t.Run(testname, func(t *testing.T) {
-			result := convert_uneven_minutes_to_even(test.time)
-			if result != test.want {
-				t.Errorf("got %s, want %s", result, test.want)
-			}
-		})
-	}
-}
+//func TestConvert_uneven_minutes_to_even(t *testing.T) {
+//	t.Parallel()
+//	tests := []struct {
+//		time string
+//		want string
+//	}{
+//		{"1938", "1945"},
+//		{"1228", "1230"},
+//	}
+//
+//	for _, test := range tests {
+//		testname := fmt.Sprintf("time: %s, wanted: %s", test.time, test.want)
+//		t.Run(testname, func(t *testing.T) {
+//			result, err := convert_uneven_time_to_even(test.time)
+//			if result != test.want {
+//				t.Errorf("got %s, want %s", result, test.want)
+//			}
+//		})
+//	}
+//}
 
-func Fuzz_convert_uneven_minutes_to_even(f *testing.F) {
-	f.Add("1438")
-	even_minutes := []string{"15", "30", "45", "00"}
-	f.Fuzz(func(t *testing.T, number string) {
-		result := convert_uneven_minutes_to_even(number)
-		if result == "" {
-			return
-		}
-		result_minutes := result[len(result)-2:]
-		if !slices.Contains(even_minutes, result_minutes) {
-			t.Errorf(`Expected minutes to be 15, 30, 45 or 00 but it was %s`, result_minutes)
-		}
-	})
+func Test_populate_all_times(t *testing.T) {
+	all_times := populate_all_times()
+	for _, time := range all_times {
+		time_to_string := get_string_time_from_unix(time)
+		fmt.Println(time_to_string)
+	}
 }
 
 func TestGetAllReservationTimes(t *testing.T) {
-	// TODO: highest unix should be 25200, but it's currently 24300
-	times, err := get_all_reservation_times("", "0745")
-	if err != nil {
-		t.Fatalf(`unexpected error in TestGetAllReservationTimes: %s`, err)
+	t.Parallel()
+	tests := []struct {
+		restaurant_starting_time string
+		restaurant_closing_time  string
+		want                     []int64
+	}{
+		// 15 minutes is 900 unix
+		{"2300", "0000", []int64{83700}},
+		{"0000", "0115", []int64{87300, 88200}},
+		{"0700", "0900", []int64{26100, 27000, 27900, 28800, 29700}},
 	}
-	fmt.Println("first is:", times[0])
-	fmt.Println("last is:", times[len(times)-1])
-	if len(times) != 8 {
-		t.Fatalf(`expected len to be %d but it was %d`, 8, len(times))
-	}
-	times2, err := get_all_reservation_times("", "")
-	if err != nil {
-		t.Errorf(`unexpected error in TestGetAllReservationTimes: %s`, err)
-	}
-	if len(times2) != 96 {
-		t.Fatalf(`expected len to be %d but it was %d`, 96, len(times2))
+
+	for _, test := range tests {
+		testname := fmt.Sprintf("restaurant_starting_time: %s, restaurant_closing_time: %s", test.restaurant_starting_time, test.restaurant_closing_time)
+		t.Run(testname, func(t *testing.T) {
+			times, err := get_all_reservation_times(get_unix_from_time(test.restaurant_starting_time), get_unix_from_time(test.restaurant_closing_time))
+			if err != nil {
+				t.Fatalf(`unexpected error in TestGetAllReservationTimes: %s`, err)
+			}
+
+			if !reflect.DeepEqual(test.want, times) {
+				t.Errorf("length of wrong results is: %d and we wanted: %d", len(times), len(test.want))
+			}
+		})
 	}
 }
 
@@ -176,8 +184,8 @@ func TestReturnTimeslotsInbetween(t *testing.T) {
 	for _, test := range tests {
 		testname := fmt.Sprintf("start_time %s,end_time %s,restaurant_opening_time %s restaurant_closing_time %s", test.start_time, test.end_time, test.restaurant_opening_time, test.restaurant_closing_time)
 		t.Run(testname, func(t *testing.T) {
-			all_available_time_slots, _ := get_all_reservation_times(test.restaurant_opening_time, test.restaurant_closing_time)
-			result, err := time_slots_in_between(test.start_time, test.end_time, all_available_time_slots)
+			all_available_time_slots, _ := get_all_reservation_times(get_unix_from_time(test.restaurant_opening_time), get_unix_from_time(test.restaurant_closing_time))
+			result, err := time_slots_in_between(get_unix_from_time(test.start_time), get_unix_from_time(test.end_time), all_available_time_slots)
 			if test.start_time == "" && result == nil && err == nil {
 				t.Errorf(`expected an error with start_time: %s`, test.start_time)
 			}

@@ -15,16 +15,16 @@ func get_time_slots_from_graph_api(id_from_reservation_page_url string, current_
 	r, err := http.NewRequest("GET", request_url, nil)
 
 	if err != nil {
-		return nil, errors.New("error constructing get request")
+		return nil, errors.New("error connecting to raflaamo api")
 	}
 	r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
 
 	client := &http.Client{}
 	res, err := client.Do(r)
 
-	// Will throw if we call deserialize_graph_response with a status code other than 200 so we handle it here.
+	// Will throw if we call deserialize_graph_response with a status code other than 200, so we handle it here.
 	if err != nil || res.StatusCode != 200 {
-		return nil, errors.New("error sending get request")
+		return nil, errors.New("error connecting to raflaamo api")
 	}
 
 	deserialized_graph_data := deserialize_graph_response(&res)

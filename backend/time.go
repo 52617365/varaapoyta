@@ -21,63 +21,46 @@ func get_string_time_from_unix(unix_time int64) string {
 	return get_time_from_string
 }
 
-func get_unix_from_time(time_to_convert string) (int64, error) {
-	// error checking to see if number can not be converted to int
-	if _, err := strconv.ParseInt(time_to_convert, 10, 64); err != nil {
-		return -1, errors.New("time_to_convert was not a string that could be converted to int")
-	}
-	if len(time_to_convert) < 4 {
-		return -1, errors.New("time_to_convert was in an invalid format.")
+func get_unix_from_time(time_to_convert string) int64 {
+	if is_not_valid_format(time_to_convert) {
+		return -1
 	}
 
 	minutes, _ := strconv.Atoi(time_to_convert[len(time_to_convert)-2:])
 	hour, _ := strconv.Atoi(time_to_convert[:len(time_to_convert)-2])
 
-	// if hour is 0-5 it sets day to 2
+	// if hour is 0-5 it sets day to 2 (unix)
 	if hour < 5 {
 		t := time.Date(1970, time.January, 2, hour, minutes, 00, 0, time.UTC)
-		return t.Unix(), nil
+		return t.Unix()
 	}
-	// if hour is 5-23 it sets day to 1
+	// if hour is 5-23 it sets day to 1 (unix)
 	if hour >= 5 {
 		t := time.Date(1970, time.January, 1, hour, minutes, 00, 0, time.UTC)
-		return t.Unix(), nil
+		return t.Unix()
 	}
-	return -1, errors.New("error converting to unix")
+	return -1
 }
 
-func time_formats_are_not_correct(restaurant_starting_time int64, restaurant_closing_time int64) bool {
-	// Handle the edge case where the starting_time that was provided is larger than the closing_time.
-	if restaurant_starting_time > restaurant_closing_time {
-		return true
-	}
-
-	return false
-}
-
-// Returns all reservation times taking into consideration the restaurants closing time.
+// Returns all reservation times taking into consideration the restaurants closing and opening time if present.
 // This matters because the restaurants don't take reservations 45 minutes before closing.
 func get_all_reservation_times(restaurant_starting_time_unix int64, restaurant_closing_time_unix int64) ([]int64, error) {
-	all_times, err := populate_all_times()
-	if err != nil {
-		return nil, err
-	}
+	all_times := populate_all_times()
 
 	// if there's no restaurant_starting_time or restaurant_closing_time to take into consideration, just return all the times.
 	if restaurant_closing_time_unix == -1 && restaurant_starting_time_unix == -1 {
 		return all_times, nil
 	}
 
-	if time_formats_are_not_correct(restaurant_starting_time_unix, restaurant_closing_time_unix) {
-		return nil, errors.New("the provided restaurant_starting_time and/or restaurant_closing_time formats were incorrect")
+	// Here we check if the starting_time is larger than closing_time.
+	// This will result in an error because the user tried to provide times but failed with the format.
+	if restaurant_starting_time_unix > restaurant_closing_time_unix {
+		return nil, errors.New("restaurant_start_time was larger than closing_time")
 	}
-
-	// if starting time exists but closing does not.
 	if opening_time_exists_but_closing_does_not(restaurant_starting_time_unix, restaurant_closing_time_unix) {
 		captured_times := extract_unwanted_times(restaurant_starting_time_unix, -1, all_times)
 		return captured_times, nil
 	}
-	// if closing time exists but starting time does not.
 	if closing_time_exists_but_opening_does_not(restaurant_starting_time_unix, restaurant_closing_time_unix) {
 		captured_times := extract_unwanted_times(-1, restaurant_closing_time_unix, all_times)
 		return captured_times, nil
@@ -149,59 +132,31 @@ func unix_time_is_not_in_closed_time_slot(restaurant_closing_time_to_unix int64,
 	return false
 }
 
-func populate_all_times() ([]int64, error) {
+func populate_all_times() []int64 {
 	all_times := make([]int64, 0, 96)
 	for hour := 0; hour < 24; hour++ {
 		if hour < 10 {
-			formatted_time_slot_one, err := get_unix_from_time(fmt.Sprintf("0%d00", hour))
-			if err != nil {
-				return nil, err
-			}
+			formatted_time_slot_one := get_unix_from_time(fmt.Sprintf("0%d00", hour))
+			formatted_time_slot_two := get_unix_from_time(fmt.Sprintf("0%d15", hour))
+			formatted_time_slot_three := get_unix_from_time(fmt.Sprintf("0%d30", hour))
+			formatted_time_slot_four := get_unix_from_time(fmt.Sprintf("0%d45", hour))
 			all_times = append(all_times, formatted_time_slot_one)
-			formatted_time_slot_two, err := get_unix_from_time(fmt.Sprintf("0%d15", hour))
-			if err != nil {
-				return nil, err
-			}
 			all_times = append(all_times, formatted_time_slot_two)
-
-			formatted_time_slot_three, err := get_unix_from_time(fmt.Sprintf("0%d30", hour))
-			if err != nil {
-				return nil, err
-			}
 			all_times = append(all_times, formatted_time_slot_three)
-
-			formatted_time_slot_four, err := get_unix_from_time(fmt.Sprintf("0%d45", hour))
-			if err != nil {
-				return nil, err
-			}
 			all_times = append(all_times, formatted_time_slot_four)
 		}
 		if hour >= 10 {
-			formatted_time_slot_one, err := get_unix_from_time(fmt.Sprintf("%d00", hour))
-			if err != nil {
-				return nil, err
-			}
+			formatted_time_slot_one := get_unix_from_time(fmt.Sprintf("%d00", hour))
+			formatted_time_slot_two := get_unix_from_time(fmt.Sprintf("%d15", hour))
+			formatted_time_slot_three := get_unix_from_time(fmt.Sprintf("%d30", hour))
+			formatted_time_slot_four := get_unix_from_time(fmt.Sprintf("%d45", hour))
 			all_times = append(all_times, formatted_time_slot_one)
-			formatted_time_slot_two, err := get_unix_from_time(fmt.Sprintf("%d15", hour))
-			if err != nil {
-				return nil, err
-			}
 			all_times = append(all_times, formatted_time_slot_two)
-
-			formatted_time_slot_three, err := get_unix_from_time(fmt.Sprintf("%d30", hour))
-			if err != nil {
-				return nil, err
-			}
 			all_times = append(all_times, formatted_time_slot_three)
-
-			formatted_time_slot_four, err := get_unix_from_time(fmt.Sprintf("%d45", hour))
-			if err != nil {
-				return nil, err
-			}
 			all_times = append(all_times, formatted_time_slot_four)
 		}
 	}
-	return all_times, nil
+	return all_times
 }
 
 // This struct contains the time you check the graph api with, and the corresponding start and end time window that the response covers.
@@ -252,7 +207,6 @@ func get_current_date_and_time() date_and_time {
 
 // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
 // The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
-// TODO maybe current_time should be unix here?
 func get_time_slots_from_current_point_forward(current_time string) []covered_times {
 	all_possible_time_slots := [...]covered_times{
 		{time: "0200", time_window_start: "0000", time_window_end: "0600"},
@@ -273,40 +227,25 @@ func get_time_slots_from_current_point_forward(current_time string) []covered_ti
 Used to get all the time slots in between the graph start and graph end.
 E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 */
-// this throws for some reason.
-func time_slots_in_between(start_time string, ending_time string, reservation_times []int64) ([]string, error) {
-	if len(start_time) != 4 {
-		return nil, errors.New("no start_time in the correct format provided")
-	}
-	if len(ending_time) != 4 {
-		return nil, errors.New("no end_time in the correct format provided")
-	}
-	start_time = convert_uneven_minutes_to_even(start_time)
-	ending_time = convert_uneven_minutes_to_even(ending_time)
-
-	if start_time == "" || ending_time == "" {
-		return nil, errors.New("error converting uneven minutes to even minutes")
+func time_slots_in_between(start_time int64, ending_time int64, reservation_times []int64) ([]string, error) {
+	if start_time == -1 || ending_time == -1 {
+		return nil, errors.New("start_time or ending_time were empty")
 	}
 	if start_time == ending_time {
 		return nil, errors.New("trying to get a time_slot with 2 identical timestamps")
 	}
-
-	start_time_unix := get_unix_from_time(start_time)
-	end_time_unix := get_unix_from_time(ending_time)
-
-	if start_time_unix > end_time_unix {
-		return nil, errors.New("start_time_unix was larger than end_time_unix")
+	if start_time > ending_time {
+		return nil, errors.New("start_time was larger than end_time")
 	}
 
 	var times_we_want []string
 	for _, reservation_time := range reservation_times {
-		if reservation_time > start_time_unix && reservation_time <= end_time_unix {
+		if reservation_time > start_time && reservation_time <= ending_time {
 			times_we_want = append(times_we_want, get_string_time_from_unix(reservation_time))
 		}
 	}
-
 	if len(times_we_want) == 0 {
-		return nil, errors.New("there were no times")
+		return nil, errors.New("no times found")
 	}
 	return times_we_want, nil
 }

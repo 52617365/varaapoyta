@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"log"
+	"errors"
 	"net/http"
 )
 
@@ -63,11 +63,12 @@ type links_fields struct {
 	HomepageLocalized         string_field `json:"homepageLocalized"`
 }
 
-func deserialize_response(res **http.Response) response_top_level {
+// Tries to deserialize the response from the raflaamo API and returns an error if it fails.
+func deserialize_response(res **http.Response) (response_top_level, error) {
 	response_decoded := &response_top_level{}
 	err := json.NewDecoder((*res).Body).Decode(response_decoded)
 	if err != nil {
-		log.Fatal(err)
+		return *response_decoded, errors.New("could not deserialize the response body")
 	}
-	return *response_decoded
+	return *response_decoded, nil
 }

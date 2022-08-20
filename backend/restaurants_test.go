@@ -9,7 +9,7 @@ import (
 // TestGetRestaurants We expect response to be len(470).
 func TestGetRestaurants(t *testing.T) {
 	t.Parallel()
-	restaurants := get_all_restaurants_from_raflaamo_api()
+	restaurants, _ := get_all_restaurants_from_raflaamo_api()
 
 	restaurants_length := len(restaurants)
 	if restaurants_length < 10 {

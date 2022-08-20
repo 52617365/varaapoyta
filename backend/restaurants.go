@@ -12,6 +12,7 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 
 	current_date := get_current_date_and_time()
 
+	// All possible time slots we need to check, it does not contain time slots from the past.
 	all_possible_time_slots := get_time_slots_from_current_point_forward(current_date.time)
 
 	// There can be maximum of restaurants * all_possible_time_slots, so we allocate the worst case scenario here to avoid reallocation's.
@@ -23,6 +24,7 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 	for _, restaurant := range restaurants {
 		id_from_reservation_page_url, err := get_id_from_reservation_page_url(restaurant, re)
 
+		// If we can't find the id from url, just continue on to the next one because then we can't find the reservation page.
 		if err != nil {
 			continue
 		}
@@ -34,6 +36,7 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 		}
 
 		// Iterating over all possible time slots (0200, 0800, 1400, 2000) to cover the whole 24h window (each time slot covers a 6h window.)
+		// However, all all_possible_time_slots does not contain time slots from the past.
 		for _, time_slot := range all_possible_time_slots {
 			time_slots_from_graph_api, err := get_time_slots_from_graph_api(id_from_reservation_page_url, current_date.date, time_slot.time, amount_of_eaters)
 			if err != nil {
@@ -41,28 +44,34 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 			}
 
 			// At this point in the code we have already made all the necessary checks to confirm that a graph is visible for a time slot, and we can extract information from it.
-
+			// TODO: convert_unix_timestamp_to_finland_time is unnecessary.
 			unix_timestamp_struct_of_available_table := convert_unix_timestamp_to_finland_time(time_slots_from_graph_api)
 
-			restaurant_starting_time := restaurant.Openingtime.Restauranttime.Ranges[0].Start
-			restaurant_closing_time := restaurant.Openingtime.Restauranttime.Ranges[0].End
+			// restaurant_starting_time_unix and restaurant_closing_time_unix will be -1 if restaurant_opening_time or restaurant_closing_time was empty.
+			// This will be handled and checked inside of get_all_reservation_times
+			// if they're -1, we won't take them into consideration.
+			restaurant_opening_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
+			restaurant_closing_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].End)
 
-			restaurant_starting_time_unix, err := get_unix_from_time(restaurant_starting_time)
-			restaurant_closing_time_unix, err := get_unix_from_time(restaurant_closing_time)
-
-			all_reservation_times, err := get_all_reservation_times(restaurant_starting_time_unix, restaurant_closing_time_unix)
+			// get_all_reservation_times will take into consideration the starting and closing_time if they're present.
+			all_reservation_times, err := get_all_reservation_times(restaurant_opening_time, restaurant_closing_time)
 			if err != nil {
 				continue
 			}
-			time_slots, err := time_slots_in_between(current_date.time, unix_timestamp_struct_of_available_table.time_window_end, all_reservation_times)
+			start_time_unix := get_unix_from_time(current_date.time)
+			end_time_unix := get_unix_from_time(unix_timestamp_struct_of_available_table.time_window_end)
+			time_slots, err := time_slots_in_between(start_time_unix, end_time_unix, all_reservation_times)
 
 			if err != nil {
+				continue
+			}
+			if len(time_slots) == 0 {
 				continue
 			}
 
 			single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time_slots...)
 		}
-		// Here after iterating over all time slots for the restaurant, we store the results.
+		// for each restaurant we store results here.
 		all_restaurants_with_available_times = append(all_restaurants_with_available_times, single_restaurant_with_available_times)
 	}
 	return all_restaurants_with_available_times

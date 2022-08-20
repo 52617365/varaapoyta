@@ -2,22 +2,28 @@ package main
 
 import (
 	"fmt"
+	"log"
 )
 
 // TODO: Make endpoints.
 
-// Fuck times stored in strings.
-// The line must be drawn here - Jonathan Blow.
 func main() {
-	current_time := "2330"
-	end_time := "0259"
-	closing_time := "01:30"
-	starting_time := "11:00"
+	restaurants, err := filter_restaurants_from_city("rovaniemi")
+	if err != nil {
+		// if error we return this from the endpoint.
+		log.Fatalln(err)
+	}
+	if len(restaurants) == 0 {
+		log.Fatalln("no restaurants found")
+	}
+	// here restaurants is not empty (we check it before)
+	available_tables := getAvailableTables(restaurants, 1)
+	for _, available_table := range available_tables {
+		start_string := fmt.Sprintf("name of restaurant: %s | available_tables: ", available_table.restaurant.Name.Fi_FI)
+		fmt.Println(start_string)
 
-	all_reservation_times, _ := get_all_reservation_times(starting_time, closing_time)
-	reservation_times, _ := time_slots_in_between(current_time, end_time, all_reservation_times)
-
-	for _, reservation_time := range reservation_times {
-		fmt.Println(reservation_time)
+		for _, time := range available_table.available_time_slots {
+			fmt.Println(time)
+		}
 	}
 }
