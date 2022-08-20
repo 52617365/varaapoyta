@@ -21,128 +21,116 @@ func get_string_time_from_unix(unix_time int64) string {
 	return get_time_from_string
 }
 
-func get_unix_from_time(time_to_convert string) int64 {
-	// These will not throw an error because we have already validated that they can be converted to integers before.
+func get_unix_from_time(time_to_convert string) (int64, error) {
+	// error checking to see if number can not be converted to int
+	if _, err := strconv.ParseInt(time_to_convert, 10, 64); err != nil {
+		return -1, errors.New("time_to_convert was not a string that could be converted to int")
+	}
+	if len(time_to_convert) < 4 {
+		return -1, errors.New("time_to_convert was in an invalid format.")
+	}
+
 	minutes, _ := strconv.Atoi(time_to_convert[len(time_to_convert)-2:])
 	hour, _ := strconv.Atoi(time_to_convert[:len(time_to_convert)-2])
 
 	// if hour is 0-5 it sets day to 2
 	if hour < 5 {
 		t := time.Date(1970, time.January, 2, hour, minutes, 00, 0, time.UTC)
-		return t.Unix()
+		return t.Unix(), nil
 	}
 	// if hour is 5-23 it sets day to 1
 	if hour >= 5 {
 		t := time.Date(1970, time.January, 1, hour, minutes, 00, 0, time.UTC)
-		return t.Unix()
+		return t.Unix(), nil
 	}
-	return -1
+	return -1, errors.New("error converting to unix")
 }
 
-func time_formats_are_not_correct(restaurant_starting_time string, restaurant_closing_time string) bool {
-	// If time was provided but it was invalid, (can't convert to integer to compare.)
-	if len(restaurant_starting_time) > 0 {
-		if _, err := strconv.ParseInt(restaurant_starting_time, 10, 64); err != nil {
-			return true
-		}
-	}
-	if len(restaurant_closing_time) > 0 {
-		if _, err := strconv.ParseInt(restaurant_closing_time, 10, 64); err != nil {
-			return true
-		}
-	}
-
+func time_formats_are_not_correct(restaurant_starting_time int64, restaurant_closing_time int64) bool {
 	// Handle the edge case where the starting_time that was provided is larger than the closing_time.
 	if restaurant_starting_time > restaurant_closing_time {
 		return true
 	}
 
-	// If the times exist but the formats are incorrect meaning their lengths are under 4. Ideal format is something like "1900".
-	if restaurant_closing_time != "" && len(restaurant_closing_time) != 4 || restaurant_starting_time != "" && len(restaurant_starting_time) != 4 {
-		return true
-	}
 	return false
 }
 
 // Returns all reservation times taking into consideration the restaurants closing time.
 // This matters because the restaurants don't take reservations 45 minutes before closing.
-// TODO: should restaurant_starting_time and restaurant_closing_time be passed in as unix times?
-func get_all_reservation_times(restaurant_starting_time string, restaurant_closing_time string) ([]int64, error) {
-	all_times := populate_all_times()
+func get_all_reservation_times(restaurant_starting_time_unix int64, restaurant_closing_time_unix int64) ([]int64, error) {
+	all_times, err := populate_all_times()
+	if err != nil {
+		return nil, err
+	}
 
 	// if there's no restaurant_starting_time or restaurant_closing_time to take into consideration, just return all the times.
-	if restaurant_closing_time == "" && restaurant_starting_time == "" {
+	if restaurant_closing_time_unix == -1 && restaurant_starting_time_unix == -1 {
 		return all_times, nil
 	}
 
-	if time_formats_are_not_correct(restaurant_starting_time, restaurant_closing_time) {
+	if time_formats_are_not_correct(restaurant_starting_time_unix, restaurant_closing_time_unix) {
 		return nil, errors.New("the provided restaurant_starting_time and/or restaurant_closing_time formats were incorrect")
 	}
 
 	// if starting time exists but closing does not.
-	if opening_time_exists_but_closing_does_not(restaurant_starting_time, restaurant_closing_time) {
-		captured_times := extract_unwanted_times(restaurant_starting_time, "", all_times)
+	if opening_time_exists_but_closing_does_not(restaurant_starting_time_unix, restaurant_closing_time_unix) {
+		captured_times := extract_unwanted_times(restaurant_starting_time_unix, -1, all_times)
 		return captured_times, nil
 	}
 	// if closing time exists but starting time does not.
-	if closing_time_exists_but_opening_does_not(restaurant_starting_time, restaurant_closing_time) {
-		captured_times := extract_unwanted_times("", restaurant_closing_time, all_times)
+	if closing_time_exists_but_opening_does_not(restaurant_starting_time_unix, restaurant_closing_time_unix) {
+		captured_times := extract_unwanted_times(-1, restaurant_closing_time_unix, all_times)
 		return captured_times, nil
 	}
-	return nil, errors.New("ok we're here, even though we should not be here")
+	captured_times := extract_unwanted_times(restaurant_starting_time_unix, restaurant_closing_time_unix, all_times)
+	return captured_times, nil
 }
 
-// parameters except all_times are "" if they don't exist.
-func extract_unwanted_times(opening_time string, closing_time string, all_times []int64) []int64 {
-	if opening_time_exists_but_closing_does_not(opening_time, closing_time) {
-		restaurant_starting_time_to_unix := get_unix_from_time(opening_time)
-		captured_times := make([]int64, 0, len(all_times))
+// parameters except all_times are -1 if they don't exist.
+func extract_unwanted_times(restaurant_starting_time_unix int64, restaurant_closing_time_unix int64, all_times []int64) []int64 {
+	captured_times := make([]int64, 0, len(all_times))
+	if opening_time_exists_but_closing_does_not(restaurant_starting_time_unix, restaurant_closing_time_unix) {
 		for _, individual_time := range all_times {
 			// If the time is larger than the restaurants starting time, in other words if the restaurant is already opened
-			if restaurant_is_open(individual_time, restaurant_starting_time_to_unix) {
+			if restaurant_is_open(individual_time, restaurant_starting_time_unix) {
 				captured_times = append(captured_times, individual_time)
 			}
 		}
 		return captured_times
 	}
-	if closing_time_exists_but_opening_does_not(opening_time, closing_time) {
-		restaurant_closing_time_to_unix := get_unix_from_time(closing_time)
-		captured_times := make([]int64, 0, len(all_times))
+	if closing_time_exists_but_opening_does_not(restaurant_starting_time_unix, restaurant_closing_time_unix) {
 		for _, individual_time := range all_times {
-			if unix_time_in_not_in_closed_time_slot(restaurant_closing_time_to_unix, individual_time) {
+			if unix_time_is_not_in_closed_time_slot(restaurant_closing_time_unix, individual_time) {
 				captured_times = append(captured_times, individual_time)
 			}
 		}
 		return captured_times
 	}
 	// Here both, opening and closing times exist.
-	restaurant_opening_time_to_unix := get_unix_from_time(opening_time)
-	restaurant_closing_time_to_unix := get_unix_from_time(closing_time)
-	captured_times := make([]int64, 0, len(all_times))
 	for _, individual_time := range all_times {
-		if unix_time_is_in_between_closing_and_opening_times(restaurant_closing_time_to_unix, individual_time, restaurant_opening_time_to_unix) {
+		if unix_time_is_in_between_closing_and_opening_times(restaurant_closing_time_unix, individual_time, restaurant_starting_time_unix) {
 			captured_times = append(captured_times, individual_time)
 		}
 	}
 	return captured_times
 }
 
-func unix_time_is_in_between_closing_and_opening_times(restaurant_closing_time_to_unix int64, individual_time int64, restaurant_opening_time_to_unix int64) bool {
-	if unix_time_in_not_in_closed_time_slot(restaurant_closing_time_to_unix, individual_time) && individual_time > restaurant_opening_time_to_unix {
+func unix_time_is_in_between_closing_and_opening_times(restaurant_closing_time_unix int64, individual_time int64, restaurant_opening_time_unix int64) bool {
+	if unix_time_is_not_in_closed_time_slot(restaurant_closing_time_unix, individual_time) && individual_time > restaurant_opening_time_unix /* here we get first time 15 minutes after opening time */ {
 		return true
 	}
 	return false
 }
 
-func opening_time_exists_but_closing_does_not(opening_time string, closing_time string) bool {
-	if closing_time == "" && opening_time != "" {
+func opening_time_exists_but_closing_does_not(opening_time int64, closing_time int64) bool {
+	if closing_time == -1 && opening_time != -1 {
 		return true
 	}
 	return false
 }
 
-func closing_time_exists_but_opening_does_not(opening_time string, closing_time string) bool {
-	if opening_time == "" && closing_time != "" {
+func closing_time_exists_but_opening_does_not(opening_time int64, closing_time int64) bool {
+	if opening_time == -1 && closing_time != -1 {
 		return true
 	}
 	return false
@@ -153,9 +141,12 @@ func restaurant_is_open(individual_time int64, restaurant_starting_time_to_unix 
 }
 
 // Check to see if the unix timestamp provided is in the time zone where you can't reserve tables (45 minutes before closing) aka 2700 in unix.
-func unix_time_in_not_in_closed_time_slot(restaurant_closing_time_to_unix int64, unix_time int64) bool {
+func unix_time_is_not_in_closed_time_slot(restaurant_closing_time_to_unix int64, unix_time int64) bool {
 	const forty_five_minutes int64 = 2700
-	return restaurant_closing_time_to_unix-forty_five_minutes >= unix_time
+	if unix_time <= restaurant_closing_time_to_unix-forty_five_minutes {
+		return true
+	}
+	return false
 }
 
 func populate_all_times() ([]int64, error) {
