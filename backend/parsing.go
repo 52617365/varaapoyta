@@ -6,8 +6,21 @@ import (
 	"strings"
 )
 
+func is_not_valid_format(our_number string) bool {
+	if _, err := strconv.ParseInt(our_number, 10, 64); err != nil {
+		return true
+	}
+	if len(our_number) != 4 {
+		return true
+	}
+	return false
+}
+
 // Returns an even number that is supported by the raflaamo site.
-func convert_uneven_minutes_to_even(our_number string) string {
+func convert_uneven_time_to_even(our_number string) (string, error) {
+	if is_not_valid_format(our_number) {
+		return "", errors.New("our_number format was incorrect")
+	}
 	our_number_length := len(our_number)
 
 	// Numbers are the last 2 characters in all cases.
@@ -16,31 +29,31 @@ func convert_uneven_minutes_to_even(our_number string) string {
 	our_number_hours := our_number[:our_number_length-2]
 
 	if time_is_already_even(our_number_minutes) {
-		return our_number
+		return our_number, nil
 	}
 	if our_number_minutes < "15" {
 		even_number := our_number_hours + "15"
-		return even_number
+		return even_number, nil
 	}
 	if our_number_minutes < "30" {
 		even_number := our_number_hours + "30"
-		return even_number
+		return even_number, nil
 	}
 	if our_number_minutes < "45" {
 		even_number := our_number_hours + "45"
-		return even_number
+		return even_number, nil
 	}
 	if our_number_minutes > "45" {
 		// Checking if its 23 to avoid incrementing it to 24 which would be invalid since 24 is represented as 00 (00:00).
 
 		if our_number_hours == "23" {
-			return "0000"
+			return "0000", nil
 		}
 
 		// Converting to integer so we can increment it.
 		our_number_hour_as_integer, err := strconv.Atoi(our_number_hours)
 		if err != nil {
-			return ""
+			return "", errors.New("error converting to our_number to integer")
 		}
 
 		/*
@@ -53,14 +66,14 @@ func convert_uneven_minutes_to_even(our_number string) string {
 		if our_number_hour_as_integer < 10 {
 			our_number_hour_as_integer++
 			even_number := "0" + strconv.Itoa(our_number_hour_as_integer) + "00"
-			return even_number
+			return even_number, nil
 		}
 
 		// Converting hours back to strings, so we match the original format.
 		even_number := strconv.Itoa(our_number_hour_as_integer) + "00"
-		return even_number
+		return even_number, nil
 	}
-	return ""
+	return "", errors.New("error converting to our_number to integer")
 }
 
 // Checks to see if the time passed in has minutes that we consider even (00, 15, 30, 45).
