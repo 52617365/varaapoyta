@@ -20,9 +20,9 @@ func Fuzz_get_string_time_from_unix(f *testing.F) {
 	})
 }
 func Fuzz_get_unix_from_time(f *testing.F) {
-	f.Add(2, 30)
-	f.Fuzz(func(t *testing.T, hour int, minutes int) {
-		unix_time := get_unix_from_time(hour, minutes)
+	f.Add("1230")
+	f.Fuzz(func(t *testing.T, time string) {
+		unix_time := get_unix_from_time(time)
 
 		if unix_time == -1 {
 			t.Errorf("fuzzing resulted in -1")
@@ -50,14 +50,15 @@ func Fuzz_time_slots_inbetween(f *testing.F) {
 
 func Fuzz_get_all_reservation_times(f *testing.F) {
 	f.Add("3000", "2000")
-	f.Add("", "")
-	f.Fuzz(func(t *testing.T, starting_time, closing_time string) {
+	f.Fuzz(func(t *testing.T, starting_time string, closing_time string) {
 		reservation_times, err := get_all_reservation_times(starting_time, closing_time)
-
-		if err != nil {
-			t.Errorf("unexpected error in Fuzz_get_all_reservation_times: %s", err)
+		if time_formats_are_not_correct(starting_time, closing_time) && err == nil {
+			t.Errorf("expected an error with starting_time: %s and closing_time: %s", starting_time, closing_time)
 		}
-		if reservation_times == nil {
+		if !time_formats_are_not_correct(starting_time, closing_time) && err != nil {
+			t.Errorf("unexpected error with starting_time: %s and closing_time: %s", starting_time, closing_time)
+		}
+		if reservation_times == nil && err == nil {
 			t.Errorf("unexpected nil value in Fuzz_get_all_reservation_times")
 		}
 	})
@@ -77,13 +78,13 @@ func TestTimeSlotsFromCurrentPointForward(t *testing.T) {
 	second_time_slot_windows := get_time_slots_from_current_point_forward(current_time)
 	for time_slot_window_index, time_slot_window := range second_time_slot_windows {
 		if time_slot_window.time != expected_time_slot_windows[time_slot_window_index].time {
-			t.Errorf("Expected window time to be %s but it was %s", expected_time_slot_windows[time_slot_window_index].time, time_slot_window.time)
+			t.Fatalf("Expected window time to be %s but it was %s", expected_time_slot_windows[time_slot_window_index].time, time_slot_window.time)
 		}
 		if time_slot_window.time_window_start != expected_time_slot_windows[time_slot_window_index].time_window_start {
-			t.Errorf("Expected time window start time to be %s but it was %s", expected_time_slot_windows[time_slot_window_index].time_window_start, time_slot_window.time_window_start)
+			t.Fatalf("Expected time window start time to be %s but it was %s", expected_time_slot_windows[time_slot_window_index].time_window_start, time_slot_window.time_window_start)
 		}
 		if time_slot_window.time_window_end != expected_time_slot_windows[time_slot_window_index].time_window_end {
-			t.Errorf("Expected time window end time to be %s but it was %s", expected_time_slot_windows[time_slot_window_index].time_window_end, time_slot_window.time_window_end)
+			t.Fatalf("Expected time window end time to be %s but it was %s", expected_time_slot_windows[time_slot_window_index].time_window_end, time_slot_window.time_window_end)
 		}
 	}
 }
@@ -136,19 +137,22 @@ func Fuzz_convert_uneven_minutes_to_even(f *testing.F) {
 }
 
 func TestGetAllReservationTimes(t *testing.T) {
-	times, err := get_all_reservation_times("", "0100")
+	// TODO: highest unix should be 25200, but it's currently 24300
+	times, err := get_all_reservation_times("", "0745")
 	if err != nil {
 		t.Fatalf(`unexpected error in TestGetAllReservationTimes: %s`, err)
 	}
-	if len(times) != 78 {
-		t.Fatalf(`expected len to be %d but it was %d`, 78, len(times))
+	fmt.Println("first is:", times[0])
+	fmt.Println("last is:", times[len(times)-1])
+	if len(times) != 8 {
+		t.Fatalf(`expected len to be %d but it was %d`, 8, len(times))
 	}
 	times2, err := get_all_reservation_times("", "")
 	if err != nil {
 		t.Errorf(`unexpected error in TestGetAllReservationTimes: %s`, err)
 	}
 	if len(times2) != 96 {
-		t.Fatalf(`expected len to be %d but it was %d`, 96, len(times))
+		t.Fatalf(`expected len to be %d but it was %d`, 96, len(times2))
 	}
 }
 

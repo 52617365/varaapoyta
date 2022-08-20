@@ -51,6 +51,8 @@ type opening_fields_ranges struct {
 	// Ranges interface{} `json:"ranges"`
 	Ranges []ranges_times `json:"ranges"`
 }
+
+// TODO: these should be unix timestamps.
 type ranges_times struct {
 	Start string `json:"start"`
 	End   string `json:"end"`

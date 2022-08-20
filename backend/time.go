@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -20,7 +21,11 @@ func get_string_time_from_unix(unix_time int64) string {
 	return get_time_from_string
 }
 
-func get_unix_from_time(hour int, minutes int) int64 {
+func get_unix_from_time(time_to_convert string) int64 {
+	// These will not throw an error because we have already validated that they can be converted to integers before.
+	minutes, _ := strconv.Atoi(time_to_convert[len(time_to_convert)-2:])
+	hour, _ := strconv.Atoi(time_to_convert[:len(time_to_convert)-2])
+
 	// if hour is 0-5 it sets day to 2
 	if hour < 5 {
 		t := time.Date(1970, time.January, 2, hour, minutes, 00, 0, time.UTC)
@@ -34,10 +39,34 @@ func get_unix_from_time(hour int, minutes int) int64 {
 	return -1
 }
 
+func time_formats_are_not_correct(restaurant_starting_time string, restaurant_closing_time string) bool {
+	// If time was provided but it was invalid, (can't convert to integer to compare.)
+	if len(restaurant_starting_time) > 0 {
+		if _, err := strconv.ParseInt(restaurant_starting_time, 10, 64); err != nil {
+			return true
+		}
+	}
+	if len(restaurant_closing_time) > 0 {
+		if _, err := strconv.ParseInt(restaurant_closing_time, 10, 64); err != nil {
+			return true
+		}
+	}
+
+	// Handle the edge case where the starting_time that was provided is larger than the closing_time.
+	if restaurant_starting_time > restaurant_closing_time {
+		return true
+	}
+
+	// If the times exist but the formats are incorrect meaning their lengths are under 4. Ideal format is something like "1900".
+	if restaurant_closing_time != "" && len(restaurant_closing_time) != 4 || restaurant_starting_time != "" && len(restaurant_starting_time) != 4 {
+		return true
+	}
+	return false
+}
+
 // Returns all reservation times taking into consideration the restaurants closing time.
 // This matters because the restaurants don't take reservations 45 minutes before closing.
-
-// TODO: handle opening time too on top of closing_time. (Don't take times from before the opening time.)
+// TODO: should restaurant_starting_time and restaurant_closing_time be passed in as unix times?
 func get_all_reservation_times(restaurant_starting_time string, restaurant_closing_time string) ([]int64, error) {
 	all_times := populate_all_times()
 
@@ -46,78 +75,27 @@ func get_all_reservation_times(restaurant_starting_time string, restaurant_closi
 		return all_times, nil
 	}
 
-	// If the times exist but the formats are incorrect.
-	if restaurant_closing_time != "" && len(restaurant_closing_time) < 4 || restaurant_starting_time != "" && len(restaurant_starting_time) < 4 {
-		return nil, errors.New("restaurant_starting_time and restaurant_closing_time provided but they're in the wrong format")
+	if time_formats_are_not_correct(restaurant_starting_time, restaurant_closing_time) {
+		return nil, errors.New("the provided restaurant_starting_time and/or restaurant_closing_time formats were incorrect")
 	}
 
 	// if starting time exists but closing does not.
-	if restaurant_starting_time != "" && restaurant_closing_time == "" {
-		starting_time_mins := restaurant_starting_time[len(restaurant_starting_time)-2:]
-		starting_time_hours := restaurant_starting_time[:len(restaurant_starting_time)-2]
-		starting_time_mins_int, err := strconv.Atoi(starting_time_mins)
-		if err != nil {
-			return nil, errors.New("there was an error with starting_time_hours integer conversion")
-		}
-		starting_time_hour_int, err := strconv.Atoi(starting_time_hours)
-		if err != nil {
-			return nil, errors.New("there was an error with starting_time_hours integer conversion")
-		}
-
-		captured_times := extract_unwanted_times(-1, -1, starting_time_hour_int, starting_time_mins_int, all_times)
+	if opening_time_exists_but_closing_does_not(restaurant_starting_time, restaurant_closing_time) {
+		captured_times := extract_unwanted_times(restaurant_starting_time, "", all_times)
 		return captured_times, nil
 	}
 	// if closing time exists but starting time does not.
-	if restaurant_closing_time != "" && restaurant_starting_time == "" {
-		closing_time_mins := restaurant_closing_time[len(restaurant_closing_time)-2:]
-		closing_time_hours := restaurant_closing_time[:len(restaurant_closing_time)-2]
-
-		closing_time_mins_int, err := strconv.Atoi(closing_time_mins)
-		if err != nil {
-			return nil, errors.New("there was an error with closing_time_mins integer conversion")
-		}
-		closing_time_hour_int, err := strconv.Atoi(closing_time_hours)
-		if err != nil {
-			return nil, errors.New("there was an error with closing_time_hours integer conversion")
-		}
-		captured_times := extract_unwanted_times(closing_time_hour_int, closing_time_mins_int, -1, -1, all_times)
-		return captured_times, nil
-	}
-
-	// if both exist.
-	if restaurant_closing_time != "" && restaurant_starting_time != "" {
-		closing_time_mins := restaurant_closing_time[len(restaurant_closing_time)-2:]
-		closing_time_hours := restaurant_closing_time[:len(restaurant_closing_time)-2]
-		starting_time_mins := restaurant_starting_time[len(restaurant_starting_time)-2:]
-		starting_time_hours := restaurant_starting_time[:len(restaurant_starting_time)-2]
-
-		closing_time_mins_int, err := strconv.Atoi(closing_time_mins)
-		if err != nil {
-			return nil, errors.New("there was an error with closing_time_mins integer conversion")
-		}
-		closing_time_hour_int, err := strconv.Atoi(closing_time_hours)
-		if err != nil {
-			return nil, errors.New("there was an error with closing_time_hours integer conversion")
-		}
-		starting_time_mins_int, err := strconv.Atoi(starting_time_mins)
-		if err != nil {
-			return nil, errors.New("there was an error with starting_time_mins integer conversion")
-		}
-		starting_time_hour_int, err := strconv.Atoi(starting_time_hours)
-		if err != nil {
-			return nil, errors.New("there was an error with starting_time_hour integer conversion")
-		}
-		captured_times := extract_unwanted_times(closing_time_hour_int, closing_time_mins_int, starting_time_hour_int, starting_time_mins_int, all_times)
+	if closing_time_exists_but_opening_does_not(restaurant_starting_time, restaurant_closing_time) {
+		captured_times := extract_unwanted_times("", restaurant_closing_time, all_times)
 		return captured_times, nil
 	}
 	return nil, errors.New("ok we're here, even though we should not be here")
 }
 
-// TODO: make this work with end and start time
-// parameters except all_times are -1 if they don't exist.
-func extract_unwanted_times(ending_hour int, ending_mins int, opening_hour int, opening_mins int, all_times []int64) []int64 {
-	if opening_time_exists_but_closing_does_not(opening_hour, ending_hour) {
-		restaurant_starting_time_to_unix := get_unix_from_time(opening_hour, opening_mins)
+// parameters except all_times are "" if they don't exist.
+func extract_unwanted_times(opening_time string, closing_time string, all_times []int64) []int64 {
+	if opening_time_exists_but_closing_does_not(opening_time, closing_time) {
+		restaurant_starting_time_to_unix := get_unix_from_time(opening_time)
 		captured_times := make([]int64, 0, len(all_times))
 		for _, individual_time := range all_times {
 			// If the time is larger than the restaurants starting time, in other words if the restaurant is already opened
@@ -127,8 +105,8 @@ func extract_unwanted_times(ending_hour int, ending_mins int, opening_hour int, 
 		}
 		return captured_times
 	}
-	if closing_time_exists_but_opening_does_not(opening_hour, ending_hour) {
-		restaurant_closing_time_to_unix := get_unix_from_time(ending_hour, ending_mins)
+	if closing_time_exists_but_opening_does_not(opening_time, closing_time) {
+		restaurant_closing_time_to_unix := get_unix_from_time(closing_time)
 		captured_times := make([]int64, 0, len(all_times))
 		for _, individual_time := range all_times {
 			if unix_time_in_not_in_closed_time_slot(restaurant_closing_time_to_unix, individual_time) {
@@ -138,8 +116,8 @@ func extract_unwanted_times(ending_hour int, ending_mins int, opening_hour int, 
 		return captured_times
 	}
 	// Here both, opening and closing times exist.
-	restaurant_opening_time_to_unix := get_unix_from_time(opening_hour, opening_mins)
-	restaurant_closing_time_to_unix := get_unix_from_time(ending_hour, ending_mins)
+	restaurant_opening_time_to_unix := get_unix_from_time(opening_time)
+	restaurant_closing_time_to_unix := get_unix_from_time(closing_time)
 	captured_times := make([]int64, 0, len(all_times))
 	for _, individual_time := range all_times {
 		if unix_time_is_in_between_closing_and_opening_times(restaurant_closing_time_to_unix, individual_time, restaurant_opening_time_to_unix) {
@@ -156,26 +134,22 @@ func unix_time_is_in_between_closing_and_opening_times(restaurant_closing_time_t
 	return false
 }
 
-// TODO: this logic is flawed, fix.
-func opening_time_exists_but_closing_does_not(opening_hour int, ending_hour int) bool {
-	if ending_hour == -1 && opening_hour != -1 {
+func opening_time_exists_but_closing_does_not(opening_time string, closing_time string) bool {
+	if closing_time == "" && opening_time != "" {
 		return true
 	}
 	return false
 }
 
-func closing_time_exists_but_opening_does_not(opening_hour int, ending_hour int) bool {
-	if opening_hour == -1 && ending_hour != -1 {
+func closing_time_exists_but_opening_does_not(opening_time string, closing_time string) bool {
+	if opening_time == "" && closing_time != "" {
 		return true
 	}
 	return false
 }
 
 func restaurant_is_open(individual_time int64, restaurant_starting_time_to_unix int64) bool {
-	if individual_time > restaurant_starting_time_to_unix {
-		return true
-	}
-	return false
+	return individual_time > restaurant_starting_time_to_unix
 }
 
 // Check to see if the unix timestamp provided is in the time zone where you can't reserve tables (45 minutes before closing) aka 2700 in unix.
@@ -184,17 +158,31 @@ func unix_time_in_not_in_closed_time_slot(restaurant_closing_time_to_unix int64,
 	return restaurant_closing_time_to_unix-forty_five_minutes >= unix_time
 }
 
+// TODO: This does not return all times correctly E.g. 07:00 is missing. (25200)
 func populate_all_times() []int64 {
 	all_times := make([]int64, 0, 96)
-	hour := 0
 	minutes := 0
-	for {
-		if hour == 24 {
-			break
-		}
-		all_times = append(all_times, get_unix_from_time(hour, minutes))
-		if minutes < 45 || minutes > 0 {
+	hour := 0
+	for hour < 24 {
+		if minutes <= 45 {
 			minutes = minutes + 15
+		}
+		// need to format because number would be "900" instead of "0900".
+		if hour < 10 {
+			// same thing with minutes
+			if minutes < 10 {
+				time_to_string := fmt.Sprintf("0%d0%d", hour, minutes)
+				all_times = append(all_times, get_unix_from_time(time_to_string))
+			}
+			if minutes >= 10 {
+				time_to_string := fmt.Sprintf("0%d%d", hour, minutes)
+				all_times = append(all_times, get_unix_from_time(time_to_string))
+			}
+		}
+		// no need to format.
+		if hour >= 10 {
+			time_to_string := strconv.Itoa(hour + minutes)
+			all_times = append(all_times, get_unix_from_time(time_to_string))
 		}
 		if minutes == 60 {
 			hour++
@@ -252,6 +240,7 @@ func get_current_date_and_time() date_and_time {
 
 // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
 // The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
+// TODO maybe current_time should be unix here?
 func get_time_slots_from_current_point_forward(current_time string) []covered_times {
 	all_possible_time_slots := [...]covered_times{
 		{time: "0200", time_window_start: "0000", time_window_end: "0600"},
@@ -265,7 +254,7 @@ func get_time_slots_from_current_point_forward(current_time string) []covered_ti
 			time_slots_we_want = append(time_slots_we_want, time_slot)
 		}
 	}
-	return nil
+	return time_slots_we_want
 }
 
 /*
@@ -273,41 +262,25 @@ Used to get all the time slots in between the graph start and graph end.
 E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 */
 // this throws for some reason.
-func time_slots_in_between(start_time string, end_time string, reservation_times []int64) ([]string, error) {
-	if len(start_time) < 4 {
-		return nil, errors.New("no start_time provided")
+func time_slots_in_between(start_time string, ending_time string, reservation_times []int64) ([]string, error) {
+	if len(start_time) != 4 {
+		return nil, errors.New("no start_time in the correct format provided")
 	}
-	if len(end_time) < 4 {
-		return nil, errors.New("no end_time provided")
+	if len(ending_time) != 4 {
+		return nil, errors.New("no end_time in the correct format provided")
 	}
 	start_time = convert_uneven_minutes_to_even(start_time)
-	end_time = convert_uneven_minutes_to_even(end_time)
+	ending_time = convert_uneven_minutes_to_even(ending_time)
 
-	if start_time == "" || end_time == "" {
+	if start_time == "" || ending_time == "" {
 		return nil, errors.New("error converting uneven minutes to even minutes")
 	}
-	if start_time == end_time {
+	if start_time == ending_time {
 		return nil, errors.New("trying to get a time_slot with 2 identical timestamps")
 	}
-	start_time_minutes, err := strconv.Atoi(start_time[len(start_time)-2:])
-	if err != nil {
-		return nil, errors.New("error converting start time minutes to int")
-	}
-	start_time_hours, err := strconv.Atoi(start_time[:len(start_time)-2])
-	if err != nil {
-		return nil, errors.New("error converting start time hours to int")
-	}
-	end_time_minutes, err := strconv.Atoi(end_time[len(end_time)-2:])
-	if err != nil {
-		return nil, errors.New("error converting end time minutes to int")
-	}
-	end_time_hours, err := strconv.Atoi(end_time[:len(end_time)-2])
-	if err != nil {
-		return nil, errors.New("error converting end time hours to int")
-	}
 
-	start_time_unix := get_unix_from_time(start_time_hours, start_time_minutes)
-	end_time_unix := get_unix_from_time(end_time_hours, end_time_minutes)
+	start_time_unix := get_unix_from_time(start_time)
+	end_time_unix := get_unix_from_time(ending_time)
 
 	if start_time_unix > end_time_unix {
 		return nil, errors.New("start_time_unix was larger than end_time_unix")

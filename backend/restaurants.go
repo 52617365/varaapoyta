@@ -47,6 +47,9 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 			restaurant_starting_time := restaurant.Openingtime.Restauranttime.Ranges[0].Start
 			restaurant_closing_time := restaurant.Openingtime.Restauranttime.Ranges[0].End
 
+			// TODO: Convert starting_time and closing_time to unix here to avoid complexities in the functions.
+			// restaurant_starting_time_unix := get_unix_from_time(restaurant_starting_time)
+			// restaurant_closing_time_unix := get_unix_from_time(restaurant_closing_time)
 			all_reservation_times, err := get_all_reservation_times(restaurant_starting_time, restaurant_closing_time) // in reality, it's not all because we need to consider restaurants closing time.
 			if err != nil {
 				continue
