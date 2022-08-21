@@ -57,7 +57,7 @@ func extract_unwanted_times(first_possible_reservation_time int64, last_possible
 	captured_times := make([]int64, 0, len(all_times))
 
 	for _, time := range all_times {
-		if time >= first_possible_reservation_time && time <= last_possible_reservation_time {
+		if time > first_possible_reservation_time && time <= last_possible_reservation_time {
 			captured_times = append(captured_times, time)
 		}
 	}
@@ -203,7 +203,7 @@ func time_slots_in_between(start_time int64, graph_end int64, reservation_times 
 
 	var times_we_want []string
 	for _, reservation_time := range reservation_times {
-		if reservation_time >= start_time && reservation_time <= graph_end {
+		if reservation_time > start_time && reservation_time <= graph_end {
 			// We convert the times into string_time because that's the format we will be using later on to display the times.
 			times_we_want = append(times_we_want, get_string_time_from_unix(reservation_time))
 		}
