@@ -35,40 +35,47 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 			available_time_slots: make([]string, 0, len(all_possible_time_slots)),
 		}
 
+		// If there is no time ranges available for the restaurant, we just assume it does not even exist.
+		if restaurant.Openingtime.Restauranttime.Ranges == nil {
+			continue
+		}
+		restaurant_start_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
+		// We minus 45 minutes from the end time because restaurants don't take reservations in that time slot.
+		// E.g. if restaurant closes at 22:00, the last possible reservation time is 21:00.
+		const forty_five_minutes_unix int64 = 2700
+		restaurant_ending_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].End) - forty_five_minutes_unix
+
+		all_reservation_times, err := get_all_reservation_times(restaurant_start_time, restaurant_ending_time)
+		if err != nil {
+			continue
+		}
+
 		// Iterating over all possible time slots (0200, 0800, 1400, 2000) to cover the whole 24h window (each time slot covers a 6h window.)
 		// However, all all_possible_time_slots does not contain time slots from the past.
 		for _, time_slot := range all_possible_time_slots {
 			time_slots_from_graph_api, err2 := get_time_slots_from_graph_api(id_from_reservation_page_url, current_date.date, time_slot.time, amount_of_eaters)
 			if err2 != nil {
+				// it's err if there was an error connecting to raflaamo API or if there were no results.
 				continue
 			}
 			for _, time_slot_from_graph_api := range time_slots_from_graph_api {
-				// At this point in the code we have already made all the necessary checks to confirm that a graph is visible for a time slot, and we can extract information from it.
-				// TODO: convert_unix_timestamp_to_finland_time might be unnecessary.
-				unix_timestamp_struct_of_available_table := convert_unix_timestamp_to_finland_time(&time_slot_from_graph_api)
+				// Adding 10800000(ms) to the time to match utc +2 or +3 (finnish time) (10800000 ms corresponds to 3h)
+				time_slot_from_graph_api.Intervals[0].From += 10800000
+				time_slot_from_graph_api.Intervals[0].To += 10800000
 
-				// restaurant_starting_time_unix and restaurant_closing_time_unix will be -1 if restaurant_opening_time or restaurant_closing_time was empty.
-				// This will be handled and checked inside of get_all_reservation_times
-				// if they're -1, we won't take them into consideration.
-				restaurant_opening_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
-				restaurant_closing_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].End)
-
-				// get_all_reservation_times will take into consideration the starting and closing_time if they're present.
-				all_reservation_times, err := get_all_reservation_times(restaurant_opening_time, restaurant_closing_time)
-				if err != nil {
-					continue
-				}
+				// TODO: this could be replaced by just getting current minutes in unix format (from 1970 jan 1).
 				start_time_unix := get_unix_from_time(current_date.time)
-				end_time_unix := get_unix_from_time(unix_timestamp_struct_of_available_table.time_window_end)
-				time_slots, err := time_slots_in_between(start_time_unix, end_time_unix, all_reservation_times)
 
-				if err != nil || len(time_slots) == 0 {
+				graph_end_unix := time_slot_from_graph_api.Intervals[0].To
+
+				time_slots, err3 := time_slots_in_between(start_time_unix, graph_end_unix, all_reservation_times)
+				if err3 != nil {
 					continue
 				}
 
 				// Here we are doing this to avoid appending duplicate times.
 				for _, time := range time_slots {
-					// If slice already contains, don't append it again.
+					// If slice containing time slots does not already contain the time slot, add the time slot.
 					if !slices.Contains(single_restaurant_with_available_times.available_time_slots, time) {
 						single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time)
 					}
