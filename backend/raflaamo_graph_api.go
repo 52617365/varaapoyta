@@ -8,7 +8,7 @@ import (
 
 // Gets timeslots from raflaamo API that is responsible for returning graph data.
 // Instead of drawing a graph with it, we convert it into time to determine which table is open or not.
-func get_time_slots_from_graph_api(id_from_reservation_page_url string, current_date string, time_slot string, amount_of_eaters int) ([]parsed_graph_data, error) {
+func get_time_slots_from_graph_api(id_from_reservation_page_url string, current_date string, time_slot string, amount_of_eaters int) (*parsed_graph_data, error) {
 	// https://s-varaukset.fi/api/recommendations/slot/{id}/{date}/{time}/{amount_of_eaters}
 	request_url := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", id_from_reservation_page_url, current_date, time_slot, amount_of_eaters)
 
@@ -35,18 +35,19 @@ func get_time_slots_from_graph_api(id_from_reservation_page_url string, current_
 	}
 	deserialized_graph_data_with_open_tables := filter_out_time_slots_with_no_open_tables(deserialized_graph_data)
 
-	if len(deserialized_graph_data_with_open_tables) == 0 {
+	if deserialized_graph_data_with_open_tables == nil {
 		return nil, errors.New("there were no open tables")
 	}
 	return deserialized_graph_data_with_open_tables, nil
 }
 
-func filter_out_time_slots_with_no_open_tables(datas []parsed_graph_data) []parsed_graph_data {
+func filter_out_time_slots_with_no_open_tables(datas []parsed_graph_data) *parsed_graph_data {
 	times_with_open_tables := make([]parsed_graph_data, 0, len(datas))
 	for _, data := range datas {
 		if !time_slot_does_not_contain_open_tables(data) {
 			times_with_open_tables = append(times_with_open_tables, data)
 		}
 	}
-	return times_with_open_tables
+	// Returning only the first index because the api for some reason contains weird data on top of the one we care about.
+	return &times_with_open_tables[0]
 }
