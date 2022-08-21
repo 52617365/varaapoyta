@@ -9,19 +9,17 @@ import (
 	"time"
 )
 
-// error in this function, 87300 returns "0001" when it should return "00:15"
 func get_string_time_from_unix(unix_time int64) string {
 	time_regex, _ := regexp.Compile(`\d{2}:\d{2}`)
 
-	// Adding 10800000(ms) to the time to match utc +2 or +3 (finnish time) (10800000 ms corresponds to 3h)
 	raw_string := time.Unix(unix_time, 0).UTC().String()
 
 	get_time_from_string := time_regex.FindString(raw_string)
-	get_time_from_string = strings.Replace(get_time_from_string, ":", "", -1)
 	return get_time_from_string
 }
 
 func get_unix_from_time(time_to_convert string) int64 {
+	time_to_convert = strings.Replace(time_to_convert, ":", "", -1)
 	if is_not_valid_format(time_to_convert) {
 		return -1
 	}
@@ -42,57 +40,25 @@ func get_unix_from_time(time_to_convert string) int64 {
 	return -1
 }
 
-// Returns all reservation times taking into consideration the restaurants closing and opening time if present.
-// This matters because the restaurants don't take reservations 45 minutes before closing.
+// The parameters passed here have already taken into consideration the restaurants starting and closing time.
 func get_all_reservation_times(restaurant_starting_time_unix int64, restaurant_closing_time_unix int64) ([]int64, error) {
 	all_times := populate_all_times()
 
-	// if there's no restaurant_starting_time or restaurant_closing_time to take into consideration, just return all the times.
-	if restaurant_closing_time_unix == -1 && restaurant_starting_time_unix == -1 {
-		return all_times, nil
-	}
-
 	// Here we check if the starting_time is larger than closing_time.
 	// This will result in an error because the user tried to provide times but failed with the format.
-	if restaurant_starting_time_unix > restaurant_closing_time_unix {
-		return nil, errors.New("restaurant_start_time was larger than closing_time")
-	}
-	if opening_time_exists_but_closing_does_not(restaurant_starting_time_unix, restaurant_closing_time_unix) {
-		captured_times := extract_unwanted_times(restaurant_starting_time_unix, -1, all_times)
-		return captured_times, nil
-	}
-	if closing_time_exists_but_opening_does_not(restaurant_starting_time_unix, restaurant_closing_time_unix) {
-		captured_times := extract_unwanted_times(-1, restaurant_closing_time_unix, all_times)
-		return captured_times, nil
+	if restaurant_starting_time_unix >= restaurant_closing_time_unix {
+		return nil, errors.New("restaurant_start_time was larger or equal to closing_time")
 	}
 	captured_times := extract_unwanted_times(restaurant_starting_time_unix, restaurant_closing_time_unix, all_times)
 	return captured_times, nil
 }
 
-// parameters except all_times are -1 if they don't exist.
-func extract_unwanted_times(restaurant_starting_time_unix int64, restaurant_closing_time_unix int64, all_times []int64) []int64 {
+func extract_unwanted_times(first_possible_reservation_time int64, last_possible_reservation_time int64, all_times []int64) []int64 {
 	captured_times := make([]int64, 0, len(all_times))
-	if opening_time_exists_but_closing_does_not(restaurant_starting_time_unix, restaurant_closing_time_unix) {
-		for _, individual_time := range all_times {
-			// If the time is larger than the restaurants starting time, in other words if the restaurant is already opened
-			if restaurant_is_open(individual_time, restaurant_starting_time_unix) {
-				captured_times = append(captured_times, individual_time)
-			}
-		}
-		return captured_times
-	}
-	if closing_time_exists_but_opening_does_not(restaurant_starting_time_unix, restaurant_closing_time_unix) {
-		for _, individual_time := range all_times {
-			if unix_time_is_not_in_closed_time_slot(restaurant_closing_time_unix, individual_time) {
-				captured_times = append(captured_times, individual_time)
-			}
-		}
-		return captured_times
-	}
-	// Here both, opening and closing times exist.
-	for _, individual_time := range all_times {
-		if unix_time_is_in_between_closing_and_opening_times(restaurant_closing_time_unix, individual_time, restaurant_starting_time_unix) {
-			captured_times = append(captured_times, individual_time)
+
+	for _, time := range all_times {
+		if time >= first_possible_reservation_time && time <= last_possible_reservation_time {
+			captured_times = append(captured_times, time)
 		}
 	}
 	return captured_times
@@ -117,10 +83,6 @@ func closing_time_exists_but_opening_does_not(opening_time int64, closing_time i
 		return true
 	}
 	return false
-}
-
-func restaurant_is_open(individual_time int64, restaurant_starting_time_to_unix int64) bool {
-	return individual_time > restaurant_starting_time_to_unix
 }
 
 // Check to see if the unix timestamp provided is in the time zone where you can't reserve tables (45 minutes before closing) aka 2700 in unix.
@@ -166,23 +128,23 @@ type covered_times struct {
 	time_window_end   string
 }
 
-// The data from the raflaamo graph api comes as unix timestamps, but we want them as human-readable times in strings, so we
-// convert the unix ms timestamps into utc +2 (finnish time).
-func convert_unix_timestamp_to_finland_time(time_slot_in_unix *parsed_graph_data) covered_times {
-	time_regex, _ := regexp.Compile(`\d{2}:\d{2}`)
-
-	// Adding 10800000(ms) to the time to match utc +2 or +3 (finnish time) (10800000 ms corresponds to 3h)
-	unix_start_time_in_finnish_time := time.UnixMilli(int64(time_slot_in_unix.Intervals[0].From + 10800000)).UTC()
-	unix_end_time_in_finnish_time := time.UnixMilli(int64(time_slot_in_unix.Intervals[0].To + 10800000)).UTC()
-
-	timestamp_struct_of_available_table := covered_times{
-		time:              "",
-		time_window_start: strings.Replace(time_regex.FindString(unix_start_time_in_finnish_time.String()), ":", "", -1),
-		time_window_end:   strings.Replace(time_regex.FindString(unix_end_time_in_finnish_time.String()), ":", "", -1),
-	}
-
-	return timestamp_struct_of_available_table
-}
+//// The data from the raflaamo graph api comes as unix timestamps, but we want them as human-readable times in strings, so we
+//// convert the unix ms timestamps into utc +2 (finnish time).
+//func convert_unix_timestamp_to_finland_time(time_slot_in_unix *parsed_graph_data) covered_times {
+//	time_regex, _ := regexp.Compile(`\d{2}:\d{2}`)
+//
+//	// Adding 10800000(ms) to the time to match utc +2 or +3 (finnish time) (10800000 ms corresponds to 3h)
+//	unix_start_time_in_finnish_time := time.UnixMilli(int64(time_slot_in_unix.Intervals[0].From + 10800000)).UTC()
+//	unix_end_time_in_finnish_time := time.UnixMilli(int64(time_slot_in_unix.Intervals[0].To + 10800000)).UTC()
+//
+//	timestamp_struct_of_available_table := covered_times{
+//		time:              "",
+//		time_window_start: strings.Replace(time_regex.FindString(unix_start_time_in_finnish_time.String()), ":", "", -1),
+//		time_window_end:   strings.Replace(time_regex.FindString(unix_end_time_in_finnish_time.String()), ":", "", -1),
+//	}
+//
+//	return timestamp_struct_of_available_table
+//}
 
 type date_and_time struct {
 	date string
@@ -227,20 +189,22 @@ func get_time_slots_from_current_point_forward(current_time string) []covered_ti
 Used to get all the time slots in between the graph start and graph end.
 E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 */
-func time_slots_in_between(start_time int64, ending_time int64, reservation_times []int64) ([]string, error) {
-	if start_time == -1 || ending_time == -1 {
-		return nil, errors.New("start_time or ending_time were empty")
-	}
-	if start_time == ending_time {
+// Here reservation_times here has already taken into consideration the restaurants opening and closing time.
+func time_slots_in_between(start_time int64, graph_end int64, reservation_times []int64) ([]string, error) {
+	//if start_time == -1 || graph_end == -1 {
+	//	return nil, errors.New("start_time or graph_end were empty")
+	//}
+	if start_time == graph_end {
 		return nil, errors.New("trying to get a time_slot with 2 identical timestamps")
 	}
-	if start_time > ending_time {
+	if start_time > graph_end {
 		return nil, errors.New("start_time was larger than end_time")
 	}
 
 	var times_we_want []string
 	for _, reservation_time := range reservation_times {
-		if reservation_time > start_time && reservation_time <= ending_time {
+		if reservation_time >= start_time && reservation_time <= graph_end {
+			// We convert the times into string_time because that's the format we will be using later on to display the times.
 			times_we_want = append(times_we_want, get_string_time_from_unix(reservation_time))
 		}
 	}

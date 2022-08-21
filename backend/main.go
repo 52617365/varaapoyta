@@ -6,7 +6,6 @@ import (
 )
 
 // TODO: Make endpoints.
-
 func main() {
 	restaurants, err := filter_restaurants_from_city("rovaniemi")
 	if err != nil {
