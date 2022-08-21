@@ -17,11 +17,13 @@ type parsed_interval_data struct {
 	Color string `json:"color"` // Optional field, we can match this to see if the restaurant has available tables. (if not nil it does.)
 }
 
-func deserialize_graph_response(res **http.Response) []parsed_graph_data {
+func deserialize_graph_response(res **http.Response) *parsed_graph_data {
 	var response_decoded []parsed_graph_data
 	err := json.NewDecoder((*res).Body).Decode(&response_decoded)
 	if err != nil {
 		return nil
 	}
-	return response_decoded
+	// Returning only the first index because the api for some reason contains weird data on top of the one we care about.
+	// The relevant data is in the first index.
+	return &response_decoded[0]
 }

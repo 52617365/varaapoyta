@@ -58,33 +58,31 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 				// it's err if there was an error connecting to raflaamo API or if there were no results.
 				continue
 			}
-			for _, time_slot_from_graph_api := range time_slots_from_graph_api {
-				// Adding 10800000(ms) to the time to match utc +2 or +3 (finnish time) (10800000 ms corresponds to 3h)
-				time_slot_from_graph_api.Intervals[0].From += 10800000
-				time_slot_from_graph_api.Intervals[0].To += 10800000
+			// Adding 10800000(ms) to the time to match utc +2 or +3 (finnish time) (10800000 ms corresponds to 3h)
+			time_slots_from_graph_api.Intervals[0].From += 10800000
+			time_slots_from_graph_api.Intervals[0].To += 10800000
 
-				// TODO: this could be replaced by just getting current minutes in unix format (from 1970 jan 1).
-				start_time_unix := get_unix_from_time(current_date.time)
+			// TODO: this could be replaced by just getting current minutes in unix format (from 1970 jan 1).
+			start_time_unix := get_unix_from_time(current_date.time)
 
-				graph_end_unix := time_slot_from_graph_api.Intervals[0].To
+			graph_end_unix := time_slots_from_graph_api.Intervals[0].To
 
-				time_slots, err3 := time_slots_in_between(start_time_unix, graph_end_unix, all_reservation_times)
-				if err3 != nil {
-					continue
-				}
+			time_slots, err3 := time_slots_in_between(start_time_unix, graph_end_unix, all_reservation_times)
+			if err3 != nil {
+				continue
+			}
 
-				// Here we are doing this to avoid appending duplicate times.
-				for _, time := range time_slots {
-					// If slice containing time slots does not already contain the time slot, add the time slot.
-					if !slices.Contains(single_restaurant_with_available_times.available_time_slots, time) {
-						single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time)
-					}
+			// Here we are doing this to avoid appending duplicate times.
+			for _, time := range time_slots {
+				// If slice containing time slots does not already contain the time slot, add the time slot.
+				if !slices.Contains(single_restaurant_with_available_times.available_time_slots, time) {
+					single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time)
 				}
 			}
 		}
-		// for each restaurant we store results here.
 		all_restaurants_with_available_times = append(all_restaurants_with_available_times, single_restaurant_with_available_times)
 	}
+	// for each restaurant we store results here.
 	return all_restaurants_with_available_times
 }
 
