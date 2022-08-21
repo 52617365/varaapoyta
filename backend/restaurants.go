@@ -66,7 +66,14 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 					continue
 				}
 
-			single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time_slots...)
+				// Here we are doing this to avoid appending duplicate times.
+				for _, time := range time_slots {
+					// If slice already contains, don't append it again.
+					if !slices.Contains(single_restaurant_with_available_times.available_time_slots, time) {
+						single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time)
+					}
+				}
+			}
 		}
 		// for each restaurant we store results here.
 		all_restaurants_with_available_times = append(all_restaurants_with_available_times, single_restaurant_with_available_times)
