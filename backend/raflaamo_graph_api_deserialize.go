@@ -12,8 +12,8 @@ type parsed_graph_data struct {
 }
 
 type parsed_interval_data struct {
-	From  int    `json:"from"`  // From is a unix timestamp in ms.
-	To    int    `json:"to"`    // To is a unix timestamp in ms.
+	From  int64  `json:"from"`  // From is a unix timestamp in ms.
+	To    int64  `json:"to"`    // To is a unix timestamp in ms.
 	Color string `json:"color"` // Optional field, we can match this to see if the restaurant has available tables. (if not nil it does.)
 }
 
