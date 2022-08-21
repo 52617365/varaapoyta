@@ -107,35 +107,6 @@ func Fuzz_times_from_current_point_forward(f *testing.F) {
 	})
 }
 
-//func TestConvert_uneven_minutes_to_even(t *testing.T) {
-//	t.Parallel()
-//	tests := []struct {
-//		time string
-//		want string
-//	}{
-//		{"1938", "1945"},
-//		{"1228", "1230"},
-//	}
-//
-//	for _, test := range tests {
-//		testname := fmt.Sprintf("time: %s, wanted: %s", test.time, test.want)
-//		t.Run(testname, func(t *testing.T) {
-//			result, err := convert_uneven_time_to_even(test.time)
-//			if result != test.want {
-//				t.Errorf("got %s, want %s", result, test.want)
-//			}
-//		})
-//	}
-//}
-
-func Test_populate_all_times(t *testing.T) {
-	all_times := populate_all_times()
-	for _, time := range all_times {
-		time_to_string := get_string_time_from_unix(time)
-		fmt.Println(time_to_string)
-	}
-}
-
 func TestGetAllReservationTimes(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
