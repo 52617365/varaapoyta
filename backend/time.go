@@ -64,36 +64,6 @@ func extract_unwanted_times(first_possible_reservation_time int64, last_possible
 	return captured_times
 }
 
-func unix_time_is_in_between_closing_and_opening_times(restaurant_closing_time_unix int64, individual_time int64, restaurant_opening_time_unix int64) bool {
-	if unix_time_is_not_in_closed_time_slot(restaurant_closing_time_unix, individual_time) && individual_time > restaurant_opening_time_unix /* here we get first time 15 minutes after opening time */ {
-		return true
-	}
-	return false
-}
-
-func opening_time_exists_but_closing_does_not(opening_time int64, closing_time int64) bool {
-	if closing_time == -1 && opening_time != -1 {
-		return true
-	}
-	return false
-}
-
-func closing_time_exists_but_opening_does_not(opening_time int64, closing_time int64) bool {
-	if opening_time == -1 && closing_time != -1 {
-		return true
-	}
-	return false
-}
-
-// Check to see if the unix timestamp provided is in the time zone where you can't reserve tables (45 minutes before closing) aka 2700 in unix.
-func unix_time_is_not_in_closed_time_slot(restaurant_closing_time_to_unix int64, unix_time int64) bool {
-	const forty_five_minutes int64 = 2700
-	if unix_time <= restaurant_closing_time_to_unix-forty_five_minutes {
-		return true
-	}
-	return false
-}
-
 func populate_all_times() []int64 {
 	all_times := make([]int64, 0, 96)
 	for hour := 0; hour < 24; hour++ {
