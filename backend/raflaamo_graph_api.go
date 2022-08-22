@@ -8,9 +8,11 @@ import (
 
 // Gets timeslots from raflaamo API that is responsible for returning graph data.
 // Instead of drawing a graph with it, we convert it into time to determine which table is open or not.
-func get_time_slots_from_graph_api(id_from_reservation_page_url string, current_date string, time_slot string, amount_of_eaters int) (*parsed_graph_data, error) {
+func get_time_slots_from_graph_api(id_from_reservation_page_url string, time_slot int64, amount_of_eaters int) (*parsed_graph_data, error) {
+	time_slot_string := get_string_time_from_unix(time_slot)
+	current_date := get_current_date_and_time().date
 	// https://s-varaukset.fi/api/recommendations/slot/{id}/{date}/{time}/{amount_of_eaters}
-	request_url := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", id_from_reservation_page_url, current_date, time_slot, amount_of_eaters)
+	request_url := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", id_from_reservation_page_url, current_date, time_slot_string, amount_of_eaters)
 
 	r, err := http.NewRequest("GET", request_url, nil)
 

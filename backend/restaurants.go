@@ -9,19 +9,14 @@ import (
 )
 
 // TODO: use goroutines for requests
-func get_available_tables(restaurants []response_fields, amount_of_eaters int) []restaurant_with_available_times_struct {
+// TODO: refactor this excuse of a fucking code block, how the fuck did it get here fuck.
+func get_available_tables(restaurants []response_fields, current_time date_and_time, amount_of_eaters int) []restaurant_with_available_times_struct {
 	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex101.com/r/NtFMrz/1
-
-	current_date := get_current_date_and_time()
-
-	start_time_unix := get_unix_from_time(current_date.time)
 	// All possible time slots we need to check, it does not contain time slots from the past.
-	all_possible_time_slots := get_time_slots_from_current_point_forward(current_date.time)
-
-	total_memory_to_reserve_for_all_restaurant_time_slots := len(restaurants) * len(all_possible_time_slots) / 3
+	all_possible_time_slots := get_time_slots_from_current_point_forward(current_time.time)
 
 	// This will contain all the available time slots from all restaurants after loop runs.
-	all_restaurants_with_available_times := make([]restaurant_with_available_times_struct, 0, total_memory_to_reserve_for_all_restaurant_time_slots)
+	all_restaurants_with_available_times := make([]restaurant_with_available_times_struct, 0, 80)
 
 	for _, restaurant := range restaurants {
 		id_from_reservation_page_url, err := get_id_from_reservation_page_url(restaurant, re)
@@ -41,11 +36,14 @@ func get_available_tables(restaurants []response_fields, amount_of_eaters int) [
 		if restaurant.Openingtime.Restauranttime.Ranges == nil {
 			continue
 		}
+
+		// Converting restaurant_start_time to unix, so we can compare it easily.
 		restaurant_start_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
-		// We minus 45 minutes from the end time because restaurants don't take reservations in that time slot.
-		// E.g. if restaurant closes at 22:00, the last possible reservation time is 21:00.
-		const forty_five_minutes_unix int64 = 2700
-		restaurant_ending_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].End) - forty_five_minutes_unix
+
+		// We minus 1 hour from the end time because restaurants don't take reservations before that time slot.
+		// IMPORTANT: E.g. if restaurant closes at 22:00, the last possible reservation time is 21:00.
+		const one_hour_unix int64 = 3600
+		restaurant_ending_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].End) - one_hour_unix
 
 		all_reservation_times, err := get_all_reservation_times(restaurant_start_time, restaurant_ending_time)
 		if err != nil {
@@ -55,8 +53,10 @@ func get_available_tables(restaurants []response_fields, amount_of_eaters int) [
 		// Iterating over all possible time slots (0200, 0800, 1400, 2000) to cover the whole 24h window (each time slot covers a 6h window.)
 		// However, all all_possible_time_slots does not contain time slots from the past.
 		for _, time_slot := range all_possible_time_slots {
-			time_slots_from_graph_api, err2 := get_time_slots_from_graph_api(id_from_reservation_page_url, current_date.date, time_slot.time, amount_of_eaters)
-			if err2 != nil {
+			// TODO: store result in channel.
+			results_from_graph_api := make(chan string)
+			time_slots_from_graph_api, err := get_time_slots_from_graph_api(id_from_reservation_page_url, time_slot.time, amount_of_eaters)
+			if err != nil {
 				// it's err if there was an error connecting to raflaamo API or if there were no results.
 				continue
 			}
@@ -66,22 +66,24 @@ func get_available_tables(restaurants []response_fields, amount_of_eaters int) [
 
 			graph_end_unix := time_slots_from_graph_api.Intervals[0].To
 
-			time_slots, err3 := time_slots_in_between(start_time_unix, graph_end_unix, all_reservation_times)
-			if err3 != nil {
+			// time_slows_in_between stores result in channel and contains a non nil value if it had an error.
+			is_err := time_slots_in_between(current_time.time, graph_end_unix, results_from_graph_api, all_reservation_times)
+			if is_err != nil {
 				continue
 			}
 
-			// Here we are doing this to avoid appending duplicate times.
-			for _, time := range time_slots {
-				// If slice containing time slots does not already contain the time slot, add the time slot.
-				if !slices.Contains(single_restaurant_with_available_times.available_time_slots, time) {
-					single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, time)
-				}
+			// If slice containing time slots does not already contain the time slot, add the time slot from the channel.
+			if !slices.Contains(single_restaurant_with_available_times.available_time_slots, <-results_from_graph_api) {
+				single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, <-results_from_graph_api)
+			}
+
+			// If slice containing time slots does not already contain the time slot, add the time slot from the channel.
+			if !slices.Contains(single_restaurant_with_available_times.available_time_slots, <-results_from_graph_api) {
+				single_restaurant_with_available_times.available_time_slots = append(single_restaurant_with_available_times.available_time_slots, <-results_from_graph_api)
 			}
 		}
 		all_restaurants_with_available_times = append(all_restaurants_with_available_times, single_restaurant_with_available_times)
 	}
-	// for each restaurant we store results here.
 	return all_restaurants_with_available_times
 }
 

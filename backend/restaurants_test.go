@@ -47,7 +47,8 @@ func TestGetAvailableTables(t *testing.T) {
 	city := "helsinki"
 	restaurants, _ := filter_restaurants_from_city(city)
 
-	results := get_available_tables(restaurants, amount_of_eaters)
+	current_time := get_current_date_and_time()
+	results := get_available_tables(restaurants, current_time, amount_of_eaters)
 
 	if len(results) == 0 {
 		t.Errorf("unexpected results length: %d", len(results))
@@ -112,6 +113,7 @@ func BenchmarkGetAvailableTables(b *testing.B) {
 		amount_of_eaters := 1
 		city := "helsinki"
 		restaurants, _ := filter_restaurants_from_city(city)
-		get_available_tables(restaurants, amount_of_eaters)
+		current_time := get_current_date_and_time()
+		get_available_tables(restaurants, current_time, amount_of_eaters)
 	}
 }

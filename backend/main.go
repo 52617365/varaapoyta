@@ -16,7 +16,9 @@ func main() {
 		log.Fatalln("no restaurants found")
 	}
 	// here restaurants is not empty (we check it before)
-	available_tables := getAvailableTables(restaurants, 1)
+
+	current_time := get_current_date_and_time()
+	available_tables := get_available_tables(restaurants, current_time, 1)
 	for _, available_table := range available_tables {
 		start_string := fmt.Sprintf("name of restaurant: %s | available_tables: ", available_table.restaurant.Name.Fi_FI)
 		fmt.Println(start_string)
