@@ -2,17 +2,19 @@ package main
 
 import (
 	"errors"
-	"golang.org/x/exp/slices"
 	"regexp"
 	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 // TODO: use goroutines for requests
-func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []restaurant_with_available_times_struct {
+func get_available_tables(restaurants []response_fields, amount_of_eaters int) []restaurant_with_available_times_struct {
 	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex101.com/r/NtFMrz/1
 
 	current_date := get_current_date_and_time()
 
+	start_time_unix := get_unix_from_time(current_date.time)
 	// All possible time slots we need to check, it does not contain time slots from the past.
 	all_possible_time_slots := get_time_slots_from_current_point_forward(current_date.time)
 
@@ -61,9 +63,6 @@ func getAvailableTables(restaurants []response_fields, amount_of_eaters int) []r
 			// Adding 10800000(ms) to the time to match utc +2 or +3 (finnish time) (10800000 ms corresponds to 3h)
 			time_slots_from_graph_api.Intervals[0].From += 10800000
 			time_slots_from_graph_api.Intervals[0].To += 10800000
-
-			// TODO: this could be replaced by just getting current minutes in unix format (from 1970 jan 1).
-			start_time_unix := get_unix_from_time(current_date.time)
 
 			graph_end_unix := time_slots_from_graph_api.Intervals[0].To
 

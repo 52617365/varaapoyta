@@ -21,11 +21,14 @@ func is_not_valid_format(our_number string) bool {
 
 // Gets the restaurants from the passed in argument. Returns error if nothing is found.
 func filter_restaurants_from_city(city string) ([]response_fields, error) {
+	if city == "" {
+		return nil, errors.New("no city provided")
+	}
 	restaurants, err := get_all_restaurants_from_raflaamo_api()
 	if err != nil {
 		return nil, errors.New("there was an error connecting to the raflaamo api")
 	}
-	captured_restaurants := make([]response_fields, 0, len(restaurants))
+	captured_restaurants := make([]response_fields, 0, 80)
 
 	for _, restaurant := range restaurants {
 		if strings.Contains(strings.ToLower(restaurant.Address.Municipality.Fi_FI), strings.ToLower(city)) {
