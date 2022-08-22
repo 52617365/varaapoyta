@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang.org/x/exp/slices"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -23,8 +24,12 @@ func Fuzz_get_unix_from_time(f *testing.F) {
 	f.Fuzz(func(t *testing.T, time string) {
 		unix_time := get_unix_from_time(time)
 
-		if unix_time == -1 {
-			t.Errorf("fuzzing resulted in -1")
+		time = strings.Replace(time, ":", "", -1)
+		if is_not_valid_format(time) && unix_time != -1 {
+			t.Errorf("expected error")
+		}
+		if unix_time == -1 && !is_not_valid_format(time) {
+			t.Errorf("fuzzing resulted in -1 when we did not expect it to")
 		}
 	})
 }

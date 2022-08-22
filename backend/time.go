@@ -19,7 +19,9 @@ func get_string_time_from_unix(unix_time int64) string {
 }
 
 func get_unix_from_time(time_to_convert string) int64 {
-	time_to_convert = strings.Replace(time_to_convert, ":", "", -1)
+	if strings.Contains(time_to_convert, ":") {
+		time_to_convert = strings.Replace(time_to_convert, ":", "", -1)
+	}
 	if is_not_valid_format(time_to_convert) {
 		return -1
 	}
@@ -57,7 +59,7 @@ func extract_unwanted_times(first_possible_reservation_time int64, last_possible
 	captured_times := make([]int64, 0, len(all_times))
 
 	for _, time := range all_times {
-		if time > first_possible_reservation_time && time <= last_possible_reservation_time {
+		if time > first_possible_reservation_time && time < last_possible_reservation_time {
 			captured_times = append(captured_times, time)
 		}
 	}
