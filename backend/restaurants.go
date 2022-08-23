@@ -18,10 +18,6 @@ func get_available_tables(restaurants []response_fields, amount_of_eaters int) [
 	all_time_intervals := get_all_raflaamo_time_intervals()
 
 	for _, restaurant := range restaurants {
-		// If there is no time ranges available for the restaurant, we just assume it does not even exist.
-		if restaurant_does_not_have_time_range(restaurant) {
-			continue
-		}
 		// If we can't find the id from url, just continue on to the next one because without the id we can't find the reservation page.
 		id_from_reservation_page_url, err := get_id_from_reservation_page_url(restaurant)
 		if err != nil {
@@ -30,7 +26,7 @@ func get_available_tables(restaurants []response_fields, amount_of_eaters int) [
 		// Here the available_time_slots will be populated once the next for loop iterates all the time_slots.
 		restaurant_with_available_times := restaurant_and_available_time_intervals{
 			restaurant:           restaurant,
-			available_time_slots: make([]string, 0, len(time_slots_to_check_from_graph_api)),
+			available_time_slots: []string{},
 		}
 
 		restaurant_office_hours := get_opening_and_closing_time_from(restaurant)
@@ -51,17 +47,11 @@ func get_available_tables(restaurants []response_fields, amount_of_eaters int) [
 	return all_restaurants_with_available_times
 }
 
-func restaurant_does_not_have_time_range(restaurant response_fields) bool {
-	return restaurant.Openingtime.Restauranttime.Ranges == nil
-}
-
 // We do this because the id from the "Id" field is not always the same as the id needed in the reservation page.
 func get_id_from_reservation_page_url(restaurant response_fields) (string, error) {
 	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex101.com/r/NtFMrz/1
 	reservation_page_url := restaurant.Links.TableReservationLocalized.Fi_FI
-	if restaurant_does_not_contain_reservation_page(restaurant) {
-		return "", errors.New("restaurant did not contain reservation page url")
-	}
+
 	if reservation_page_url_is_not_valid(reservation_page_url) {
 		return "", errors.New("reservation_page_url_is_not_valid")
 	}
@@ -85,11 +75,6 @@ func reservation_page_url_is_not_valid(reservation_page_url string) bool {
 // The color field will contain "transparent" if it does not contain a graph (open times), else it contains nil (meaning there are open tables)
 func time_slot_does_not_contain_open_tables(data parsed_graph_data) bool {
 	return data.Intervals[0].Color == "transparent"
-}
-
-// Some restaurants don't even contain a reservation page url, these restaurants are useless to us, so we make sure to check it.
-func restaurant_does_not_contain_reservation_page(restaurant response_fields) bool {
-	return len(restaurant.Links.TableReservationLocalized.Fi_FI) == 0
 }
 
 type restaurant_time struct {

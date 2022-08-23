@@ -7,7 +7,7 @@ import (
 
 // TODO: Make endpoints.
 func main() {
-	restaurants, err := filter_restaurants_from_city("rovaniemi")
+	restaurants, err := filter_valid_restaurants_from_city("helsinki")
 	if err != nil {
 		// if error we return this from the endpoint.
 		log.Fatalln(err)

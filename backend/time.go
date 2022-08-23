@@ -19,9 +19,7 @@ func get_string_time_from_unix(unix_time int64) string {
 }
 
 func get_unix_from_time(time_to_convert string) int64 {
-	if strings.Contains(time_to_convert, ":") {
-		time_to_convert = strings.Replace(time_to_convert, ":", "", -1)
-	}
+	time_to_convert = strings.Replace(time_to_convert, ":", "", -1)
 	if is_not_valid_format(time_to_convert) {
 		return -1
 	}
@@ -50,11 +48,11 @@ func get_time_intervals_in_between_office_hours(restaurant_starting_time_unix in
 	if restaurant_starting_time_unix >= restaurant_closing_time_unix {
 		return nil, errors.New("restaurant_start_time was larger or equal to closing_time")
 	}
-	captured_times := make([]int64, 0, len(all_time_intervals)/2)
+	captured_times := make([]int64, 0, len(all_time_intervals))
 
-	for _, time := range all_time_intervals {
-		if time > restaurant_starting_time_unix && time <= restaurant_closing_time_unix {
-			captured_times = append(captured_times, time)
+	for _, time_interval := range all_time_intervals {
+		if time_interval > restaurant_starting_time_unix && time_interval <= restaurant_closing_time_unix {
+			captured_times = append(captured_times, time_interval)
 		}
 	}
 	return captured_times, nil

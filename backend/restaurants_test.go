@@ -42,7 +42,7 @@ func TestGetAvailableTables(t *testing.T) {
 	t.Parallel()
 	amount_of_eaters := 1
 	city := "helsinki"
-	restaurants, _ := filter_restaurants_from_city(city)
+	restaurants, _ := filter_valid_restaurants_from_city(city)
 
 	results := get_available_tables(restaurants, amount_of_eaters)
 
@@ -102,11 +102,17 @@ func BenchmarkGetRestaurants(b *testing.B) {
 		get_all_restaurants_from_raflaamo_api()
 	}
 }
+func BenchmarkFilter(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		city := "helsinki"
+		filter_valid_restaurants_from_city(city)
+	}
+}
 func BenchmarkGetAvailableTables(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		amount_of_eaters := 1
 		city := "helsinki"
-		restaurants, _ := filter_restaurants_from_city(city)
+		restaurants, _ := filter_valid_restaurants_from_city(city)
 		get_available_tables(restaurants, amount_of_eaters)
 	}
 }

@@ -20,7 +20,8 @@ func is_not_valid_format(our_number string) bool {
 }
 
 // Gets the restaurants from the passed in argument. Returns error if nothing is found.
-func filter_restaurants_from_city(city string) ([]response_fields, error) {
+func filter_valid_restaurants_from_city(city string) ([]response_fields, error) {
+	city = strings.ToLower(city)
 	if city == "" {
 		return nil, errors.New("no city provided")
 	}
@@ -28,10 +29,14 @@ func filter_restaurants_from_city(city string) ([]response_fields, error) {
 	if err != nil {
 		return nil, errors.New("there was an error connecting to the raflaamo api")
 	}
-	captured_restaurants := make([]response_fields, 0, 80)
+	captured_restaurants := make([]response_fields, 0, 30)
 
+	// TODO: shall we filter all the restaurants out here that don't have a reservation link or ranges?
 	for _, restaurant := range restaurants {
-		if strings.Contains(strings.ToLower(restaurant.Address.Municipality.Fi_FI), strings.ToLower(city)) {
+
+		// If there is no time ranges available for the restaurant, we just assume it does not even exist.
+		// Also, if there is no reservation link the restaurant is useless to us.
+		if strings.ToLower(restaurant.Address.Municipality.Fi_FI) == city && restaurant.Openingtime.Restauranttime.Ranges != nil && restaurant.Links.TableReservationLocalized.Fi_FI != "" {
 			captured_restaurants = append(captured_restaurants, restaurant)
 		}
 	}

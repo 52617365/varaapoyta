@@ -9,7 +9,7 @@ import (
 func TestGetRestaurantsFromCity(t *testing.T) {
 	t.Parallel()
 	city := "helsinki"
-	restaurants_from_helsinki, err := filter_restaurants_from_city(city)
+	restaurants_from_helsinki, err := filter_valid_restaurants_from_city(city)
 
 	if err != nil {
 		t.Errorf("Error getting restaurants from city.")
@@ -25,7 +25,7 @@ func TestGetRestaurantsFromCity(t *testing.T) {
 func TestGetRestaurantsFromCityThatDoesNotExist(t *testing.T) {
 	t.Parallel()
 	city := "muumilaakso111"
-	restaurants_from_city_that_does_not_exist, err := filter_restaurants_from_city(city)
+	restaurants_from_city_that_does_not_exist, err := filter_valid_restaurants_from_city(city)
 
 	if err == nil && len(restaurants_from_city_that_does_not_exist) > 1 {
 		t.Errorf("Expected test to fail but it did not.")
