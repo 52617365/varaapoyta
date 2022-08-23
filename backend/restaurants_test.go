@@ -1,7 +1,6 @@
 package main
 
 import (
-	"regexp"
 	"strings"
 	"testing"
 )
@@ -19,8 +18,6 @@ func TestGetRestaurants(t *testing.T) {
 }
 
 func FuzzGetIdFromReservationId(f *testing.F) {
-	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
-
 	f.Add("helsinki", "https://s-varaukset.fi/online/reservation/fi/38?_ga=2.146560948.1092747230.1612503015-489168449.1604043706")
 	f.Fuzz(func(t *testing.T, city string, url string) {
 		placeholder_restaurant := response_fields{
@@ -32,7 +29,7 @@ func FuzzGetIdFromReservationId(f *testing.F) {
 			Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},
 			Links:       links_fields{TableReservationLocalized: string_field{Fi_FI: url}, HomepageLocalized: string_field{Fi_FI: ""}},
 		}
-		_, err := get_id_from_reservation_page_url(placeholder_restaurant, re)
+		_, err := get_id_from_reservation_page_url(placeholder_restaurant)
 		if !strings.Contains(placeholder_restaurant.Links.TableReservationLocalized.Fi_FI, "https://s-varaukset.fi/online/reservation/fi") && err == nil {
 			t.Errorf("expected error")
 		}
@@ -47,8 +44,7 @@ func TestGetAvailableTables(t *testing.T) {
 	city := "helsinki"
 	restaurants, _ := filter_restaurants_from_city(city)
 
-	current_time := get_current_date_and_time()
-	results := get_available_tables(restaurants, current_time, amount_of_eaters)
+	results := get_available_tables(restaurants, amount_of_eaters)
 
 	if len(results) == 0 {
 		t.Errorf("unexpected results length: %d", len(results))
@@ -58,7 +54,6 @@ func TestGetAvailableTables(t *testing.T) {
 // reservation_page_url := restaurant.Links.TableReservationLocalized.Fi_FI
 func TestGetIdFromReservationPageUrl(t *testing.T) {
 	t.Parallel()
-	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
 	restaurant_url := "https://s-varaukset.fi/online/reservation/fi/38?_ga=2.146560948.1092747230.1612503015-489168449.1604043706"
 
 	expected_id := "38"
@@ -72,7 +67,7 @@ func TestGetIdFromReservationPageUrl(t *testing.T) {
 		Links:       links_fields{TableReservationLocalized: string_field{Fi_FI: restaurant_url}, HomepageLocalized: string_field{Fi_FI: ""}},
 	}
 
-	id, err := get_id_from_reservation_page_url(placeholder_restaurant, re)
+	id, err := get_id_from_reservation_page_url(placeholder_restaurant)
 
 	if err != nil {
 		t.Errorf("get_id_from_reservation_page_url threw when we did not expect it to.")
@@ -84,7 +79,6 @@ func TestGetIdFromReservationPageUrl(t *testing.T) {
 }
 func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
 	t.Parallel()
-	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex102.com/r/NtFMrz/1
 	restaurant_url := "sitethatshouldnotwork.fi"
 
 	placeholder_restaurant := response_fields{
@@ -97,7 +91,7 @@ func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
 		Links:       links_fields{TableReservationLocalized: string_field{Fi_FI: restaurant_url}, HomepageLocalized: string_field{Fi_FI: ""}},
 	}
 
-	_, err := get_id_from_reservation_page_url(placeholder_restaurant, re)
+	_, err := get_id_from_reservation_page_url(placeholder_restaurant)
 
 	if err == nil {
 		t.Errorf("we expected get_id_from_reservation_page_url to throw but it did not.")
@@ -113,7 +107,6 @@ func BenchmarkGetAvailableTables(b *testing.B) {
 		amount_of_eaters := 1
 		city := "helsinki"
 		restaurants, _ := filter_restaurants_from_city(city)
-		current_time := get_current_date_and_time()
-		get_available_tables(restaurants, current_time, amount_of_eaters)
+		get_available_tables(restaurants, amount_of_eaters)
 	}
 }

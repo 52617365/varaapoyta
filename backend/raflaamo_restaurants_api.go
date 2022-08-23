@@ -8,7 +8,7 @@ import (
 )
 
 // Contains the restaurant information and on top of that, all available times you can reserve a table from that restaurant.
-type restaurant_with_available_times_struct struct {
+type restaurant_and_available_time_intervals struct {
 	restaurant           response_fields
 	available_time_slots []string
 }

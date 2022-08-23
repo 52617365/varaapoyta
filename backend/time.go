@@ -43,30 +43,24 @@ func get_unix_from_time(time_to_convert string) int64 {
 }
 
 // The parameters passed here have already taken into consideration the restaurants starting and closing time.
-func get_all_reservation_times(restaurant_starting_time_unix int64, restaurant_closing_time_unix int64) ([]int64, error) {
-	all_times := populate_all_times()
-
+// get_time_intervals_in_between_office_hours gets all the possible time_intervals you can reserve inside a start and end time slot.
+func get_time_intervals_in_between_office_hours(restaurant_starting_time_unix int64, restaurant_closing_time_unix int64, all_time_intervals []int64) ([]int64, error) {
 	// Here we check if the starting_time is larger than closing_time.
 	// This will result in an error because the user tried to provide times but failed with the format.
 	if restaurant_starting_time_unix >= restaurant_closing_time_unix {
 		return nil, errors.New("restaurant_start_time was larger or equal to closing_time")
 	}
-	captured_times := extract_unwanted_times(restaurant_starting_time_unix, restaurant_closing_time_unix, all_times)
-	return captured_times, nil
-}
+	captured_times := make([]int64, 0, len(all_time_intervals)/2)
 
-func extract_unwanted_times(first_possible_reservation_time int64, last_possible_reservation_time int64, all_times []int64) []int64 {
-	captured_times := make([]int64, 0, len(all_times))
-
-	for _, time := range all_times {
-		if time > first_possible_reservation_time && time <= last_possible_reservation_time {
+	for _, time := range all_time_intervals {
+		if time > restaurant_starting_time_unix && time <= restaurant_closing_time_unix {
 			captured_times = append(captured_times, time)
 		}
 	}
-	return captured_times
+	return captured_times, nil
 }
 
-func populate_all_times() []int64 {
+func get_all_raflaamo_time_intervals() []int64 {
 	all_times := make([]int64, 0, 96)
 	for hour := 0; hour < 24; hour++ {
 		if hour < 10 {
@@ -113,7 +107,7 @@ func get_current_date_and_time() date_and_time {
 	dt := time.Now().String()
 	date_to_string := date_regex.FindString(dt)
 	time_to_string := time_regex.FindString(dt)
-	time_to_string = strings.Replace(time_to_string, ":", "", -1) // Reformats E.g. 10:00 to 1000.
+	time_to_string = strings.Replace(time_to_string, ":", "", -1) // Reformat E.g. 10:00 to 1000.
 
 	return date_and_time{
 		date: date_to_string,
@@ -123,8 +117,7 @@ func get_current_date_and_time() date_and_time {
 
 // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
 // The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
-// TODO: this is buggy as strings, convert to unix.
-func get_time_slots_from_current_point_forward(current_time int64) []covered_times {
+func get_graph_time_slots_from_current_point_forward(current_time int64) []covered_times {
 	all_possible_time_slots := [...]covered_times{
 		{time: 7200, time_window_start: 0, time_window_end: 21600},
 		{time: 28800, time_window_start: 21600, time_window_end: 43200},
@@ -145,23 +138,21 @@ Used to get all the time slots in between the graph start and graph end.
 E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 */
 // Here reservation_times here has already taken into consideration the restaurants opening and closing time.
-func time_slots_in_between(start_time int64, graph_end int64, add_time_slot chan string, reservation_times []int64) error {
-	//if start_time == -1 || graph_end == -1 {
-	//	return nil, errors.New("start_time or graph_end were empty")
-	//}
+func time_slots_in_between(start_time int64, graph_end int64, reservation_times []int64) ([]string, error) {
 	if start_time == graph_end {
-		return errors.New("trying to get a time_slot with 2 identical timestamps")
+		return nil, errors.New("trying to get a time_slot with 2 identical timestamps")
 	}
 	if start_time > graph_end {
-		return errors.New("start_time was larger than end_time")
+		return nil, errors.New("start_time was larger than end_time")
 	}
 
-	// TODO: here add to channel instead?
+	reservation_times_we_want := make([]string, 0, len(reservation_times))
+
 	for _, reservation_time := range reservation_times {
 		if reservation_time > start_time && reservation_time <= graph_end {
 			// We convert the times into string_time because that's the format we will be using later on to display the times.
-			add_time_slot <- get_string_time_from_unix(reservation_time)
+			reservation_times_we_want = append(reservation_times_we_want, get_string_time_from_unix(reservation_time))
 		}
 	}
-	return nil
+	return reservation_times_we_want, nil
 }
