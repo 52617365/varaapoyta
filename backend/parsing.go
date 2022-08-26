@@ -33,7 +33,6 @@ func filter_valid_restaurants_from_city(city string) ([]response_fields, error) 
 
 	// TODO: shall we filter all the restaurants out here that don't have a reservation link or ranges?
 	for _, restaurant := range restaurants {
-
 		// If there is no time ranges available for the restaurant, we just assume it does not even exist.
 		// Also, if there is no reservation link the restaurant is useless to us.
 		if strings.ToLower(restaurant.Address.Municipality.Fi_FI) == city && restaurant.Openingtime.Restauranttime.Ranges != nil && restaurant.Links.TableReservationLocalized.Fi_FI != "" {

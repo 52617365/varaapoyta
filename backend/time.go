@@ -116,6 +116,7 @@ func get_current_date_and_time() date_and_time {
 // 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
 // The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
 func get_graph_time_slots_from_current_point_forward(current_time int64) []covered_times {
+	// Getting current_time, so we can avoid checking times from the past.
 	all_possible_time_slots := [...]covered_times{
 		{time: 7200, time_window_start: 0, time_window_end: 21600},
 		{time: 28800, time_window_start: 21600, time_window_end: 43200},
@@ -145,10 +146,8 @@ func time_slots_in_between(start_time int64, graph_end int64, reservation_times 
 	}
 
 	reservation_times_we_want := make([]string, 0, len(reservation_times))
-
 	for _, reservation_time := range reservation_times {
 		if reservation_time > start_time && reservation_time <= graph_end {
-			// We convert the times into string_time because that's the format we will be using later on to display the times.
 			reservation_times_we_want = append(reservation_times_we_want, get_string_time_from_unix(reservation_time))
 		}
 	}

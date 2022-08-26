@@ -7,13 +7,14 @@ import (
 )
 
 // TODO: use goroutines for requests
+// TODO: this is too slow when we're doing multiple restaurants
 func get_available_tables(restaurants []response_fields, amount_of_eaters int) []restaurant_and_available_time_intervals {
 	// Getting current_time, so we can avoid checking times from the past.
 	current_time := get_current_date_and_time()
 	// All possible time slots we need to check, it does not contain time slots from the past.
 	time_slots_to_check_from_graph_api := get_graph_time_slots_from_current_point_forward(current_time.time)
 	// This will contain all the available time slots from all restaurants after loop runs.
-	all_restaurants_with_available_times := make([]restaurant_and_available_time_intervals, 0, 80)
+	all_restaurants_with_available_times := make([]restaurant_and_available_time_intervals, 0, len(restaurants))
 	// 11:00, 11:15, 11:30 and so on.
 	all_time_intervals := get_all_raflaamo_time_intervals()
 
@@ -22,11 +23,6 @@ func get_available_tables(restaurants []response_fields, amount_of_eaters int) [
 		id_from_reservation_page_url, err := get_id_from_reservation_page_url(restaurant)
 		if err != nil {
 			continue
-		}
-		// Here the available_time_slots will be populated once the next for loop iterates all the time_slots.
-		restaurant_with_available_times := restaurant_and_available_time_intervals{
-			restaurant:           restaurant,
-			available_time_slots: []string{},
 		}
 
 		restaurant_office_hours := get_opening_and_closing_time_from(restaurant)
@@ -40,8 +36,11 @@ func get_available_tables(restaurants []response_fields, amount_of_eaters int) [
 		if err != nil {
 			continue
 		}
-		restaurant_with_available_times.available_time_slots = available_intervals_from_graph_api
 
+		restaurant_with_available_times := restaurant_and_available_time_intervals{
+			restaurant:           restaurant,
+			available_time_slots: available_intervals_from_graph_api,
+		}
 		all_restaurants_with_available_times = append(all_restaurants_with_available_times, restaurant_with_available_times)
 	}
 	return all_restaurants_with_available_times

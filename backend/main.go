@@ -15,8 +15,6 @@ func main() {
 	if len(restaurants) == 0 {
 		log.Fatalln("no restaurants found")
 	}
-	// here restaurants is not empty (we check it before)
-
 	available_tables := get_available_tables(restaurants, 1)
 	for _, available_table := range available_tables {
 		start_string := fmt.Sprintf("name of restaurant: %s | available_tables: ", available_table.restaurant.Name.Fi_FI)
