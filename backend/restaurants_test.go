@@ -41,7 +41,7 @@ func FuzzGetIdFromReservationId(f *testing.F) {
 func TestGetAvailableTables(t *testing.T) {
 	t.Parallel()
 	amount_of_eaters := 1
-	city := "helsinki"
+	city := "rovaniemi"
 	restaurants, _ := filter_valid_restaurants_from_city(city)
 
 	results := get_available_tables(restaurants, amount_of_eaters)
