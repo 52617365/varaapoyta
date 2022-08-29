@@ -19,13 +19,14 @@ type response_third_level struct {
 }
 
 type response_fields struct {
-	Id          string          `json:"id"`
-	Name        string_field    `json:"name"`
-	Urlpath     string_field    `json:"urlPath"`
-	Address     address_fields  `json:"address"`
-	Features    features_fields `json:"features"`
-	Openingtime opening_fields  `json:"openingTime"`
-	Links       links_fields    `json:"links"`
+	Id                   string          `json:"id"`
+	Name                 string_field    `json:"name"`
+	Urlpath              string_field    `json:"urlPath"`
+	Address              address_fields  `json:"address"`
+	Features             features_fields `json:"features"`
+	Openingtime          opening_fields  `json:"openingTime"`
+	Links                links_fields    `json:"links"`
+	available_time_slots []string        // This will be populated later on when we iterate this list and get all time slots.
 }
 
 type string_field struct {

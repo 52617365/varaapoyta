@@ -36,12 +36,11 @@ func FuzzGetIdFromReservationId(f *testing.F) {
 	})
 }
 
-// Honestly, I don't know a better way to test this function.
-// maybe test the individual functions that this function uses?
+// This function is our bottleneck.
 func TestGetAvailableTables(t *testing.T) {
 	t.Parallel()
 	amount_of_eaters := 1
-	city := "rovaniemi"
+	city := "helsinki"
 	restaurants, _ := filter_valid_restaurants_from_city(city)
 
 	results := get_available_tables(restaurants, amount_of_eaters)

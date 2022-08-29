@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -56,6 +57,8 @@ func interact_with_api(all_possible_time_slots []covered_times, id_from_reservat
 			}
 			// Adding timezone difference into the unix time. (three hours).
 			graph_end_unix := deserialized_graph_data.Intervals[0].To
+			// Adding 10800000(ms) to the time to match utc +2 or +3 (finnish time) (10800000 ms corresponds to 3h)
+			// because graph unix time fields "to" and "from" come in utc+0
 			graph_end_unix += 10800000
 			response_chan <- deserialized_graph_data
 		})
@@ -63,18 +66,10 @@ func interact_with_api(all_possible_time_slots []covered_times, id_from_reservat
 	wp.StopWait()
 	close(response_chan)
 
-	//data := make([]parsed_graph_data, 0, len(all_possible_time_slots))
-	//for thing := range response_chan {
-	//	// @Speed appending is useless, could just return channel instead.
-	//	data = append(data, *thing)
-	//}
-	//if len(data) == 0 {
-	//	return nil, errors.New("didnt find anything")
-	//}
 	return response_chan, nil
 }
 
-func get_available_time_intervals_from_graph_api(id_from_reservation_page_url string, time_slots_to_check_from_graph_api []covered_times, amount_of_eaters int, all_reservation_times []int64, current_time date_and_time) ([]string, error) {
+func get_available_time_intervals_from_graph_api(restaurant_starting_time_unix int64, restaurant_closing_time_unix int64, id_from_reservation_page_url string, time_slots_to_check_from_graph_api []covered_times, amount_of_eaters int, all_reservation_times []int64, current_time date_and_time) ([]string, error) {
 	// Reserve space for all the time_slots which the function will return in the end.
 	api_responses, err := interact_with_api(time_slots_to_check_from_graph_api, id_from_reservation_page_url, current_time.date, amount_of_eaters)
 
@@ -86,18 +81,36 @@ func get_available_time_intervals_from_graph_api(id_from_reservation_page_url st
 	time_slots := make([]string, 0, len(time_slots_to_check_from_graph_api))
 	for api_response := range api_responses {
 		graph_end_unix := api_response.Intervals[0].To
-		// Adding 10800000(ms) to the time to match utc +2 or +3 (finnish time) (10800000 ms corresponds to 3h)
-		// because graph unix time fields "to" and "from" come in utc+0
-		slots, err := time_slots_in_between(current_time.time, graph_end_unix, all_reservation_times)
-		if err != nil {
-			return nil, err
+
+		if current_time.time >= graph_end_unix {
+			return nil, errors.New("trying to get a time_slot with invalid timestamps")
 		}
+
 		// Avoiding storing duplicate time slots because without this, it will.
-		for _, slot := range slots {
-			if !slices.Contains(time_slots, slot) {
-				time_slots = append(time_slots, slot)
+		for _, reservation_time := range all_reservation_times {
+			// We check if the timestamps are valid here.
+			if valid_graph_time_slot(reservation_time, current_time.time, graph_end_unix) && time_slot_in_restaurant_opening_hours(reservation_time, restaurant_starting_time_unix, restaurant_closing_time_unix) {
+				slot := get_string_time_from_unix(reservation_time)
+				if !slices.Contains(time_slots, slot) {
+					time_slots = append(time_slots, slot)
+				}
 			}
 		}
 	}
 	return time_slots, nil
+}
+
+// Checks to see if the reservation time checked is larger than the current time and smaller or equal to the last possible time to reserve (graph_end_unix)
+func valid_graph_time_slot(reservation_time int64, current_time int64, graph_end_unix int64) bool {
+	if reservation_time > current_time && reservation_time <= graph_end_unix {
+		return true
+	}
+	return false
+}
+
+func time_slot_in_restaurant_opening_hours(reservation_time int64, restaurant_starting_time_unix int64, restaurant_closing_time_unix int64) bool {
+	if reservation_time > restaurant_starting_time_unix && reservation_time <= restaurant_closing_time_unix {
+		return true
+	}
+	return false
 }

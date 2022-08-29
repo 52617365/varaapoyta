@@ -145,7 +145,7 @@ func TestGetAllReservationTimes(t *testing.T) {
 	}
 }
 
-// TODO: make test work with channels.
+//// TODO: make test work with channels.
 //func TestReturnTimeslotsInbetween(t *testing.T) {
 //	t.Parallel()
 //	tests := []struct {
@@ -166,7 +166,7 @@ func TestGetAllReservationTimes(t *testing.T) {
 //	for _, test := range tests {
 //		testname := fmt.Sprintf("start_time %s,end_time %s,restaurant_opening_time %s restaurant_closing_time %s", test.start_time, test.end_time, test.restaurant_opening_time, test.restaurant_closing_time)
 //		t.Run(testname, func(t *testing.T) {
-//			all_available_time_slots, _ := get_all_reservation_times(get_unix_from_time(test.restaurant_opening_time), get_unix_from_time(test.restaurant_closing_time))
+//			all_available_time_slots, _ := get_available_time_intervals_from_graph_api(get_unix_from_time(test.restaurant_opening_time), get_unix_from_time(test.restaurant_closing_time))
 //			result, err := time_slots_in_between(get_unix_from_time(test.start_time), get_unix_from_time(test.end_time), all_available_time_slots)
 //			if test.start_time == "" && result == nil && err == nil {
 //				t.Errorf(`expected an error with start_time: %s`, test.start_time)

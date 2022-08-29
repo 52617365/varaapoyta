@@ -36,7 +36,12 @@ func filter_valid_restaurants_from_city(city string) ([]response_fields, error) 
 		// If there is no time ranges available for the restaurant, we just assume it does not even exist.
 		// Also, if there is no reservation link the restaurant is useless to us.
 		if strings.ToLower(restaurant.Address.Municipality.Fi_FI) == city && restaurant.Openingtime.Restauranttime.Ranges != nil && restaurant.Links.TableReservationLocalized.Fi_FI != "" {
-			captured_restaurants = append(captured_restaurants, restaurant)
+			restaurant_office_hours := get_opening_and_closing_time_from(restaurant)
+			// Checking to see if the timestamps are fucked here, so we don't have to check them later.
+			// We have already checked that the ranges exist in the previous condition (restaurant.Openingtime.Restauranttime.Ranges != nil)
+			if !(restaurant_office_hours.opening >= restaurant_office_hours.closing) {
+				captured_restaurants = append(captured_restaurants, restaurant)
+			}
 		}
 	}
 	return captured_restaurants, nil

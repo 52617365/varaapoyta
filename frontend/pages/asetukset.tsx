@@ -89,6 +89,7 @@ function useNoInitialEffect(
     }, [effect]);
 }
 
+// TODO: figure out if we even want local storage.
 function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: string[] }) {
     const [buttonLoading, setButtonLoading] = React.useState(false);
     function setLoadingState() {
@@ -101,8 +102,6 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
     let ravintolaBoxes = GenerateCheckboxes(ravintolat, ravintola_lista)
     let kaupungitBoxes = GenerateCheckboxes(kaupungit, kaupunki_lista)
 
-    console.log(ravintola_lista)
-    console.log(kaupunki_lista)
     // loading up states on page load.
     useEffect(() => {
         let ravintolat_storage = localStorage.getItem('varaapoyta_ravintolat')
@@ -129,9 +128,9 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
     return (
         <>
             <div className="relative hero min-h-screen bg-base-200">
-                <Link href={"/varaa"}>
+                <Link href={"/"}>
                     <a className={"absolute top-0 right-0"}>
-            <Button text={"Takaisin varaamaan"} setButton={setLoadingState} buttonLoading={buttonLoading}/>
+                        <Button text={"Takaisin varaamaan"} setButton={setLoadingState} buttonLoading={buttonLoading}/>
                     </a>
                 </Link>
                 <div className="hero-content text-center">

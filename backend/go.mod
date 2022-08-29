@@ -7,6 +7,8 @@ require (
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
 )
 
+require github.com/gorilla/mux v1.8.0 // indirect
+
 require (
 	github.com/alitto/pond v1.8.0
 	github.com/gammazero/deque v0.2.0 // indirect

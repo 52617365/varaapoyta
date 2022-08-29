@@ -1,13 +1,27 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"log"
+	"net/http"
 )
 
-// TODO: Make endpoints.
 func main() {
-	restaurants, err := filter_valid_restaurants_from_city("helsinki")
+	r := mux.NewRouter()
+	r.HandleFunc("/tables/{city}", entry_point).Methods("GET")
+	log.Fatal(http.ListenAndServe(":10000", r))
+}
+func entry_point(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	city := vars["city"]
+	if city == "" {
+		// TODO: Get all the cities and then match if it even exists on raflaamo site here.
+		_, _ = fmt.Fprintf(w, "no city provided")
+		return
+	}
+	restaurants, err := filter_valid_restaurants_from_city(city)
 	if err != nil {
 		// if error we return this from the endpoint.
 		log.Fatalln(err)
@@ -16,12 +30,6 @@ func main() {
 		log.Fatalln("no restaurants found")
 	}
 	available_tables := get_available_tables(restaurants, 1)
-	for _, available_table := range available_tables {
-		start_string := fmt.Sprintf("name of restaurant: %s | available_tables: ", available_table.restaurant.Name.Fi_FI)
-		fmt.Println(start_string)
-
-		for _, time := range available_table.available_time_slots {
-			fmt.Println(time)
-		}
-	}
+	serialize, _ := json.Marshal(available_tables)
+	_, _ = fmt.Fprintf(w, string(serialize))
 }

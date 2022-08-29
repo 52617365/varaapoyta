@@ -8,13 +8,11 @@ import (
 
 // TODO: use goroutines for requests
 // TODO: this is too slow when we're doing multiple restaurants
-func get_available_tables(restaurants []response_fields, amount_of_eaters int) []restaurant_and_available_time_intervals {
+func get_available_tables(restaurants []response_fields, amount_of_eaters int) []response_fields {
 	// Getting current_time, so we can avoid checking times from the past.
 	current_time := get_current_date_and_time()
 	// All possible time slots we need to check, it does not contain time slots from the past.
 	time_slots_to_check_from_graph_api := get_graph_time_slots_from_current_point_forward(current_time.time)
-	// This will contain all the available time slots from all restaurants after loop runs.
-	all_restaurants_with_available_times := make([]restaurant_and_available_time_intervals, 0, len(restaurants))
 	// 11:00, 11:15, 11:30 and so on.
 	all_time_intervals := get_all_raflaamo_time_intervals()
 
@@ -26,24 +24,16 @@ func get_available_tables(restaurants []response_fields, amount_of_eaters int) [
 		}
 
 		restaurant_office_hours := get_opening_and_closing_time_from(restaurant)
-
-		time_intervals_in_between_office_hours, err := get_time_intervals_in_between_office_hours(restaurant_office_hours.opening, restaurant_office_hours.closing, all_time_intervals)
+		// TODO: pass all_time_intervals into function instead of time_intervals_in_between_office_hours and then do the branch checking inside the function instead of in the previous function.
+		available_intervals_from_graph_api, err := get_available_time_intervals_from_graph_api(restaurant_office_hours.opening, restaurant_office_hours.closing, id_from_reservation_page_url, time_slots_to_check_from_graph_api, amount_of_eaters, all_time_intervals, current_time)
 		if err != nil {
 			continue
 		}
-		// available_intervals_from_graph_api contains all the possible intervals where you can reserve a table.
-		available_intervals_from_graph_api, err := get_available_time_intervals_from_graph_api(id_from_reservation_page_url, time_slots_to_check_from_graph_api, amount_of_eaters, time_intervals_in_between_office_hours, current_time)
-		if err != nil {
-			continue
-		}
-
-		restaurant_with_available_times := restaurant_and_available_time_intervals{
-			restaurant:           restaurant,
-			available_time_slots: available_intervals_from_graph_api,
-		}
-		all_restaurants_with_available_times = append(all_restaurants_with_available_times, restaurant_with_available_times)
+		// Here we populate the empty field time slot with all the available time slots.
+		// This is expected behavior because we planned on populating it later on.
+		restaurant.available_time_slots = available_intervals_from_graph_api
 	}
-	return all_restaurants_with_available_times
+	return restaurants
 }
 
 // We do this because the id from the "Id" field is not always the same as the id needed in the reservation page.
