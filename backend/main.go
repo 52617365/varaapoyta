@@ -21,15 +21,16 @@ func entry_point(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprintf(w, "no city provided")
 		return
 	}
-	restaurants, err := filter_valid_restaurants_from_city(city)
+
+	restaurants, err := get_all_restaurants_from_raflaamo_api()
 	if err != nil {
-		// if error we return this from the endpoint.
 		log.Fatalln(err)
 	}
+	// We can replace this with extra conditions in get_available_tables.
 	if len(restaurants) == 0 {
 		log.Fatalln("no restaurants found")
 	}
-	available_tables := get_available_tables(restaurants, 1)
+	available_tables := get_available_tables(city, restaurants, 1)
 	serialize, _ := json.Marshal(available_tables)
 	_, _ = fmt.Fprintf(w, string(serialize))
 }

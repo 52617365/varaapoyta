@@ -8,7 +8,7 @@ import (
 
 // TODO: use goroutines for requests
 // TODO: this is too slow when we're doing multiple restaurants
-func get_available_tables(restaurants []response_fields, amount_of_eaters int) []response_fields {
+func get_available_tables(city string, restaurants []response_fields, amount_of_eaters int) []response_fields {
 	// Getting current_time, so we can avoid checking times from the past.
 	current_time := get_current_date_and_time()
 	// All possible time slots we need to check, it does not contain time slots from the past.
@@ -17,9 +17,13 @@ func get_available_tables(restaurants []response_fields, amount_of_eaters int) [
 	all_time_intervals := get_all_raflaamo_time_intervals()
 
 	for _, restaurant := range restaurants {
+		if !(filter_restaurant(city, restaurant)) {
+			continue
+		}
 		// If we can't find the id from url, just continue on to the next one because without the id we can't find the reservation page.
 		id_from_reservation_page_url, err := get_id_from_reservation_page_url(restaurant)
 		if err != nil {
+			// No id found, irrelevant url.
 			continue
 		}
 
@@ -83,4 +87,20 @@ func get_opening_and_closing_time_from(restaurant response_fields) restaurant_ti
 		opening: restaurant_start_time,
 		closing: restaurant_ending_time,
 	}
+}
+
+func filter_restaurant(city string, restaurant response_fields) bool {
+	city = strings.ToLower(city)
+	if city == "" {
+		return false
+	}
+	if strings.ToLower(restaurant.Address.Municipality.Fi_FI) == city && restaurant.Openingtime.Restauranttime.Ranges != nil && restaurant.Links.TableReservationLocalized.Fi_FI != "" {
+		restaurant_office_hours := get_opening_and_closing_time_from(restaurant)
+		// Checking to see if the timestamps are fucked here, so we don't have to check them later.
+		// We have already checked that the ranges exist in the previous condition (restaurant.Openingtime.Restauranttime.Ranges != nil)
+		if !(restaurant_office_hours.opening >= restaurant_office_hours.closing) {
+			return true
+		}
+	}
+	return false
 }

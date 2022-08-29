@@ -41,9 +41,8 @@ func TestGetAvailableTables(t *testing.T) {
 	t.Parallel()
 	amount_of_eaters := 1
 	city := "helsinki"
-	restaurants, _ := filter_valid_restaurants_from_city(city)
-
-	results := get_available_tables(restaurants, amount_of_eaters)
+	restaurants, _ := get_all_restaurants_from_raflaamo_api()
+	results := get_available_tables(city, restaurants, amount_of_eaters)
 
 	if len(results) == 0 {
 		t.Errorf("unexpected results length: %d", len(results))
@@ -111,7 +110,7 @@ func BenchmarkGetAvailableTables(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		amount_of_eaters := 1
 		city := "helsinki"
-		restaurants, _ := filter_valid_restaurants_from_city(city)
-		get_available_tables(restaurants, amount_of_eaters)
+		restaurants, _ := get_all_restaurants_from_raflaamo_api()
+		get_available_tables(city, restaurants, amount_of_eaters)
 	}
 }

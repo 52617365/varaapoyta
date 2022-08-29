@@ -10,6 +10,5 @@ require (
 require github.com/gorilla/mux v1.8.0 // indirect
 
 require (
-	github.com/alitto/pond v1.8.0
 	github.com/gammazero/deque v0.2.0 // indirect
 )

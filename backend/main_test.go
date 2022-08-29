@@ -8,18 +8,16 @@ import (
 
 func BenchmarkMain(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		restaurants, err := filter_valid_restaurants_from_city("helsinki")
-		if err != nil {
-			// if error we return this from the endpoint.
-			log.Fatalln(err)
-		}
+		city := "helsinki"
+		restaurants, _ := get_all_restaurants_from_raflaamo_api()
+
 		if len(restaurants) == 0 {
 			log.Fatalln("no restaurants found")
 		}
 		// here restaurants is not empty (we check it before)
 
-		available_tables := get_available_tables(restaurants, 1)
-		for _, available_table := range available_tables {
+		results := get_available_tables(city, restaurants, 1)
+		for _, available_table := range results {
 			start_string := fmt.Sprintf("name of restaurant: %s | available_tables: ", available_table.Name.Fi_FI)
 			fmt.Println(start_string)
 
