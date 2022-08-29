@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// TODO: use goroutines for requests
 // TODO: this is too slow when we're doing multiple restaurants
 func get_available_tables(city string, restaurants []response_fields, amount_of_eaters int) []response_fields {
 	// Getting current_time, so we can avoid checking times from the past.
@@ -92,6 +91,9 @@ func get_opening_and_closing_time_from(restaurant response_fields) restaurant_ti
 func filter_restaurant(city string, restaurant response_fields) bool {
 	city = strings.ToLower(city)
 	if city == "" {
+		return false
+	}
+	if strings.Contains(restaurant.Links.TableReservationLocalized.Fi_FI, "(MISSING)") {
 		return false
 	}
 	if strings.ToLower(restaurant.Address.Municipality.Fi_FI) == city && restaurant.Openingtime.Restauranttime.Ranges != nil && restaurant.Links.TableReservationLocalized.Fi_FI != "" {
