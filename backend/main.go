@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -93,8 +94,8 @@ func entry_point(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	city := vars["city"]
 	if is_not_valid_city(city) {
-		w.Write([]byte("no restaurants with that city"))
-		//_, _ = fmt.Fprintf(w, "no restaurants with that city")
+		serialized_err, _ := json.Marshal("no restaurants with that city")
+		w.Write(serialized_err)
 		return
 	}
 
@@ -102,12 +103,11 @@ func entry_point(w http.ResponseWriter, r *http.Request) {
 	amount_of_eaters_int := get_int_from_amount_of_eaters(amount_of_eaters)
 
 	if amount_of_eaters_int == -1 {
-		w.Write([]byte("amount of eaters is unknown"))
-		//_, _ = fmt.Fprintf(w, "amount of eaters is unknown")
+		serialized_err, _ := json.Marshal("amount of eaters is unknown")
+		w.Write(serialized_err)
 		return
 	}
 
-	// TODO: why is times not included in the serialize_string?
 	available_tables := get_available_tables(city, amount_of_eaters_int)
 	serialize, _ := json.Marshal(available_tables)
 
@@ -118,7 +118,7 @@ func entry_point(w http.ResponseWriter, r *http.Request) {
 }
 
 func is_not_valid_city(city string) bool {
-	return !Contains(all_possible_cities, city)
+	return !Contains(all_possible_cities, strings.ToLower(city))
 }
 
 func get_int_from_amount_of_eaters(amount_of_eaters string) int {
