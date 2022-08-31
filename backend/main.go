@@ -1,14 +1,16 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
-var possible_cities = [...]string{
+var all_possible_cities = [...]string{
 	"helsinki",
 	"espoo",
 	"vantaa",
@@ -68,19 +70,32 @@ var possible_cities = [...]string{
 	"rovaniemi",
 	"kittilä"}
 
-// TODO: Make endpoints.
+func Contains[T comparable](arr [58]T, x T) bool {
+	for _, v := range arr {
+		if v == x {
+			return true
+		}
+	}
+	return false
+}
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/tables/{city}", entry_point).Methods("GET")
+	r.HandleFunc("/tables/{city}/{amount_of_eaters}", entry_point).Methods("GET")
 	log.Fatal(http.ListenAndServe(":10000", r))
 }
 func entry_point(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	city := vars["city"]
-	_, _ = fmt.Fprintf(w, city)
-	if city == "" {
-		// TODO: Get all the cities and then match if it even exists on raflaamo site here.
-		_, _ = fmt.Fprintf(w, "no city provided")
+	amount_of_eaters := vars["amount_of_eaters"] //  This is the amount of eaters.
+	amount_of_eaters_int := get_int_from_amount_of_eaters(amount_of_eaters)
+
+	if amount_of_eaters_int == -1 {
+		_, _ = fmt.Fprintf(w, "amount of eaters is unknown")
+		return
+	}
+
+	if is_not_valid_city(city) {
+		_, _ = fmt.Fprintf(w, "no restaurants with that city")
 		return
 	}
 
@@ -91,7 +106,23 @@ func entry_point(w http.ResponseWriter, r *http.Request) {
 	if len(restaurants) == 0 {
 		log.Fatalln("no restaurants found")
 	}
-	//available_tables := get_available_tables(city, restaurants, 1)
-	//serialize, _ := json.Marshal(available_tables)
-	//_, _ = fmt.Fprintf(w, string(serialize))
+	// FIX: get_available_tables never actually filters out the unwanted cities.
+	available_tables := get_available_tables(city, restaurants, amount_of_eaters_int)
+	serialize, _ := json.Marshal(available_tables)
+	_, _ = fmt.Fprintf(w, string(serialize))
+}
+
+func is_not_valid_city(city string) bool {
+	return !Contains(all_possible_cities, city)
+}
+
+func get_int_from_amount_of_eaters(amount_of_eaters string) int {
+	if amount_of_eaters == "" {
+		return -1
+	}
+	if val, err := strconv.Atoi(amount_of_eaters); err == nil {
+		return val
+	}
+	return -1
+
 }
