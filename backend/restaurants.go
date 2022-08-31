@@ -15,8 +15,9 @@ func get_available_tables(city string, restaurants []response_fields, amount_of_
 	// 11:00, 11:15, 11:30 and so on.
 	all_time_intervals := get_all_raflaamo_time_intervals()
 
+	restaurants_from_provided_city := make([]response_fields, 0, 60)
 	for _, restaurant := range restaurants {
-		if !(filter_restaurant(city, restaurant)) {
+		if restaurant_format_is_incorrect(city, restaurant) {
 			continue
 		}
 		// If we can't find the id from url, just continue on to the next one because without the id we can't find the reservation page.
@@ -34,9 +35,11 @@ func get_available_tables(city string, restaurants []response_fields, amount_of_
 		}
 		// Here we populate the empty field time slot with all the available time slots.
 		// This is expected behavior because we planned on populating it later on.
+
 		restaurant.available_time_slots = available_intervals_from_graph_api
+		restaurants_from_provided_city = append(restaurants_from_provided_city, restaurant)
 	}
-	return restaurants
+	return restaurants_from_provided_city
 }
 
 // We do this because the id from the "Id" field is not always the same as the id needed in the reservation page.
@@ -88,21 +91,35 @@ func get_opening_and_closing_time_from(restaurant response_fields) restaurant_ti
 	}
 }
 
-func filter_restaurant(city string, restaurant response_fields) bool {
+func restaurant_format_is_incorrect(city string, restaurant response_fields) bool {
+
+	// Converting to lower so that we don't run into problems when comparing it.
 	city = strings.ToLower(city)
-	if city == "" {
-		return false
-	}
+
+	// It sometimes has this weird (MISSING) thing and that is an indication that there is something scary happening with the reservation page link so we avoid those.
 	if strings.Contains(restaurant.Links.TableReservationLocalized.Fi_FI, "(MISSING)") {
-		return false
+		return true
 	}
-	if strings.ToLower(restaurant.Address.Municipality.Fi_FI) == city && restaurant.Openingtime.Restauranttime.Ranges != nil && restaurant.Links.TableReservationLocalized.Fi_FI != "" {
-		restaurant_office_hours := get_opening_and_closing_time_from(restaurant)
-		// Checking to see if the timestamps are fucked here, so we don't have to check them later.
-		// We have already checked that the ranges exist in the previous condition (restaurant.Openingtime.Restauranttime.Ranges != nil)
-		if !(restaurant_office_hours.opening >= restaurant_office_hours.closing) {
-			return true
-		}
+	// We check that the city is the correct one since we want to filter them out depending on the passed in city.
+	if strings.ToLower(restaurant.Address.Municipality.Fi_FI) != city {
+		return true
 	}
+	// The restaurant times are nil if there are no time ranges available, we want to skip those because they are useless to us without times.
+	if restaurant.Openingtime.Restauranttime.Ranges == nil {
+		return true
+	}
+	// Reservation url is sometimes empty, skip at this point cuz we can't reserve a table without a reservation page url.
+	if restaurant.Links.TableReservationLocalized.Fi_FI == "" {
+		return true
+	}
+
+	restaurant_office_hours := get_opening_and_closing_time_from(restaurant)
+	// Checking to see if the timestamps are fucked here, so we don't have to check them later.
+	// We have already checked that the ranges exist in the previous condition (restaurant.Openingtime.Restauranttime.Ranges != nil)
+	if restaurant_office_hours.opening >= restaurant_office_hours.closing {
+		return true
+	}
+
+	// Woohoo validated
 	return false
 }
