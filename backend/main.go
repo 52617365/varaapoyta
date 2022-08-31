@@ -83,6 +83,7 @@ func Contains[T comparable](arr [58]T, x T) bool {
 	}
 	return false
 }
+// TODO: we don't need "urlPath" and "features" from the raflaamo api.
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/tables/{city}/{amount_of_eaters}", entry_point).Methods("GET")

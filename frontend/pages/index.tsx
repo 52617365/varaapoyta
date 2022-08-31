@@ -3,10 +3,43 @@ import Link from "next/link"
 import SiteFooter from "../components/SiteFooter";
 import Button from "../components/Button";
 import React, {useState} from "react";
+import {webpack} from "next/dist/compiled/webpack/webpack";
+
+interface string_field {
+    fi_FI: string
+}
+
+interface ranges_contents {
+    end: string;
+    start: string;
+}
+
+interface ranges {
+    ranges: Array<ranges_contents>
+}
+
+interface opening_time {
+    kitchenTime: ranges;
+    restaurantTime: ranges;
+}
+interface address {
+    municipality: string_field;
+    street: string_field;
+    zipcode: string
+}
+
+interface api_response {
+    id: number;
+    address: address
+    available_time_slots: Array<string>;
+    name: string_field;
+    openingTime: opening_time;
+    urlPath: string_field;
+}
 
 const Home: NextPage = () => {
     const [buttonLoading, setButtonLoading] = React.useState(false);
-    const [ravintolatApista, setRavintolat] = React.useState(null);
+    const [ravintolatApista, setRavintolat] = React.useState<api_response[]>([]);
 
     const fetchInformation = async (city: string) => {
         if (buttonLoading || city == "") {
@@ -16,15 +49,14 @@ const Home: NextPage = () => {
         try {
             const url = `http://localhost:10000/tables/${city}/1`
             const response = await fetch(url)
-            const response_json = await response.json()
-            console.log(response_json)
-            setRavintolat(response_json)
+            const parsed_response = await response.json()
+            console.log(parsed_response)
+            setRavintolat(parsed_response)
             setButtonLoading(false)
         } catch (e) {
+            setButtonLoading(false)
             console.log("Error fetching endpoint.")
         }
-        // TODO: fetchInfo should set buttonLoading to false when fetched.
-        setButtonLoading(false)
     }
     // kaupunki is used in get query to endpoint
     const [kaupunki, asetaKaupunki] = useState('');
@@ -49,10 +81,24 @@ const Home: NextPage = () => {
                             </a>
                         </Link>
                         <div className={"pb-3"}>
-                            <input type="text" placeholder="Kaupunki" className="input w-full max-w-xs" onChange={handleKaupunki}/>
+                            <input type="text" placeholder="Kaupunki" className="input w-full max-w-xs"
+                                   onChange={handleKaupunki}/>
                         </div>
                         <div>
-                            <Button text="Hae ravintolat" setButton={fetchInformation} buttonLoading={buttonLoading} textfield_text={kaupunki}/>
+                            <Button text="Hae ravintolat" setButton={fetchInformation} buttonLoading={buttonLoading}
+                                    textfield_text={kaupunki}/>
+                        </div>
+                        <div>
+                            {ravintolatApista.map((ravintola: api_response) => {
+                                return (
+                                    <>
+                                        <h1>{ravintola.id}</h1>
+                                        <h1>{ravintola.address.municipality.fi_FI}</h1>
+                                        <h1>{ravintola.address.street.fi_FI}</h1>
+                                        <h1>{ravintola.address.zipcode}</h1>
+                                    </>
+                                )
+                            })}
                         </div>
                     </div>
                 </div>
