@@ -130,7 +130,7 @@ function Asetukset({ravintolat, kaupungit}: { ravintolat: string[], kaupungit: s
             <div className="relative hero min-h-screen bg-base-200">
                 <Link href={"/"}>
                     <a className={"absolute top-0 right-0"}>
-                        <Button text={"Takaisin varaamaan"} setButton={setLoadingState} buttonLoading={buttonLoading}/>
+                        <Button text={"Takaisin varaamaan"} setButton={setLoadingState} buttonLoading={buttonLoading} textfield_text={""}/>
                     </a>
                 </Link>
                 <div className="hero-content text-center">

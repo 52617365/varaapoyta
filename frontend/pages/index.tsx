@@ -6,23 +6,24 @@ import React, {useState} from "react";
 
 const Home: NextPage = () => {
     const [buttonLoading, setButtonLoading] = React.useState(false);
-    // const [ravintolatApista, setRavintolat] = React.useState([]);
+    const [ravintolatApista, setRavintolat] = React.useState(null);
 
-    const fetchInformation = (city: string) =>  {
-        if(buttonLoading || city == "") {
+    const fetchInformation = async (city: string) => {
+        if (buttonLoading || city == "") {
             return
         }
         setButtonLoading(true)
         try {
             const url = `http://localhost:10000/tables/${city}/1`
-            console.log(url)
-            fetch(url, {
-            }).then(res => console.log(res.json()))
-            // TODO: fetchInfo should set buttonLoading to false when fetched.
-        }
-        catch(e){
+            const response = await fetch(url)
+            const response_json = await response.json()
+            console.log(response_json)
+            setRavintolat(response_json)
+            setButtonLoading(false)
+        } catch (e) {
             console.log("Error fetching endpoint.")
         }
+        // TODO: fetchInfo should set buttonLoading to false when fetched.
         setButtonLoading(false)
     }
     // kaupunki is used in get query to endpoint
@@ -51,7 +52,6 @@ const Home: NextPage = () => {
                             <input type="text" placeholder="Kaupunki" className="input w-full max-w-xs" onChange={handleKaupunki}/>
                         </div>
                         <div>
-                            {/*TODO: figure out how to correctly pass the value in the text field into the fetchInformation function. */}
                             <Button text="Hae ravintolat" setButton={fetchInformation} buttonLoading={buttonLoading} textfield_text={kaupunki}/>
                         </div>
                     </div>
