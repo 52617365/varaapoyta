@@ -2,25 +2,34 @@ import type {NextPage} from 'next'
 import Link from "next/link"
 import SiteFooter from "../components/SiteFooter";
 import Button from "../components/Button";
-import React from "react";
+import React, {useState} from "react";
 
-function fetchInfo() {
-    // TODO: Connect to the backend endpoint here.
-    fetch("https://api.raflaamo.fi/query", {
-    }).then(res => console.log(res))
-}
-
-
-// TODO: turn page navigations into regular buttons cuz they load insta instead of having a loading time, only use the loading indicator on buttons that send requests.
 const Home: NextPage = () => {
     const [buttonLoading, setButtonLoading] = React.useState(false);
+    // const [ravintolatApista, setRavintolat] = React.useState([]);
 
-    function fetchInformation() {
+    const fetchInformation = (city: string) =>  {
+        if(buttonLoading || city == "") {
+            return
+        }
         setButtonLoading(true)
-        // TODO: fetchInfo should set buttonLoading to false when fetched.
-        fetchInfo()
+        try {
+            const url = `http://localhost:10000/tables/${city}/1`
+            console.log(url)
+            fetch(url, {
+            }).then(res => console.log(res.json()))
+            // TODO: fetchInfo should set buttonLoading to false when fetched.
+        }
+        catch(e){
+            console.log("Error fetching endpoint.")
+        }
+        setButtonLoading(false)
     }
-
+    // kaupunki is used in get query to endpoint
+    const [kaupunki, asetaKaupunki] = useState('');
+    const handleKaupunki = (event: React.ChangeEvent<HTMLInputElement>) => {
+        asetaKaupunki(event.target.value);
+    };
     return (
         <>
             <div className="hero min-h-screen bg-base-200">
@@ -39,10 +48,11 @@ const Home: NextPage = () => {
                             </a>
                         </Link>
                         <div className={"pb-3"}>
-                            <input type="text" placeholder="Kaupunki" className="input w-full max-w-xs"/>
+                            <input type="text" placeholder="Kaupunki" className="input w-full max-w-xs" onChange={handleKaupunki}/>
                         </div>
                         <div>
-                            <Button text="Hae ravintolat" setButton={fetchInformation} buttonLoading={buttonLoading}/>
+                            {/*TODO: figure out how to correctly pass the value in the text field into the fetchInformation function. */}
+                            <Button text="Hae ravintolat" setButton={fetchInformation} buttonLoading={buttonLoading} textfield_text={kaupunki}/>
                         </div>
                     </div>
                 </div>
