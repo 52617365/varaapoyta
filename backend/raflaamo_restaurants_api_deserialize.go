@@ -26,7 +26,7 @@ type response_fields struct {
 	Features             features_fields `json:"features"`
 	Openingtime          opening_fields  `json:"openingTime"`
 	Links                links_fields    `json:"links"`
-	available_time_slots []string        // This will be populated later on when we iterate this list and get all time slots.
+	Available_time_slots []string        `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all time slots.
 }
 
 type string_field struct {

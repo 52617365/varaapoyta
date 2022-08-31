@@ -21,7 +21,7 @@ func BenchmarkMain(b *testing.B) {
 			start_string := fmt.Sprintf("name of restaurant: %s | available_tables: ", available_table.Name.Fi_FI)
 			fmt.Println(start_string)
 
-			for _, time := range available_table.available_time_slots {
+			for _, time := range available_table.Available_time_slots {
 				fmt.Println(time)
 			}
 		}

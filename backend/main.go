@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -70,6 +69,11 @@ var all_possible_cities = [...]string{
 	"rovaniemi",
 	"kittilä"}
 
+func set_correct_request_headers(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Content-Type", "application/json")
+}
+
 func Contains[T comparable](arr [58]T, x T) bool {
 	for _, v := range arr {
 		if v == x {
@@ -84,32 +88,33 @@ func main() {
 	log.Fatal(http.ListenAndServe(":10000", r))
 }
 func entry_point(w http.ResponseWriter, r *http.Request) {
+	// TODO: set this to explicit urls once it works.
+	set_correct_request_headers(&w)
 	vars := mux.Vars(r)
 	city := vars["city"]
+	if is_not_valid_city(city) {
+		w.Write([]byte("no restaurants with that city"))
+		//_, _ = fmt.Fprintf(w, "no restaurants with that city")
+		return
+	}
+
 	amount_of_eaters := vars["amount_of_eaters"] //  This is the amount of eaters.
 	amount_of_eaters_int := get_int_from_amount_of_eaters(amount_of_eaters)
 
 	if amount_of_eaters_int == -1 {
-		_, _ = fmt.Fprintf(w, "amount of eaters is unknown")
+		w.Write([]byte("amount of eaters is unknown"))
+		//_, _ = fmt.Fprintf(w, "amount of eaters is unknown")
 		return
 	}
 
-	if is_not_valid_city(city) {
-		_, _ = fmt.Fprintf(w, "no restaurants with that city")
-		return
-	}
-
-	restaurants, err := get_all_restaurants_from_raflaamo_api()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	if len(restaurants) == 0 {
-		log.Fatalln("no restaurants found")
-	}
-	// FIX: get_available_tables never actually filters out the unwanted cities.
-	available_tables := get_available_tables(city, restaurants, amount_of_eaters_int)
+	// TODO: why is times not included in the serialize_string?
+	available_tables := get_available_tables(city, amount_of_eaters_int)
 	serialize, _ := json.Marshal(available_tables)
-	_, _ = fmt.Fprintf(w, string(serialize))
+
+	_, err2 := w.Write(serialize)
+	if err2 != nil {
+		return
+	}
 }
 
 func is_not_valid_city(city string) bool {

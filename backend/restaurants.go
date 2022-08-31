@@ -7,7 +7,15 @@ import (
 )
 
 // TODO: this is too slow when we're doing multiple restaurants
-func get_available_tables(city string, restaurants []response_fields, amount_of_eaters int) []response_fields {
+func get_available_tables(city string, amount_of_eaters int) []response_fields {
+	restaurants, err := get_all_restaurants_from_raflaamo_api()
+	if err != nil {
+		return nil
+	}
+	if len(restaurants) == 0 {
+		return nil
+	}
+
 	// Getting current_time, so we can avoid checking times from the past.
 	current_time := get_current_date_and_time()
 	// All possible time slots we need to check, it does not contain time slots from the past.
@@ -36,7 +44,7 @@ func get_available_tables(city string, restaurants []response_fields, amount_of_
 		// Here we populate the empty field time slot with all the available time slots.
 		// This is expected behavior because we planned on populating it later on.
 
-		restaurant.available_time_slots = available_intervals_from_graph_api
+		restaurant.Available_time_slots = available_intervals_from_graph_api
 		restaurants_from_provided_city = append(restaurants_from_provided_city, restaurant)
 	}
 	return restaurants_from_provided_city
