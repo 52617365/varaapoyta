@@ -5,7 +5,6 @@ import Head from "next/head";
 import SiteFooter from "../components/SiteFooter"
 import {SWRConfig} from 'swr'
 
-// TODO: Instead of logging in, use local storage to store settings.
 function MyApp({Component, pageProps}: AppProps) {
     return (
         <SWRConfig value={{provider: () => new Map()}}>
@@ -15,7 +14,7 @@ function MyApp({Component, pageProps}: AppProps) {
                     <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0"/>
                 </Head>
                 <Component {...pageProps} />
-                <SiteFooter/>
+                    <SiteFooter/>
             </ThemeProvider>
         </SWRConfig>
     )

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import SiteFooter from "../components/SiteFooter";
 import React from "react";
 
 function Varaa() {
@@ -8,7 +7,7 @@ function Varaa() {
             <div className="relative hero min-h-screen bg-base-200">
                 <Link href={"/asetukset"}>
                     <a className={"absolute top-0 right-0"}>
-			<button className="btn">Muuta asetuksiasi</button>
+                        <button className="btn">Muuta asetuksiasi</button>
                     </a>
                 </Link>
                 <div className="hero-content text-center">
@@ -20,7 +19,6 @@ function Varaa() {
                     </div>
                 </div>
             </div>
-            <SiteFooter/>
         </>
     )
 }

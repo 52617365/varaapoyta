@@ -5,8 +5,6 @@ import Button from "../components/Button";
 import Link from "next/link";
 
 // TODO: Laita local storage toimimaan.
-
-// Locate checked checkboxes.
 function GenerateCheckboxes(items: string[], checked_items: string[]) {
     return items.map((item) => {
         if (checked_items.includes(item)) {
