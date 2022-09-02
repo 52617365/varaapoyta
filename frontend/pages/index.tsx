@@ -56,14 +56,16 @@ const Home: NextPage = () => {
                                     textfield_text={kaupunki}/>
                         </div>
                         <div className='pt-5'>
-                            {ravintolatApista.map((ravintola: api_response) => {
-                                return (
-                                    // Storing the id from the reservation page url so its easy to reuse when in V2 we have reservation too. 
-                                    <div key={ravintola.links.tableReservationLocalizedId} className='pb-5'>
-                                        <Card texts={ravintola}/>
-                                    </div>
-                                )
-                            })}
+                            <div className="grid grid-rows-4 grid-flow-col gap-4">
+                                {ravintolatApista.map((ravintola: api_response) => {
+                                    return (
+                                        // Storing the id from the reservation page url so its easy to reuse when in V2 we have reservation too. 
+                                        <div key={ravintola.links.tableReservationLocalizedId} className='pb-5'>
+                                            <Card texts={ravintola}/>
+                                        </div>
+                                    )
+                                })}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 import api_response from "../interfaces/api_response_interface"
 import ModalContacts from "../components/ModalContacts"
 import ModalLinks from "../components/ModalLinks"
+import ModalOpenTimes from "../components/ModalOpenTimes"
 
 function Card({texts}: { texts: api_response}) {
     return (
@@ -10,6 +11,7 @@ function Card({texts}: { texts: api_response}) {
                     <div className="pr-4 space-x-2">
                         <ModalContacts information={texts}/>
                         <ModalLinks information={texts}/>
+                        <ModalOpenTimes information={texts}/>
                     </div>
             <div className="card-actions justify-end">
                 {/*TODO: add some timer here or something?*/}
