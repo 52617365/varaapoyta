@@ -7,6 +7,7 @@ import (
 )
 
 // TODO: this is too slow when we're doing multiple restaurants
+// TODO: we're not getting postcodes in final deserialized response.
 func get_available_tables(city string, amount_of_eaters int) []response_fields {
 	restaurants, err := get_all_restaurants_from_raflaamo_api()
 	if err != nil {
@@ -45,6 +46,8 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 		// This is expected behavior because we planned on populating it later on.
 
 		restaurant.Available_time_slots = available_intervals_from_graph_api
+		// Storing this, so we can easily use it later without parsing the reservation url again.
+		restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
 		restaurants_from_provided_city = append(restaurants_from_provided_city, restaurant)
 	}
 	return restaurants_from_provided_city

@@ -60,6 +60,7 @@ type ranges_times struct {
 
 type links_fields struct {
 	TableReservationLocalized string_field `json:"tableReservationLocalized"`
+	TableReservationLocalizedId string `json:"tableReservationLocalizedId"`
 	HomepageLocalized         string_field `json:"homepageLocalized"`
 }
 
