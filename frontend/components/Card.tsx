@@ -28,7 +28,8 @@ function Card({ texts }: { texts: api_response }) {
           </button>
           {/* TODO: Add something related to closing time here */}
           {/* Like a countdown timer or something */}
-          <Countdown hours={0} minutes={1} seconds={1} />
+          {/* TODO: substract the closing time from current time in the backend and return */}
+          <Countdown hours={0} minutes={1} seconds={0} />
         </div>
       </div>
     </div>

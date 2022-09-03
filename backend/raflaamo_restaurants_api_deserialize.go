@@ -44,8 +44,10 @@ type features_fields struct {
 }
 
 type opening_fields struct {
-	Restauranttime opening_fields_ranges `json:"restaurantTime"`
-	Kitchentime    opening_fields_ranges `json:"kitchenTime"`
+	Restauranttime           opening_fields_ranges `json:"restaurantTime"`
+	Kitchentime              opening_fields_ranges `json:"kitchenTime"`
+	Time_till_closed_hours   int                   `json:"time_till_closed_hours"`
+	Time_till_closed_minutes int                   `json:"time_till_closed_minutes"`
 }
 
 type opening_fields_ranges struct {
@@ -59,9 +61,9 @@ type ranges_times struct {
 }
 
 type links_fields struct {
-	TableReservationLocalized string_field `json:"tableReservationLocalized"`
-	TableReservationLocalizedId string `json:"tableReservationLocalizedId"`
-	HomepageLocalized         string_field `json:"homepageLocalized"`
+	TableReservationLocalized   string_field `json:"tableReservationLocalized"`
+	TableReservationLocalizedId string       `json:"tableReservationLocalizedId"`
+	HomepageLocalized           string_field `json:"homepageLocalized"`
 }
 
 // Tries to deserialize the response from the raflaamo API and returns an error if it fails.

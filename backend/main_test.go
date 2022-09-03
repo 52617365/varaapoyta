@@ -16,7 +16,7 @@ func BenchmarkMain(b *testing.B) {
 		}
 		// here restaurants is not empty (we check it before)
 
-		results := get_available_tables(city, restaurants, 1)
+		results := get_available_tables(city, 1)
 		for _, available_table := range results {
 			start_string := fmt.Sprintf("name of restaurant: %s | available_tables: ", available_table.Name.Fi_FI)
 			fmt.Println(start_string)

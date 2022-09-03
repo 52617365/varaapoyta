@@ -110,7 +110,6 @@ func BenchmarkGetAvailableTables(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		amount_of_eaters := 1
 		city := "helsinki"
-		restaurants, _ := get_all_restaurants_from_raflaamo_api()
-		get_available_tables(city, restaurants, amount_of_eaters)
+		get_available_tables(city, amount_of_eaters)
 	}
 }

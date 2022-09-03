@@ -48,6 +48,13 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 		restaurant.Available_time_slots = available_intervals_from_graph_api
 		// Storing this, so we can easily use it later without parsing the reservation url again.
 		restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
+
+		// Adding relative times so we can display them as a countdown on the page later.
+		relative_time_to_closing := get_relative_time_to_closing_time(restaurant_office_hours.closing)
+		restaurant.Openingtime.Time_till_closed_hours = relative_time_to_closing.hour
+		restaurant.Openingtime.Time_till_closed_minutes = relative_time_to_closing.minutes
+
+		restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
 		restaurants_from_provided_city = append(restaurants_from_provided_city, restaurant)
 	}
 	return restaurants_from_provided_city
@@ -89,16 +96,18 @@ type restaurant_time struct {
 }
 
 func get_opening_and_closing_time_from(restaurant response_fields) restaurant_time {
-	// Converting restaurant_start_time to unix, so we can compare it easily.
-	restaurant_start_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
+	// Converting restaurant_kitchen_start_time to unix, so we can compare it easily.
+	// restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
+	restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Kitchentime.Ranges[0].Start)
 	// We minus 1 hour from the end time because restaurants don't take reservations before that time slot.
 	// IMPORTANT: E.g. if restaurant closes at 22:00, the last possible reservation time is 21:00.
 	const one_hour_unix int64 = 3600
-	restaurant_ending_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].End) - one_hour_unix
+	// restaurant_kitchen_ending_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].End) - one_hour_unix
+	restaurant_kitchen_ending_time := get_unix_from_time(restaurant.Openingtime.Kitchentime.Ranges[0].End) - one_hour_unix
 
 	return restaurant_time{
-		opening: restaurant_start_time,
-		closing: restaurant_ending_time,
+		opening: restaurant_kitchen_start_time,
+		closing: restaurant_kitchen_ending_time,
 	}
 }
 

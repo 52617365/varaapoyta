@@ -14,25 +14,6 @@ function CountdownThingy({
   const [minutesState, setMinutes] = useState<number>(minutes);
   const [secondsState, setSeconds] = useState<number>(seconds);
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setHours((v: number) => (v <= 0 ? hoursState : v - 1));
-  //   }, 1000);
-  //
-  //   return () => {
-  //     clearTimeout(timer);
-  //   };
-  // }, [hoursState]);
-  //
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setMinutes((v: number) => (v <= 0 ? minutesState : v - 1));
-  //   }, 1000);
-  //
-  //   return () => {
-  //     clearTimeout(timer);
-  //   };
-  // }, [minutesState]);
   useEffect(() => {
     if (hoursState === 0 && minutesState === 0 && secondsState === 0) {
       return
