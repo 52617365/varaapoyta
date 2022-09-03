@@ -36,9 +36,10 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 			continue
 		}
 
-		restaurant_office_hours := get_opening_and_closing_time_from(restaurant)
+		kitchen_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
+		restaurant_office_hours := get_opening_and_closing_time_from_restaurant_time(restaurant)
 		// TODO: pass all_time_intervals into function instead of time_intervals_in_between_office_hours and then do the branch checking inside the function instead of in the previous function.
-		available_intervals_from_graph_api, err := get_available_time_intervals_from_graph_api(restaurant_office_hours.opening, restaurant_office_hours.closing, id_from_reservation_page_url, time_slots_to_check_from_graph_api, amount_of_eaters, all_time_intervals, current_time)
+		available_intervals_from_graph_api, err := get_available_time_intervals_from_graph_api(kitchen_office_hours.opening, kitchen_office_hours.closing, id_from_reservation_page_url, time_slots_to_check_from_graph_api, amount_of_eaters, all_time_intervals, current_time)
 		if err != nil {
 			continue
 		}
@@ -49,10 +50,17 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 		// Storing this, so we can easily use it later without parsing the reservation url again.
 		restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
 
-		// Adding relative times so we can display them as a countdown on the page later.
-		relative_time_to_closing := get_relative_time_to_closing_time(restaurant_office_hours.closing)
-		restaurant.Openingtime.Time_till_closed_hours = relative_time_to_closing.hour
-		restaurant.Openingtime.Time_till_closed_minutes = relative_time_to_closing.minutes
+		// Adding relative times, so we can display them as a countdown on the page later.
+		time_till_restaurant_closed := get_time_till_restaurant_closing_time(restaurant_office_hours.closing)
+		time_till_restaurants_kitchen_closed := get_time_till_restaurant_closing_time(kitchen_office_hours.closing)
+
+		// Adding the relative time to when the restaurant itself closes (Timestamp can be different than the kitchen time).
+		restaurant.Openingtime.Time_till_restaurant_closed_hours = time_till_restaurant_closed.hour
+		restaurant.Openingtime.Time_till_restaurant_closed_minutes = time_till_restaurant_closed.minutes
+
+		// Adding the relative time to when the restaurants kitchen closes (Timestamp can be different than the restaurant itself).
+		restaurant.Openingtime.Time_till_kitchen_closed_hours = time_till_restaurants_kitchen_closed.hour
+		restaurant.Openingtime.Time_till_kitchen_closed_minutes = time_till_restaurants_kitchen_closed.minutes
 
 		restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
 		restaurants_from_provided_city = append(restaurants_from_provided_city, restaurant)
@@ -95,7 +103,7 @@ type restaurant_time struct {
 	closing int64
 }
 
-func get_opening_and_closing_time_from(restaurant response_fields) restaurant_time {
+func get_opening_and_closing_time_from_kitchen_time(restaurant response_fields) restaurant_time {
 	// Converting restaurant_kitchen_start_time to unix, so we can compare it easily.
 	// restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
 	restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Kitchentime.Ranges[0].Start)
@@ -111,6 +119,21 @@ func get_opening_and_closing_time_from(restaurant response_fields) restaurant_ti
 	}
 }
 
+func get_opening_and_closing_time_from_restaurant_time(restaurant response_fields) restaurant_time {
+	// Converting restaurant_kitchen_start_time to unix, so we can compare it easily.
+	// restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
+	restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
+	// We minus 1 hour from the end time because restaurants don't take reservations before that time slot.
+	// IMPORTANT: E.g. if restaurant closes at 22:00, the last possible reservation time is 21:00.
+	const one_hour_unix int64 = 3600
+	// restaurant_kitchen_ending_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].End) - one_hour_unix
+	restaurant_kitchen_ending_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].End) - one_hour_unix
+
+	return restaurant_time{
+		opening: restaurant_kitchen_start_time,
+		closing: restaurant_kitchen_ending_time,
+	}
+}
 func restaurant_format_is_incorrect(city string, restaurant response_fields) bool {
 
 	// Converting to lower so that we don't run into problems when comparing it.
@@ -133,7 +156,7 @@ func restaurant_format_is_incorrect(city string, restaurant response_fields) boo
 		return true
 	}
 
-	restaurant_office_hours := get_opening_and_closing_time_from(restaurant)
+	restaurant_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
 	// Checking to see if the timestamps are fucked here, so we don't have to check them later.
 	// We have already checked that the ranges exist in the previous condition (restaurant.Openingtime.Restauranttime.Ranges != nil)
 	if restaurant_office_hours.opening >= restaurant_office_hours.closing {

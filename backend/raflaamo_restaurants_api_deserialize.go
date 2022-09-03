@@ -44,10 +44,12 @@ type features_fields struct {
 }
 
 type opening_fields struct {
-	Restauranttime           opening_fields_ranges `json:"restaurantTime"`
-	Kitchentime              opening_fields_ranges `json:"kitchenTime"`
-	Time_till_closed_hours   int                   `json:"time_till_closed_hours"`
-	Time_till_closed_minutes int                   `json:"time_till_closed_minutes"`
+	Restauranttime                      opening_fields_ranges `json:"restaurantTime"`
+	Kitchentime                         opening_fields_ranges `json:"kitchenTime"`
+	Time_till_restaurant_closed_hours   int                   `json:"time_till_restaurant_closed_hours"`
+	Time_till_restaurant_closed_minutes int                   `json:"time_till_restaurant_closed_minutes"`
+	Time_till_kitchen_closed_hours      int                   `json:"time_till_kitchen_closed_hours"`
+	Time_till_kitchen_closed_minutes    int                   `json:"time_till_kitchen_closed_minutes"`
 }
 
 type opening_fields_ranges struct {
