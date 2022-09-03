@@ -15,26 +15,23 @@ function Card({ texts }: { texts: api_response }) {
           <ModalOpenTimes information={texts} />
         </div>
         <div className="card-actions justify-end">
-          {/* TODO: add some timer here or something?*/}
-          {/* TODO: Add the possibility to reserve here.*/}
-          {/* <button className="btn btn-primary">Varaa</button> */}
-          <button
+          {/* <button
             className="btn btn-disabled"
             tabIndex={-1}
             role="button"
             aria-disabled="true"
           >
             Varaa (V2)
-          </button>
-          {/* TODO: Add something related to closing time here */}
-          {/* Like a countdown timer or something */}
-          {/* TODO: substract the closing time from current time in the backend and return */}
-          <Countdown hours={0} minutes={1} seconds={0} />
+          </button> */}
+          {/* <Countdown
+            hours={texts.openingTime.time_till_restaurant_closed_hours}
+            minutes={texts.openingTime.time_till_restaurant_closed_minutes}
+            seconds={0}
+          /> */}
         </div>
       </div>
     </div>
   );
 }
 
-function get_time_remaining() {}
 export default Card;

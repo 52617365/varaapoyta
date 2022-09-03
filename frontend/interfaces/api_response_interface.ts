@@ -14,6 +14,10 @@ interface ranges {
 interface opening_time {
     kitchenTime: ranges;
     restaurantTime: ranges;
+	time_till_restaurant_closed_hours:   number
+	time_till_restaurant_closed_minutes: number
+	time_till_kitchen_closed_hours:      number
+	time_till_kitchen_closed_minutes:    number
 }
 
 interface address {
