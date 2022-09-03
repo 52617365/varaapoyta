@@ -39,7 +39,7 @@ const Home: NextPage = () => {
             <p className="py-6">
               Aloita pöytävaraus kirjoittamalla kaupunkisi kenttään.
             </p>
-            <Link href={"/varaa"}>
+            {/* <Link href={"/varaa"}>
               <a className={"absolute top-0 right-0"}>
                 <button className="btn">Varaa</button>
               </a>
@@ -48,7 +48,7 @@ const Home: NextPage = () => {
               <a className={"absolute top-0 right-20"}>
                 <button className="btn">Asetukset</button>
               </a>
-            </Link>
+            </Link> */}
             <div className={"pb-3"}>
               <input
                 type="text"

@@ -2,5 +2,5 @@
 const nextConfig = {
     reactStrictMode: true,
 }
-
-module.exports = nextConfig
+const withTM = require('next-transpile-modules')(['react-daisyui'])
+module.exports = withTM({nextConfig})

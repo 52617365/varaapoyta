@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <SWRConfig value={{ provider: () => new Map() }}>
       <ThemeProvider defaultTheme="night">
         <Head>
-          <title>Varaapoyta</title>
+          <title>Varaapoyta V1</title>
           <meta
             name="viewport"
             content="width=device-width,height=device-height,initial-scale=1.0"
