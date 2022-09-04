@@ -9,9 +9,9 @@ function Card({ ravintola }: { ravintola: api_response }) {
       <div className="card-body items-center text-center">
         <h2 className="card-title">{ravintola.name.fi_FI}</h2>
         <div className="pr-4 space-x-2">
-          <ModalInformation information={ravintola} />
-          <ModalLinks information={ravintola} />
-          <ModalOpenTimes information={ravintola} />
+          <ModalInformation ravintola={ravintola} />
+          <ModalLinks ravintola={ravintola} />
+          <ModalOpenTimes ravintola={ravintola} />
         </div>
         <div className="card-actions justify-end">
           <button

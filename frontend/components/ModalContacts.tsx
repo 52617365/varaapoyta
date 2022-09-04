@@ -1,31 +1,31 @@
 import api_response from "../interfaces/api_response_interface";
 import Countdown from "../components/Countdown";
 
-function ModalInformation({ information }: { information: api_response }) {
+function ModalInformation({ ravintola}: { ravintola: api_response}) {
   return (
     <>
-      <label htmlFor="my-modal-4" className="btn modal-button">
+      <label htmlFor={"information" + ravintola.id} className="btn modal-button">
         Tiedot
       </label>
-      <input type="checkbox" id="my-modal-4" className="modal-toggle" />
-      <label htmlFor="my-modal-4" className="modal cursor-pointer">
+      <input type="checkbox" id={"information" + ravintola.id} className="modal-toggle" />
+      <label htmlFor={"information" + ravintola.id} className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
           <p className="py-4">
-            Kaupunki: {information.address.municipality.fi_FI}
+            Kaupunki: {ravintola.address.municipality.fi_FI}
           </p>
-          <p className="py-4">Osoite: {information.address.street.fi_FI}</p>
-          <p className="py-4">Postinumero: {information.address.zipCode}</p>
+          <p className="py-4">Osoite: {ravintola.address.street.fi_FI}</p>
+          <p className="py-4">Postinumero: {ravintola.address.zipCode}</p>
           <p className="py-4">
             Aukioloajat:{" "}
-            {information.openingTime.restaurantTime.ranges[0].start}-
-            {information.openingTime.restaurantTime.ranges[0].end}
+            {ravintola.openingTime.restaurantTime.ranges[0].start}-
+            {ravintola.openingTime.restaurantTime.ranges[0].end}
           </p>
           <p className="py-4">
             Ravintolan sulkeutuminen
             <Countdown
-              hours={information.openingTime.time_till_restaurant_closed_hours}
+              hours={ravintola.openingTime.time_till_restaurant_closed_hours}
               minutes={
-                information.openingTime.time_till_restaurant_closed_minutes
+                ravintola.openingTime.time_till_restaurant_closed_minutes
               }
               seconds={0}
             />
@@ -34,9 +34,9 @@ function ModalInformation({ information }: { information: api_response }) {
             Ravintolan keittiön sulkeutuminen
             <div className="content-center">
               <Countdown
-                hours={information.openingTime.time_till_kitchen_closed_hours}
+                hours={ravintola.openingTime.time_till_kitchen_closed_hours}
                 minutes={
-                  information.openingTime.time_till_kitchen_closed_minutes
+                  ravintola.openingTime.time_till_kitchen_closed_minutes
                 }
                 seconds={0}
               />

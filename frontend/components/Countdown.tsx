@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Countdown } from "react-daisyui";
 
-function CountdownThingy({
+function CountdownTimer({
   hours,
   minutes,
   seconds,
@@ -41,11 +41,12 @@ function CountdownThingy({
     return () => {
       clearTimeout(timer);
     };
-  }, [hoursState, minutesState, secondsState]);
+  }, [secondsState]);
 
   return (
     <div className="grid grid-flow-col gap-5 text-center auto-cols-max place-content-center">
       <div className="flex flex-col">
+        {/* TODO: figure out why countdown is not rendered */}
         <Countdown className="font-mono text-5xl" value={hoursState} />
         tunti
       </div>
@@ -61,4 +62,4 @@ function CountdownThingy({
   );
 }
 
-export default CountdownThingy;
+export default CountdownTimer;

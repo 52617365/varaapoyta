@@ -58,6 +58,7 @@ const Home: NextPage = () => {
                 return (
                   // Storing the id from the reservation page url so its easy to reuse when in V2 we have reservation too.
                     <div key={ravintola.links.tableReservationLocalizedId}>
+                      {/* TODO: figure out why this doesn't render all cards individually, instead they're all the same. */}
                       <Card ravintola={ravintola} />
                     </div>
                 );

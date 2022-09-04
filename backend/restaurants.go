@@ -54,11 +54,11 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 		time_till_restaurant_closed := get_time_till_restaurant_closing_time(restaurant_office_hours.closing)
 		time_till_restaurants_kitchen_closed := get_time_till_restaurant_closing_time(kitchen_office_hours.closing)
 
-		// Adding the relative time to when the restaurant itself closes (Timestamp can be different than the kitchen time).
+		// Adding the relative time to when the restaurant itself closes (Timestamp can be different, then the kitchen time).
 		restaurant.Openingtime.Time_till_restaurant_closed_hours = time_till_restaurant_closed.hour
 		restaurant.Openingtime.Time_till_restaurant_closed_minutes = time_till_restaurant_closed.minutes
 
-		// Adding the relative time to when the restaurants kitchen closes (Timestamp can be different than the restaurant itself).
+		// Adding the relative time to when the restaurants kitchen closes (Timestamp can be different, then the restaurant itself).
 		restaurant.Openingtime.Time_till_kitchen_closed_hours = time_till_restaurants_kitchen_closed.hour
 		restaurant.Openingtime.Time_till_kitchen_closed_minutes = time_till_restaurants_kitchen_closed.minutes
 
