@@ -1,0 +1,183 @@
+A writeup about the end points from raflaamo.fi that we're making requests to 12/08/2022:
+
+* https://api.raflaamo.fi/query
+** Explanation of endpoint
+This endpoint returns all restaurants that are showcased on the raflaamo restaurant page. (https://www.raflaamo.fi/fi/ravintolat/helsinki/kaikki)
+** Request with body
+*** CORS
+> The endpoint enforces CORS meaning you can access it by either not having an origin (server-side) or your origin has to match https://raflaamo.fi
+< Keep in mind that you can't access it straight from the browser because the browser enforces CORS meaning it forces an origin header for you.
+
+*** client_id
+The endpoint requires you to pass in a "client_id" as a header.
+client_id is a static value which is "jNAWMvWD9rp637RaR" at the time of writing this.
+Without the client_id the response will evaluate to "403 Forbidden", hence it's mandatory.
+*** Raw request with body
+POST https://api.raflaamo.fi/query
+User-Agent: Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+content-type: application/json
+client_id: jNAWMvWD9rp637RaR
+
+{
+  "operationName": "getRestaurantsByLocation",
+  "variables": {
+    "first": 470,
+    "input": {
+      "restaurantType": "ALL",
+      "locationName": "Helsinki",
+      "feature": {
+        "rentableVenues": false
+      }
+    },
+    "after": "eyJmIjoxMCwiZyI6eyJhIjo2MC4xNzExNiwibyI6MjQuOTMyNTh9fQo"
+  },
+  "query": "fragment Locales on LocalizedString {\n  en_GB\n  et_EE\n  fi_FI\n  ru_RU\n  sv_FI\n  __typename\n}\n\nfragment Restaurant on Restaurant {\n  id\n  name {\n    ...Locales\n    __typename\n  }\n  urlPath {\n    ...Locales\n    __typename\n  }\n  categories\n  address {\n    municipality {\n      ...Locales\n      __typename\n    }\n    postOffice {\n      ...Locales\n      __typename\n    }\n    street {\n      ...Locales\n      __typename\n    }\n    additionalLocationInfo {\n      ...Locales\n      __typename\n    }\n    zipCode\n    __typename\n  }\n  contact {\n    primaryPhone {\n      number\n      price {\n        ...Locales\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n  features {\n    accessible\n    __typename\n  }\n  openingTime {\n    restaurantTime {\n      ranges {\n        start\n        end\n        endNextDay\n        __typename\n      }\n      type\n      __typename\n    }\n    kitchenTime {\n      ranges {\n        start\n        end\n        endNextDay\n        __typename\n      }\n      type\n      __typename\n    }\n    __typename\n  }\n  links {\n    tableReservationLocalized {\n      ...Locales\n      __typename\n    }\n    homepageLocalized {\n      ...Locales\n      __typename\n    }\n    __typename\n  }\n  visualContent {\n    hero {\n      text {\n        ...Locales\n        __typename\n      }\n      url\n      __typename\n    }\n    listingImage {\n      text {\n        ...Locales\n        __typename\n      }\n      url\n      __typename\n    }\n    __typename\n  }\n  hasAnyMenuGroups\n  __typename\n}\n\nquery getRestaurantsByLocation($first: Int, $after: String, $input: ListRestaurantsByLocationInput!) {\n  listRestaurantsByLocation(first: $first, after: $after, input: $input) {\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n      __typename\n    }\n    edges {\n      ...Restaurant\n      __typename\n    }\n    __typename\n  }\n}"
+}
+
+*** About the request body
+We've talked about the headers so far, let's talk about the body itself.
+The body is a JSON string.
+**** operationName
+Specify the operation we're trying to do, in this case: getRestaurantsByLocation.
+**** variables
+An object-like structure which contains information, the only relevant information inside of it is "first", "query" and "input" > "feature" > "rentableVenues".
+This body contains a field called locationName that holds a city name from Finland that has no effect on the response.
+In other words, Raflaamo doesn't correctly filter out the restaurants from a specific city in their backend.
+
+rentableVenues is a boolean which contains true if we want to search for rentables,
+if set to true, this will result in a response of around ~400k bytes.
+
+The "after" field is a base64 encoded string when decoded translates to: 
+{"f":10,"g":{"a":60.17116,"o":24.93258}}
+"f" is the number which determines the value where we start searching restaurants. The value is 10 because when the request was
+sent, the first 10 restaurants were already fetched and rendered. We will set this to 0 in our final code to get all restaurants in the response.
+
+"g" seems to contain coordinates to somewhere near Helsinki.
+**** query
+"query": "fragment Locales on LocalizedString {\n  en_GB\n  et_EE\n  fi_FI\n  ru_RU\n  sv_FI\n  __typename\n}\n\nfragment Restaurant on Restaurant {\n  id\n  name {\n    ...Locales\n    __typename\n  }\n  urlPath {\n    ...Locales\n    __typename\n  }\n  categories\n  address {\n    municipality {\n      ...Locales\n      __typename\n    }\n    postOffice {\n      ...Locales\n      __typename\n    }\n    street {\n      ...Locales\n      __typename\n    }\n    additionalLocationInfo {\n      ...Locales\n      __typename\n    }\n    zipCode\n    __typename\n  }\n  contact {\n    primaryPhone {\n      number\n      price {\n        ...Locales\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n  features {\n    accessible\n    __typename\n  }\n  openingTime {\n    restaurantTime {\n      ranges {\n        start\n        end\n        endNextDay\n        __typename\n      }\n      type\n      __typename\n    }\n    kitchenTime {\n      ranges {\n        start\n        end\n        endNextDay\n        __typename\n      }\n      type\n      __typename\n    }\n    __typename\n  }\n  links {\n    tableReservationLocalized {\n      ...Locales\n      __typename\n    }\n    homepageLocalized {\n      ...Locales\n      __typename\n    }\n    __typename\n  }\n  visualContent {\n    hero {\n      text {\n        ...Locales\n        __typename\n      }\n      url\n      __typename\n    }\n    listingImage {\n      text {\n        ...Locales\n        __typename\n      }\n      url\n      __typename\n    }\n    __typename\n  }\n  hasAnyMenuGroups\n  __typename\n}\n\nquery getRestaurantsByLocation($first: Int, $after: String, $input: ListRestaurantsByLocationInput!) {\n  listRestaurantsByLocation(first: $first, after: $after, input: $input) {\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n      __typename\n    }\n    edges {\n      ...Restaurant\n      __typename\n    }\n    __typename\n  }\n}"
+
+The "query" contains a lot of useless crap. Namely, en_GB, et_EE, typenames etc, stuff that WE don't need, they are queried
+because apparently Raflaamo themselves need them in some way.
+
+** Response
+The original response is ~1.4M bytes with this query. We're since narrowed it down to around ~400k bytes whilst having the relevant information
+delivered to us.
+
+Response starts at "data" > "listRestaurantsByLocation" > "edges".
+"edges" is an array containing the relevant information. (id, name, urlPath(sites page), address, street, openingtimes, links etc.)
+
+If in the response ranges is not null, it contains a field called endNextDay. This is useless to us but not to raflaamo.
+I've thought about it and they probably have it to handle the change in a day, I don't need this because I treat times as unix timestamps.
+
+* https://s-varaukset.fi/api/recommendations/slot/281/2022-08-12/1000/1
+** Explanation of endpoint
+This endpoint returns the data that is included in the graphs shown on the page.
+[[./pic of graphs.png][Example of a graph]]
+** Request
+This one does not take anything in the body, the parameters are given in the url itself.
+Format is as follows:
+Original:
+https://s-varaukset.fi/api/recommendations/slot/281/2022-08-12/1000/1
+Commentated:
+https://s-varaukset.fi/api/recommendations/slot/{id}/{date}/{time}/{number_of_eaters}
+** Raw response
+  {
+    "name": "Stone's",
+    "intervals": [
+      {
+        "from": 1660294800000,
+        "to": 1660302899000
+      }
+    ],
+    "seats": 0,
+    "id": 281,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "Sports Academy Citykäytävä",
+    "intervals": [
+      {
+        "from": 1660280400000,
+        "to": 1660280400000,
+        "color": "transparent"
+      }
+    ],
+    "seats": 0,
+    "id": 533,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "La Famiglia Helsinki Sali",
+    "intervals": [
+      {
+        "from": 1660291200000,
+        "to": 1660302899000
+      }
+    ],
+    "seats": 0,
+    "id": 357,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "Zetor",
+    "intervals": [
+      {
+        "from": 1660298400000,
+        "to": 1660302899000
+      }
+    ],
+    "seats": 0,
+    "id": 297,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "VENN",
+    "intervals": [
+      {
+        "from": 1660280400000,
+        "to": 1660280400000,
+        "color": "transparent"
+      }
+    ],
+    "seats": 0,
+    "id": 1531,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  }
+]
+** About response
+The response contains useless fields not really related to the restaurant id we care about. The information we care about is in the first index array of the
+response array.
+
+The response contains some useless information, for example;
+- "seats" is always 0.
+- "env" is always null
+- "host" is always the same static value: https:\/\/s-varaukset.fi
+
+The "from" and "to" fields contain a unix timestamp in the ms format.
+
+"from" contains the start of the graph, "to" contains the end of the graph.
+"color" field is included and set to "transparent" if a graph does NOT exist on the page. (No times for restaurant).
+If a restaurant has times included in the graph, the "color" field does not exist at all.
+I.e the existance of the "color" field can be used to check if graph exists.
+
+The "from" field contains a timestamp that translates to -2h from the queried time in the url, E.g if request contains
+16:00, "from" will contain 14:00.
+
+The "to" field contains a timestamp that translates to +~4h from the queried time in the url.
+E.g queried time was 1600, "to" contains a time stamp that translates to 20:xx.
+
+Meaning one query will cover a ~6h graph time window, it can either be empty or contain available restaurants.
+[[./graphtimewindowexample.png][Example of graph time window (6h)]]
+Above picture is queried with 02:00
+
+If restaurant is not open at the queried time, the "from" response field will contain available times starting at the opening time.
+E.g query has 11:00, restaurant opens at 12:00, response field "from" starts at 12:00.
+
+To get all available tables with this endpoint, you have to make a request at these times:
+() Contains the time range the time covers.
+02:00(00:00-06:00), 08:00(6:00-12:00), 14:00(12:00-18:00), 20:00(18:00-00:00)

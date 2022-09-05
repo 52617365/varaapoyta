@@ -41,8 +41,7 @@ func TestGetAvailableTables(t *testing.T) {
 	t.Parallel()
 	amount_of_eaters := 1
 	city := "helsinki"
-	restaurants, _ := get_all_restaurants_from_raflaamo_api()
-	results := get_available_tables(city, restaurants, amount_of_eaters)
+	results := get_available_tables(city, amount_of_eaters)
 
 	if len(results) == 0 {
 		t.Errorf("unexpected results length: %d", len(results))
