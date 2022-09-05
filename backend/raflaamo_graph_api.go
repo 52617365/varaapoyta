@@ -24,8 +24,8 @@ func construct_payload(id_from_reservation_page_url string, current_date string,
 // This one sends requests, so we use goroutines in it.
 // TODO: this function is our bottleneck. We have to do something about this.
 func interact_with_api(all_possible_time_slots []covered_times, id_from_reservation_page_url string, current_date string, amount_of_eaters int) (chan *parsed_graph_data, error) {
-	response_chan := make(chan *parsed_graph_data, len(all_possible_time_slots))
 	wp := workerpool.New(5)
+	response_chan := make(chan *parsed_graph_data, len(all_possible_time_slots))
 
 	for _, time := range all_possible_time_slots {
 		time := time
@@ -65,7 +65,6 @@ func interact_with_api(all_possible_time_slots []covered_times, id_from_reservat
 	}
 	wp.StopWait()
 	close(response_chan)
-
 	return response_chan, nil
 }
 

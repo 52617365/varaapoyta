@@ -23,6 +23,7 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 	// 11:00, 11:15, 11:30 and so on.
 	all_time_intervals := get_all_raflaamo_time_intervals()
 
+	// Used when we send requests to the graph api.
 	restaurants_from_provided_city := make([]response_fields, 0, 60)
 	for _, restaurant := range restaurants {
 		if restaurant_format_is_incorrect(city, restaurant) {
