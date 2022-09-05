@@ -12,7 +12,6 @@ type relative_time struct {
 }
 
 func get_time_till_restaurant_closing_time(closing_time int64) relative_time {
-	// TODO: figure out why closing time is 30 minutes too low, it's because of we take kitchen time now instead of restaurant time.
 	// we minused one hour from it cuz they don't take reservations in that time slot, but they're still technically open, so we add it back here, this is the only place where we add it back.
 	const one_hour_unix int64 = 3600
 	closing_time += one_hour_unix
@@ -65,7 +64,6 @@ func filter_valid_restaurants_from_city(city string) ([]response_fields, error) 
 	}
 	captured_restaurants := make([]response_fields, 0, 30)
 
-	// TODO: shall we filter all the restaurants out here that don't have a reservation link or ranges?
 	for _, restaurant := range restaurants {
 		// If there is no time ranges available for the restaurant, we just assume it does not even exist.
 		// Also, if there is no reservation link the restaurant is useless to us.

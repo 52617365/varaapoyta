@@ -83,6 +83,7 @@ func Contains[T comparable](arr [58]T, x T) bool {
 	}
 	return false
 }
+
 // TODO: we don't need "urlPath" and "features" from the raflaamo api.
 func main() {
 	r := mux.NewRouter()
@@ -90,7 +91,6 @@ func main() {
 	log.Fatal(http.ListenAndServe(":10000", r))
 }
 func entry_point(w http.ResponseWriter, r *http.Request) {
-	// TODO: set this to explicit urls once it works.
 	set_correct_request_headers(&w)
 	vars := mux.Vars(r)
 	city := vars["city"]

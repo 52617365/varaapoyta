@@ -7,7 +7,6 @@ import (
 )
 
 // TODO: this is too slow when we're doing multiple restaurants
-// TODO: we're not getting postcodes in final deserialized response.
 func get_available_tables(city string, amount_of_eaters int) []response_fields {
 	restaurants, err := get_all_restaurants_from_raflaamo_api()
 	if err != nil {
@@ -38,7 +37,6 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 
 		kitchen_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
 		restaurant_office_hours := get_opening_and_closing_time_from_restaurant_time(restaurant)
-		// TODO: pass all_time_intervals into function instead of time_intervals_in_between_office_hours and then do the branch checking inside the function instead of in the previous function.
 		available_intervals_from_graph_api, err := get_available_time_intervals_from_graph_api(kitchen_office_hours.opening, kitchen_office_hours.closing, id_from_reservation_page_url, time_slots_to_check_from_graph_api, amount_of_eaters, all_time_intervals, current_time)
 		if err != nil {
 			continue
