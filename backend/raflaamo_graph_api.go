@@ -22,7 +22,7 @@ func construct_payload(id_from_reservation_page_url string, current_date string,
 // Gets timeslots from raflaamo API that is responsible for returning graph data.
 // In the end, instead of drawing a graph with it, we convert it into time to determine which table is open or not.
 // This one sends requests, so we use goroutines in it.
-// TODO: Make this faster if possible.
+// TODO: this function is our bottleneck. We have to do something about this.
 func interact_with_api(all_possible_time_slots []covered_times, id_from_reservation_page_url string, current_date string, amount_of_eaters int) (chan *parsed_graph_data, error) {
 	response_chan := make(chan *parsed_graph_data, len(all_possible_time_slots))
 	wp := workerpool.New(5)

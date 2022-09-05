@@ -108,7 +108,7 @@ func BenchmarkFilter(b *testing.B) {
 func BenchmarkGetAvailableTables(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		amount_of_eaters := 1
-		city := "helsinki"
+		city := "rovaniemi"
 		get_available_tables(city, amount_of_eaters)
 	}
 }
