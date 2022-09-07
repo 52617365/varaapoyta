@@ -8,8 +8,14 @@ import (
 // TestGetRestaurants We expect response to be len(470).
 func TestGetRestaurants(t *testing.T) {
 	t.Parallel()
-	restaurants, _ := get_all_restaurants_from_raflaamo_api()
+	raflaamo_api_response := make(chan []response_fields)
+	raflaamo_api_response_error := make(chan error)
+	go get_all_restaurants_from_raflaamo_api(raflaamo_api_response, raflaamo_api_response_error)
 
+	if <-raflaamo_api_response_error != nil {
+		t.Errorf("got error when we didnt expect to")
+	}
+	restaurants := <-raflaamo_api_response
 	restaurants_length := len(restaurants)
 	if restaurants_length < 10 {
 		// Can't check against a static number cuz the amount changes.
@@ -96,15 +102,18 @@ func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
 }
 func BenchmarkGetRestaurants(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		get_all_restaurants_from_raflaamo_api()
+		raflaamo_api_response := make(chan []response_fields)
+		raflaamo_api_response_error := make(chan error)
+		go get_all_restaurants_from_raflaamo_api(raflaamo_api_response, raflaamo_api_response_error)
 	}
 }
-func BenchmarkFilter(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		city := "helsinki"
-		filter_valid_restaurants_from_city(city)
-	}
-}
+
+//	func BenchmarkFilter(b *testing.B) {
+//		for i := 0; i < b.N; i++ {
+//			city := "helsinki"
+//			filter_valid_restaurants_from_city(city)
+//		}
+//	}
 func BenchmarkGetAvailableTables(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		amount_of_eaters := 1
