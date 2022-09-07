@@ -8,13 +8,11 @@ import (
 
 // TODO: this is too slow when we're doing multiple restaurants
 func get_available_tables(city string, amount_of_eaters int) []response_fields {
-	restaurants, err := get_all_restaurants_from_raflaamo_api()
-	if err != nil {
-		return nil
-	}
-	if len(restaurants) == 0 {
-		return nil
-	}
+
+	// Using channel because this function would block for around ~2 seconds otherwise.
+	raflaamo_api_response := make(chan []response_fields)
+	raflaamo_api_response_error := make(chan error)
+	go get_all_restaurants_from_raflaamo_api(raflaamo_api_response, raflaamo_api_response_error)
 
 	// Getting current_time, so we can avoid checking times from the past.
 	current_time := get_current_date_and_time()
@@ -23,18 +21,31 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 	// 11:00, 11:15, 11:30 and so on.
 	all_time_intervals := get_all_raflaamo_time_intervals()
 
-	// Used when we send requests to the graph api.
-	restaurants_from_provided_city := make([]response_fields, 0, 60)
-	for _, restaurant := range restaurants {
-		if restaurant_format_is_incorrect(city, restaurant) {
-			continue
-		}
-		// If we can't find the id from url, just continue on to the next one because without the id we can't find the reservation page.
-		id_from_reservation_page_url, err := get_id_from_reservation_page_url(restaurant)
-		if err != nil {
-			// No id found, irrelevant url.
-			continue
-		}
+	// Checking if there was an error when requesting the raflaamo API.
+	if <-raflaamo_api_response_error != nil {
+		return nil
+	}
+	// Getting the response received from the raflaamo api.
+	// We capture it here to avoid blocking for the duration of the request.
+	// Here we have already checked that it wasn't an error and can treat it as valid.
+	raflaamo_api_restaurants := <-raflaamo_api_response
+
+	// Channel that will hold all the restaurants with additional information related to their opening times.
+	restaurants_chan := make(chan response_fields, len(raflaamo_api_restaurants))
+
+	wp := workerpool.New(8)
+	for _, restaurant := range raflaamo_api_restaurants {
+		restaurant := restaurant
+		wp.Submit(func() {
+			if restaurant_format_is_incorrect(city, restaurant) {
+				return
+			}
+			// If we can't find the id from url, just return on to the next one because without the id we can't find the reservation page.
+			id_from_reservation_page_url, err := get_id_from_reservation_page_url(restaurant)
+			if err != nil {
+				// Not finding a valid id results in an err, without a valid id we can't check any restaurant related to the id so we just return.
+				return
+			}
 
 		kitchen_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
 		restaurant_office_hours := get_opening_and_closing_time_from_restaurant_time(restaurant)
