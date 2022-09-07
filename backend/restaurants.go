@@ -4,9 +4,11 @@ import (
 	"errors"
 	"regexp"
 	"strings"
+
+	"github.com/gammazero/workerpool"
 )
 
-// TODO: this is too slow when we're doing multiple restaurants
+// TODO: Even after our recent changes, this function is unfortunately still too slow (10 seconds for helsinki restaurants), we NEED to optimize it. Now is the time.
 func get_available_tables(city string, amount_of_eaters int) []response_fields {
 
 	// Using channel because this function would block for around ~2 seconds otherwise.
@@ -47,32 +49,40 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 				return
 			}
 
-		kitchen_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
-		restaurant_office_hours := get_opening_and_closing_time_from_restaurant_time(restaurant)
-		available_intervals_from_graph_api, err := get_available_time_intervals_from_graph_api(kitchen_office_hours.opening, kitchen_office_hours.closing, id_from_reservation_page_url, time_slots_to_check_from_graph_api, amount_of_eaters, all_time_intervals, current_time)
-		if err != nil {
-			continue
-		}
-		// Here we populate the empty field time slot with all the available time slots.
-		// This is expected behavior because we planned on populating it later on.
+			kitchen_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
+			restaurant_office_hours := get_opening_and_closing_time_from_restaurant_time(restaurant)
+			available_intervals_from_graph_api, err := get_available_time_intervals_from_graph_api(kitchen_office_hours.opening, kitchen_office_hours.closing, id_from_reservation_page_url, time_slots_to_check_from_graph_api, amount_of_eaters, all_time_intervals, current_time)
+			if err != nil {
+				return
+			}
+			// Here we populate the empty field time slot with all the available time slots.
+			// This is expected behavior because we planned on populating it later on.
 
-		restaurant.Available_time_slots = available_intervals_from_graph_api
-		// Storing this, so we can easily use it later without parsing the reservation url again.
-		restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
+			restaurant.Available_time_slots = available_intervals_from_graph_api
+			// Storing this, so we can easily use it later without parsing the reservation url again.
+			restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
 
-		// Adding relative times, so we can display them as a countdown on the page later.
-		time_till_restaurant_closed := get_time_till_restaurant_closing_time(restaurant_office_hours.closing)
-		time_till_restaurants_kitchen_closed := get_time_till_restaurant_closing_time(kitchen_office_hours.closing)
+			// Adding relative times, so we can display them as a countdown on the page later.
+			time_till_restaurant_closed := get_time_till_restaurant_closing_time(restaurant_office_hours.closing)
+			time_till_restaurants_kitchen_closed := get_time_till_restaurant_closing_time(kitchen_office_hours.closing)
 
-		// Adding the relative time to when the restaurant itself closes (Timestamp can be different, then the kitchen time).
-		restaurant.Openingtime.Time_till_restaurant_closed_hours = time_till_restaurant_closed.hour
-		restaurant.Openingtime.Time_till_restaurant_closed_minutes = time_till_restaurant_closed.minutes
+			// Adding the relative time to when the restaurant itself closes (Timestamp can be different, then the kitchen time).
+			restaurant.Openingtime.Time_till_restaurant_closed_hours = time_till_restaurant_closed.hour
+			restaurant.Openingtime.Time_till_restaurant_closed_minutes = time_till_restaurant_closed.minutes
 
-		// Adding the relative time to when the restaurants kitchen closes (Timestamp can be different, then the restaurant itself).
-		restaurant.Openingtime.Time_till_kitchen_closed_hours = time_till_restaurants_kitchen_closed.hour
-		restaurant.Openingtime.Time_till_kitchen_closed_minutes = time_till_restaurants_kitchen_closed.minutes
+			// Adding the relative time to when the restaurants kitchen closes (Timestamp can be different, then the restaurant itself).
+			restaurant.Openingtime.Time_till_kitchen_closed_hours = time_till_restaurants_kitchen_closed.hour
+			restaurant.Openingtime.Time_till_kitchen_closed_minutes = time_till_restaurants_kitchen_closed.minutes
 
-		restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
+			restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
+			restaurants_chan <- restaurant
+		})
+	}
+	wp.StopWait()
+	close(restaurants_chan)
+	// Appending channel into slice instea of directly returning channel because we serialize the array afterwards.
+	restaurants_from_provided_city := make([]response_fields, 0, len(raflaamo_api_restaurants))
+	for restaurant := range restaurants_chan {
 		restaurants_from_provided_city = append(restaurants_from_provided_city, restaurant)
 	}
 	return restaurants_from_provided_city
@@ -169,10 +179,5 @@ func restaurant_format_is_incorrect(city string, restaurant response_fields) boo
 	restaurant_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
 	// Checking to see if the timestamps are fucked here, so we don't have to check them later.
 	// We have already checked that the ranges exist in the previous condition (restaurant.Openingtime.Restauranttime.Ranges != nil)
-	if restaurant_office_hours.opening >= restaurant_office_hours.closing {
-		return true
-	}
-
-	// Woohoo validated
-	return false
+	return restaurant_office_hours.opening >= restaurant_office_hours.closing
 }
