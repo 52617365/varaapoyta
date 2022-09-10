@@ -71,9 +71,9 @@ func interact_with_api(all_possible_time_slots []covered_times, id_from_reservat
 // Function will return error if the provided timestamps were in invalid form (current time is bigger or equal to the last possible time interval returned from the API) it's an error because if that is the case, we don't have any times to check.
 func get_available_time_intervals_from_graph_api(restaurant_starting_time_unix int64, restaurant_closing_time_unix int64, id_from_reservation_page_url string, time_slots_to_check_from_graph_api []covered_times, amount_of_eaters int, all_reservation_times []int64, current_time date_and_time) ([]string, error) {
 	// Reserve space for all the time_slots which the function will return in the end.
+	time_slots := make([]string, 0, len(time_slots_to_check_from_graph_api))
 	api_responses := interact_with_api(time_slots_to_check_from_graph_api, id_from_reservation_page_url, current_time.date, amount_of_eaters)
 
-	time_slots := make([]string, 0, len(time_slots_to_check_from_graph_api))
 	for api_response := range api_responses {
 		graph_end_unix := api_response.Intervals[0].To
 

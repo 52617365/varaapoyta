@@ -7,6 +7,8 @@ import api_response from "../interfaces/api_response_interface";
 const Home: NextPage = () => {
   const [buttonLoading, setButtonLoading] = React.useState(false);
   const [ravintolatApista, setRavintolat] = React.useState<api_response[]>([]);
+  const [is_error, set_error] = React.useState<boolean>(false);
+  const [fetched, set_fetched] = React.useState<boolean>(false);
 
   const fetchInformation = async (city: string) => {
     if (buttonLoading || city == "") {
@@ -19,9 +21,42 @@ const Home: NextPage = () => {
       const parsed_response = await response.json();
       setRavintolat(parsed_response);
       setButtonLoading(false);
+      set_fetched(true);
+      set_error(false);
     } catch (e) {
       setButtonLoading(false);
       console.log("Error fetching endpoint.");
+      set_fetched(true);
+      set_error(true);
+    }
+  };
+
+  // TODO: make const_results work.
+  const render_results = () => {
+    if (ravintolatApista.length === 0 && !fetched) {
+      return <></>;
+    }
+
+    if (is_error) {
+      return <h1>Error fetching endpoint</h1>;
+    }
+    if (fetched && ravintolatApista.length === 0) {
+      return <h1>No restaurants found</h1>;
+    }
+
+    // API returns either an error message or an array containing the restaurant information.
+    if (Array.isArray(ravintolatApista)) {
+      const cards = ravintolatApista.map((ravintola: api_response) => {
+        return (
+          // Storing the id from the reservation page url as a key so its easy to reuse when in V2 we have reservation too.
+          <div key={ravintola.links.tableReservationLocalizedId}>
+            <Card ravintola={ravintola} />
+          </div>
+        );
+      });
+      return cards;
+    } else {
+      return <h1>{ravintolatApista}</h1>;
     }
   };
   // kaupunki is used in get query to endpoint
@@ -54,19 +89,12 @@ const Home: NextPage = () => {
                 textfield_text={kaupunki}
               />
             </div>
-              {ravintolatApista.map((ravintola: api_response) => {
-                return (
-                  // Storing the id from the reservation page url so its easy to reuse when in V2 we have reservation too.
-                    <div key={ravintola.links.tableReservationLocalizedId}>
-                      {/* TODO: figure out why this doesn't render all cards individually, instead they're all the same. */}
-                      <Card ravintola={ravintola} />
-                    </div>
-                );
-              })}
+            {render_results()}
           </div>
         </div>
       </div>
     </>
   );
 };
+
 export default Home;
