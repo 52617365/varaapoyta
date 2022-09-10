@@ -95,7 +95,7 @@ func entry_point(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	city := vars["city"]
 	if is_not_valid_city(city) {
-		serialized_err, _ := json.Marshal("no restaurants with that city")
+		serialized_err, _ := json.Marshal("Ei ravintoloita olemassa")
 		w.Write(serialized_err)
 		return
 	}

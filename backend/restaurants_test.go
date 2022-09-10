@@ -54,7 +54,6 @@ func TestGetAvailableTables(t *testing.T) {
 	}
 }
 
-// reservation_page_url := restaurant.Links.TableReservationLocalized.Fi_FI
 func TestGetIdFromReservationPageUrl(t *testing.T) {
 	t.Parallel()
 	restaurant_url := "https://s-varaukset.fi/online/reservation/fi/38?_ga=2.146560948.1092747230.1612503015-489168449.1604043706"
@@ -108,12 +107,6 @@ func BenchmarkGetRestaurants(b *testing.B) {
 	}
 }
 
-//	func BenchmarkFilter(b *testing.B) {
-//		for i := 0; i < b.N; i++ {
-//			city := "helsinki"
-//			filter_valid_restaurants_from_city(city)
-//		}
-//	}
 func BenchmarkGetAvailableTables(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		amount_of_eaters := 1
