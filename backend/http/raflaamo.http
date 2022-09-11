@@ -1,0 +1,22 @@
+###
+POST https://api.raflaamo.fi/query
+User-Agent: Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+content-type: application/json
+client_id: jNAWMvWD9rp637RaR
+
+{
+"operationName": "getRestaurantsByLocation",
+  "variables": {
+    "first": 470,
+    "restaurantType": "ALL",
+    "input": {
+      "locationName": "Helsinki",
+      "feature": {
+        "rentableVenues": false
+      }
+    },
+    "after": "eyJmIjoxMCwiZyI6eyJhIjo2MC4xNzExNiwibyI6MjQuOTMyNTh9fQo"
+  },
+  "query": "fragment Locales on LocalizedString {\n  en_GB\n  et_EE\n  fi_FI\n  ru_RU\n  sv_FI\n  __typename\n}\n\nfragment Restaurant on Restaurant {\n  id\n  name {\n    ...Locales\n    __typename\n  }\n  urlPath {\n    ...Locales\n    __typename\n  }\n  categories\n  address {\n    municipality {\n      ...Locales\n      __typename\n    }\n    postOffice {\n      ...Locales\n      __typename\n    }\n    street {\n      ...Locales\n      __typename\n    }\n    additionalLocationInfo {\n      ...Locales\n      __typename\n    }\n    zipCode\n    __typename\n  }\n  contact {\n    primaryPhone {\n      number\n      price {\n        ...Locales\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n  features {\n    accessible\n    __typename\n  }\n  openingTime {\n    restaurantTime {\n      ranges {\n        start\n        end\n        endNextDay\n        __typename\n      }\n      type\n      __typename\n    }\n    kitchenTime {\n      ranges {\n        start\n        end\n        endNextDay\n        __typename\n      }\n      type\n      __typename\n    }\n    __typename\n  }\n  links {\n    tableReservationLocalized {\n      ...Locales\n      __typename\n    }\n    homepageLocalized {\n      ...Locales\n      __typename\n    }\n    __typename\n  }\n  visualContent {\n    hero {\n      text {\n        ...Locales\n        __typename\n      }\n      url\n      __typename\n    }\n    listingImage {\n      text {\n        ...Locales\n        __typename\n      }\n      url\n      __typename\n    }\n    __typename\n  }\n  hasAnyMenuGroups\n  __typename\n}\n\nquery getRestaurantsByLocation($first: Int, $after: String, $input: ListRestaurantsByLocationInput!) {\n  listRestaurantsByLocation(first: $first, after: $after, input: $input) {\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n      __typename\n    }\n    edges {\n      ...Restaurant\n      __typename\n    }\n    __typename\n  }\n}"
+}
+
