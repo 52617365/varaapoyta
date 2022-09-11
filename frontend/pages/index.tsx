@@ -16,7 +16,7 @@ const Home: NextPage = () => {
     }
     setButtonLoading(true);
     try {
-      const url = `http://localhost:10000/tables/${city}/1`;
+      const url = `https://www.api.rasmusmaki.com/tables/${city}/1`;
       const response = await fetch(url);
       const parsed_response = await response.json();
       setRavintolat(parsed_response);
@@ -25,13 +25,11 @@ const Home: NextPage = () => {
       set_error(false);
     } catch (e) {
       setButtonLoading(false);
-      console.log("Error fetching endpoint.");
       set_fetched(true);
       set_error(true);
     }
   };
 
-  // TODO: make const_results work.
   const render_results = () => {
     if (ravintolatApista.length === 0 && !fetched) {
       return <></>;

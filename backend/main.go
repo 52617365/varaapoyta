@@ -84,7 +84,6 @@ func Contains[T comparable](arr [58]T, x T) bool {
 	return false
 }
 
-// TODO: we don't need "urlPath" and "features" from the raflaamo api.
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/tables/{city}/{amount_of_eaters}", entry_point).Methods("GET")
@@ -95,7 +94,7 @@ func entry_point(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	city := vars["city"]
 	if is_not_valid_city(city) {
-		serialized_err, _ := json.Marshal("Ei ravintoloita olemassa")
+		serialized_err, _ := json.Marshal("Sisään syötetyllä kaupungilla ei ole ravintoloita olemassa")
 		w.Write(serialized_err)
 		return
 	}
