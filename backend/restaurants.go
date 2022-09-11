@@ -45,7 +45,7 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 			// If we can't find the id from url, just return on to the next one because without the id we can't find the reservation page.
 			id_from_reservation_page_url, err := get_id_from_reservation_page_url(restaurant)
 			if err != nil {
-				// Not finding a valid id results in an err, without a valid id we can't check any restaurant related to the id so we just return.
+				// Not finding a valid id results in an err, without a valid id we can't check any restaurant related to the id, so we just return.
 				return
 			}
 
@@ -80,7 +80,7 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 	}
 	wp.StopWait()
 	close(restaurants_chan)
-	// Appending channel into slice instea of directly returning channel because we serialize the array afterwards.
+	// Appending channel into slice instead of directly returning channel because we serialize the array afterwards.
 	restaurants_from_provided_city := make([]response_fields, 0, len(raflaamo_api_restaurants))
 	for restaurant := range restaurants_chan {
 		restaurants_from_provided_city = append(restaurants_from_provided_city, restaurant)
@@ -168,7 +168,7 @@ func restaurant_format_is_incorrect(city string, restaurant response_fields) boo
 		return true
 	}
 	// The restaurant times are nil if there are no time ranges available, we want to skip those because they are useless to us without times.
-	if restaurant.Openingtime.Restauranttime.Ranges == nil {
+	if restaurant.Openingtime.Restauranttime.Ranges == nil || restaurant.Openingtime.Kitchentime.Ranges == nil {
 		return true
 	}
 	// Reservation url is sometimes empty, skip at this point cuz we can't reserve a table without a reservation page url.
