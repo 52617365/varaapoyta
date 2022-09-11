@@ -86,7 +86,7 @@ func Contains[T comparable](arr [58]T, x T) bool {
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/tables/{city}/{amount_of_eaters}", entry_point).Methods("GET")
+	r.HandleFunc("/raflaamo/tables/{city}/{amount_of_eaters}", entry_point).Methods("GET")
 	log.Fatal(http.ListenAndServe(":10000", r))
 }
 func entry_point(w http.ResponseWriter, r *http.Request) {
