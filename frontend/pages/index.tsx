@@ -3,7 +3,7 @@ import Button from "../components/Button";
 import React, { useState, useEffect } from "react";
 import Card from "../components/Card";
 import api_response from "../interfaces/api_response_interface";
-import AutoCompleteCitiesField from "../components/AutoCompleteCities";
+import AutoCompleteCities from "../components/AutoCompleteCities";
 
 const Home: NextPage = () => {
   const [buttonLoading, setButtonLoading] = React.useState(false);
@@ -43,7 +43,7 @@ const Home: NextPage = () => {
     }
     setButtonLoading(true);
     try {
-      const url = `http://localhost:10000/raflaamo/tables/${city}/1`;
+      const url = `https://www.api.rasmusmaki.com/raflaamo/tables/${city}/1`;
       const response = await fetch(url);
       const parsed_response = await response.json();
       setRavintolat(parsed_response);
@@ -95,11 +95,8 @@ const Home: NextPage = () => {
               Aloita pöytävaraus kirjoittamalla kaupunkisi kenttään.
             </p>
             <div className={"pb-3"}>
-              {/* <AutoCompleteCitiesField
-                default_value={kaupunki}
-                set_city={handleKaupunki}
-              />
-              // <div /> */}
+              {/* TODO: make this auto completion work correctly. */}
+              {/* <AutoCompleteCities default_value={kaupunki} /> */}
               <input
                 type="text"
                 autoComplete=""
