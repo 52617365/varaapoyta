@@ -10,6 +10,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// TODO: FIX: the relative time seems to be off when current time is 22:51 and the closing time is 23:30. Closing time points to 2am.
+// TODO: On the front end, get the users location and fill the city field automatically (google api or something)
+// TODO: Get some auto completion into the city field on the front end? Figure out how to do this.
+// @Performance: we have to make it faster, it's too slow right now but make it faster once everything else works.
+
 var all_possible_cities = [...]string{
 	"helsinki",
 	"espoo",
