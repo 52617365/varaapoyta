@@ -3,11 +3,10 @@ import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import Head from "next/head";
 import SiteFooter from "../components/SiteFooter";
-import { SWRConfig } from "swr";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <SWRConfig value={{ provider: () => new Map() }}>
+    <>
       <ThemeProvider defaultTheme="night">
         <Head>
           <title>Varaapoyta V1</title>
@@ -21,7 +20,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ThemeProvider defaultTheme="night">
         <SiteFooter />
       </ThemeProvider>
-    </SWRConfig>
+    </>
   );
 }
 
