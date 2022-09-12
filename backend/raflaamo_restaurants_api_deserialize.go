@@ -21,7 +21,6 @@ type response_third_level struct {
 type response_fields struct {
 	Id                   string          `json:"id"`
 	Name                 string_field    `json:"name"`
-	Urlpath              string_field    `json:"urlPath"`
 	Address              address_fields  `json:"address"`
 	Features             features_fields `json:"features"`
 	Openingtime          opening_fields  `json:"openingTime"`
@@ -48,8 +47,8 @@ type opening_fields struct {
 	Kitchentime                         opening_fields_ranges `json:"kitchenTime"`
 	Time_till_restaurant_closed_hours   int                   `json:"time_till_restaurant_closed_hours"`
 	Time_till_restaurant_closed_minutes int                   `json:"time_till_restaurant_closed_minutes"`
-	Time_till_kitchen_closed_hours      int                   `json:"time_till_kitchen_closed_hours"`
-	Time_till_kitchen_closed_minutes    int                   `json:"time_till_kitchen_closed_minutes"`
+	Time_left_to_reserve_hours          int                   `json:"time_left_to_reserve_hours"`
+	Time_left_to_reserve_minutes        int                   `json:"time_left_to_reserve_minutes"`
 }
 
 type opening_fields_ranges struct {

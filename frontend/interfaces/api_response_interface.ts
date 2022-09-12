@@ -16,8 +16,8 @@ interface opening_time {
     restaurantTime: ranges;
 	time_till_restaurant_closed_hours:   number
 	time_till_restaurant_closed_minutes: number
-	time_till_kitchen_closed_hours:      number
-	time_till_kitchen_closed_minutes:    number
+	time_left_to_reserve_hours:      number
+	time_left_to_reserve_minutes:    number
 }
 
 interface address {

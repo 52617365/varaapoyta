@@ -16,7 +16,7 @@ const Home: NextPage = () => {
     }
     setButtonLoading(true);
     try {
-      const url = `https://www.api.rasmusmaki.com/raflaamo/tables/${city}/1`;
+      const url = `http://localhost:10000/raflaamo/tables/${city}/1`;
       const response = await fetch(url);
       const parsed_response = await response.json();
       setRavintolat(parsed_response);
