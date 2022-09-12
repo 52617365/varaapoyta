@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Button from "../components/Button";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "../components/Card";
 import api_response from "../interfaces/api_response_interface";
 
@@ -9,7 +9,32 @@ const Home: NextPage = () => {
   const [ravintolatApista, setRavintolat] = React.useState<api_response[]>([]);
   const [is_error, set_error] = React.useState<boolean>(false);
   const [fetched, set_fetched] = React.useState<boolean>(false);
+  const [users_city, set_users_city] = useState<string>("");
+  const [kaupunki, asetaKaupunki] = useState("");
+  const handleKaupunki = (event: React.ChangeEvent<HTMLInputElement>) => {
+    asetaKaupunki(event.target.value);
+  };
 
+  const get_user_city = () => {
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      try {
+        const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=en`;
+        const response = await fetch(url);
+        const parsed_response = await response.json();
+        asetaKaupunki(parsed_response.city);
+        console.log(kaupunki);
+      } catch (e) {
+        // Could not find users location.
+        console.log("Could not find users location.");
+      }
+    });
+  };
+
+  useEffect(() => {
+    get_user_city();
+  });
+
+  // TODO: use bigdata geolocation api to get city of user using the thing.
   const fetchInformation = async (city: string) => {
     if (buttonLoading || city == "") {
       return;
@@ -23,6 +48,7 @@ const Home: NextPage = () => {
       setButtonLoading(false);
       set_fetched(true);
       set_error(false);
+      console.log(users_city);
     } catch (e) {
       setButtonLoading(false);
       set_fetched(true);
@@ -58,10 +84,6 @@ const Home: NextPage = () => {
     }
   };
   // kaupunki is used in get query to endpoint
-  const [kaupunki, asetaKaupunki] = useState("");
-  const handleKaupunki = (event: React.ChangeEvent<HTMLInputElement>) => {
-    asetaKaupunki(event.target.value);
-  };
   return (
     <>
       <div className="hero min-h-screen bg-base-200">
@@ -77,6 +99,7 @@ const Home: NextPage = () => {
                 placeholder="Kaupunki"
                 className="input w-full max-w-xs"
                 onChange={handleKaupunki}
+                value={kaupunki}
               />
             </div>
             <div>
