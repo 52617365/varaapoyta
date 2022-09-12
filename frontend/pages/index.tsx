@@ -3,13 +3,13 @@ import Button from "../components/Button";
 import React, { useState, useEffect } from "react";
 import Card from "../components/Card";
 import api_response from "../interfaces/api_response_interface";
+import AutoCompleteCitiesField from "../components/AutoCompleteCities";
 
 const Home: NextPage = () => {
   const [buttonLoading, setButtonLoading] = React.useState(false);
   const [ravintolatApista, setRavintolat] = React.useState<api_response[]>([]);
   const [is_error, set_error] = React.useState<boolean>(false);
   const [fetched, set_fetched] = React.useState<boolean>(false);
-  const [users_city, set_users_city] = useState<string>("");
   const [kaupunki, asetaKaupunki] = useState("");
   const handleKaupunki = (event: React.ChangeEvent<HTMLInputElement>) => {
     asetaKaupunki(event.target.value);
@@ -31,7 +31,9 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
-    get_user_city();
+    if (!kaupunki) {
+      get_user_city();
+    }
   });
 
   // TODO: use bigdata geolocation api to get city of user using the thing.
@@ -48,7 +50,6 @@ const Home: NextPage = () => {
       setButtonLoading(false);
       set_fetched(true);
       set_error(false);
-      console.log(users_city);
     } catch (e) {
       setButtonLoading(false);
       set_fetched(true);
@@ -94,12 +95,18 @@ const Home: NextPage = () => {
               Aloita pöytävaraus kirjoittamalla kaupunkisi kenttään.
             </p>
             <div className={"pb-3"}>
+              {/* <AutoCompleteCitiesField
+                default_value={kaupunki}
+                set_city={handleKaupunki}
+              />
+              // <div /> */}
               <input
                 type="text"
+                autoComplete=""
                 placeholder="Kaupunki"
                 className="input w-full max-w-xs"
                 onChange={handleKaupunki}
-                value={kaupunki}
+                defaultValue={kaupunki}
               />
             </div>
             <div>
