@@ -3,12 +3,14 @@ import { Combobox, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 
 export default function AutoCompletionCity({
-  default_value,
+  setSelected,
+  selected,
 }: {
-  default_value: string;
+  setSelected: any;
+  selected: string;
 }) {
   // TODO: pass this state as argument.
-  const [selected, setSelected] = useState(default_value);
+  // const [selected, setSelected] = useState(default_value);
   const [query, setQuery] = useState("");
 
   const filteredPeople =
@@ -22,7 +24,10 @@ export default function AutoCompletionCity({
         );
 
   return (
-    <Combobox value={selected} onChange={setSelected}>
+    <Combobox
+      value={selected}
+      onChange={(event: any) => setSelected(event.target.value)}
+    >
       <div className="relative mt-1 bg-base-200">
         <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-indigo-600 text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-indigo-600 sm:text-sm">
           <Combobox.Input

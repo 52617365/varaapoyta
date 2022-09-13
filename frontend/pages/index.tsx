@@ -12,6 +12,7 @@ const Home: NextPage = () => {
   const [fetched, set_fetched] = React.useState<boolean>(false);
   const [kaupunki, asetaKaupunki] = useState("");
   const handleKaupunki = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(event.target.value);
     asetaKaupunki(event.target.value);
   };
 
@@ -36,6 +37,12 @@ const Home: NextPage = () => {
     }
   });
 
+  const handleKeypress = (e: any) => {
+    //it triggers by pressing the enter key
+    if (e.keyCode === 13) {
+      fetchInformation(kaupunki);
+    }
+  };
   // TODO: use bigdata geolocation api to get city of user using the thing.
   const fetchInformation = async (city: string) => {
     if (buttonLoading || city == "") {
@@ -96,23 +103,29 @@ const Home: NextPage = () => {
             </p>
             <div className={"pb-3"}>
               {/* TODO: make this auto completion work correctly. */}
-              {/* <AutoCompleteCities default_value={kaupunki} /> */}
+              {/* <AutoCompleteCities
+                selected={kaupunki}
+                setSelected={handleKaupunki}
+              /> */}
               <input
+                onKeyDown={handleKeypress}
                 type="text"
                 autoComplete=""
                 placeholder="Kaupunki"
                 className="input w-full max-w-xs"
-                onChange={handleKaupunki}
+                onChange={(event) => asetaKaupunki(event.target.value)}
                 defaultValue={kaupunki}
               />
             </div>
             <div>
-              <Button
-                text="Hae ravintolat"
-                setButton={fetchInformation}
-                buttonLoading={buttonLoading}
-                textfield_text={kaupunki}
-              />
+              <form>
+                <Button
+                  text="Hae ravintolat"
+                  setButton={fetchInformation}
+                  buttonLoading={buttonLoading}
+                  textfield_text={kaupunki}
+                />
+              </form>
             </div>
             {render_results()}
           </div>
