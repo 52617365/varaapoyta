@@ -29,7 +29,6 @@ func FuzzGetIdFromReservationId(f *testing.F) {
 		placeholder_restaurant := response_fields{
 			Id:          "",
 			Name:        string_field{Fi_FI: ""},
-			Urlpath:     string_field{Fi_FI: ""},
 			Address:     address_fields{Municipality: string_field{Fi_FI: ""}},
 			Features:    features_fields{Accessible: false},
 			Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},
@@ -62,7 +61,6 @@ func TestGetIdFromReservationPageUrl(t *testing.T) {
 	placeholder_restaurant := response_fields{
 		Id:          "",
 		Name:        string_field{Fi_FI: ""},
-		Urlpath:     string_field{Fi_FI: ""},
 		Address:     address_fields{Municipality: string_field{Fi_FI: ""}},
 		Features:    features_fields{Accessible: false},
 		Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},
@@ -86,7 +84,6 @@ func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
 	placeholder_restaurant := response_fields{
 		Id:          "",
 		Name:        string_field{Fi_FI: ""},
-		Urlpath:     string_field{Fi_FI: ""},
 		Address:     address_fields{Municipality: string_field{Fi_FI: ""}},
 		Features:    features_fields{Accessible: false},
 		Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},

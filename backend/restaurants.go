@@ -10,16 +10,19 @@ import (
 
 // TODO: Even after our recent changes, this function is unfortunately still too slow (10 seconds for helsinki restaurants), we NEED to optimize it. Now is the time.
 func get_available_tables(city string, amount_of_eaters int) []response_fields {
-
 	// Using channel because this function would block for around ~2 seconds otherwise.
 	raflaamo_api_response := make(chan []response_fields)
 	raflaamo_api_response_error := make(chan error)
+
+	// Send the goroutines to do their thing with the API.
 	go get_all_restaurants_from_raflaamo_api(raflaamo_api_response, raflaamo_api_response_error)
 
 	// Getting current_time, so we can avoid checking times from the past.
 	current_time := get_current_date_and_time()
+
 	// All possible time slots we need to check, it does not contain time slots from the past.
 	time_slots_to_check_from_graph_api := get_graph_time_slots_from_current_point_forward(current_time.time)
+
 	// 11:00, 11:15, 11:30 and so on.
 	all_time_intervals := get_all_raflaamo_time_intervals()
 
@@ -27,7 +30,7 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 	if <-raflaamo_api_response_error != nil {
 		return nil
 	}
-	// Getting the response received from the raflaamo api.
+
 	// We capture it here to avoid blocking for the duration of the request.
 	// Here we have already checked that it wasn't an error and can treat it as valid.
 	raflaamo_api_restaurants := <-raflaamo_api_response
@@ -58,24 +61,8 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 			// Here we populate the empty field time slot with all the available time slots.
 			// This is expected behavior because we planned on populating it later on.
 
-			restaurant.Available_time_slots = available_intervals_from_graph_api
-			// Storing this, so we can easily use it later without parsing the reservation url again.
-			restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
-
-			// Adding relative times, so we can display them as a countdown on the page later.
-			time_till_restaurant_closed := get_time_till_restaurant_closing_time(restaurant_office_hours.closing)
-			time_till_restaurants_kitchen_closed := get_time_left_to_reserve(kitchen_office_hours.closing)
-
-			// Adding the relative time to when the restaurant itself closes (Timestamp can be different, then the kitchen time).
-			restaurant.Openingtime.Time_till_restaurant_closed_hours = time_till_restaurant_closed.hour
-			restaurant.Openingtime.Time_till_restaurant_closed_minutes = time_till_restaurant_closed.minutes
-
-			// Adding the relative time to when the restaurants kitchen closes (Timestamp can be different, then the restaurant itself).
-			restaurant.Openingtime.Time_left_to_reserve_hours = time_till_restaurants_kitchen_closed.hour
-			restaurant.Openingtime.Time_left_to_reserve_minutes = time_till_restaurants_kitchen_closed.minutes
-
-			restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
-			restaurants_chan <- restaurant
+			restaurant_with_additional_fields := add_additional_fields(restaurant, available_intervals_from_graph_api, id_from_reservation_page_url, restaurant_office_hours, kitchen_office_hours)
+			restaurants_chan <- *restaurant_with_additional_fields
 		})
 	}
 	wp.StopWait()
@@ -86,6 +73,29 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 		restaurants_from_provided_city = append(restaurants_from_provided_city, restaurant)
 	}
 	return restaurants_from_provided_city
+}
+
+// Storing reservation id, so we can easily use it later without parsing the reservation url again.
+// Adding relative times, so we can display them as a countdown on the page later.
+// Adding the relative time to when the restaurant itself closes (Timestamp can be different, then the kitchen time).
+// Adding the relative time to when the restaurants kitchen closes (Timestamp can be different, then the restaurant itself).
+func add_additional_fields(restaurant response_fields, available_intervals_from_graph_api []string, id_from_reservation_page_url string, restaurant_office_hours restaurant_time, kitchen_office_hours restaurant_time) *response_fields {
+	restaurant.Available_time_slots = available_intervals_from_graph_api
+
+	restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
+
+	time_till_restaurant_closed := get_time_till_restaurant_closing_time(restaurant_office_hours.closing)
+	time_till_restaurants_kitchen_closed := get_time_left_to_reserve(kitchen_office_hours.closing)
+
+	restaurant.Openingtime.Time_till_restaurant_closed_hours = time_till_restaurant_closed.hour
+	restaurant.Openingtime.Time_till_restaurant_closed_minutes = time_till_restaurant_closed.minutes
+
+	restaurant.Openingtime.Time_left_to_reserve_hours = time_till_restaurants_kitchen_closed.hour
+	restaurant.Openingtime.Time_left_to_reserve_minutes = time_till_restaurants_kitchen_closed.minutes
+
+	restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
+
+	return &restaurant
 }
 
 // We do this because the id from the "Id" field is not always the same as the id needed in the reservation page.
