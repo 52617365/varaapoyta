@@ -4,7 +4,6 @@ import (
 	"errors"
 	"regexp"
 	"strings"
-	"sync"
 
 	"github.com/gammazero/workerpool"
 )
@@ -61,26 +60,21 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 			// Here we add some fields into the restaurant struct which we already have and will be needing in the future.
 			restaurant = add_additional_fields(restaurant, id_from_reservation_page_url, kitchen_office_hours)
 
-			// until here were good.
-
 			api_responses_from_restaurant := make(chan parsed_graph_data, len(time_slots_to_check_from_graph_api))
-			var wg sync.WaitGroup
 			// Checking all the possible time slots from the restaurant.
 			for _, time_slot := range time_slots_to_check_from_graph_api {
-				wg.Add(1)
-				go interact_with_api(&wg, api_responses_from_restaurant, time_slot, id_from_reservation_page_url, current_time.date, amount_of_eaters)
+				go interact_with_api( /*&wg,*/ api_responses_from_restaurant, time_slot, id_from_reservation_page_url, current_time, amount_of_eaters)
 			}
-			// TODO: this might close before we want it to, be aware.
-			wg.Wait()
 			close(api_responses_from_restaurant)
 
-			//api_responses := make([]parsed_graph_data, 100)
-			//// capturing results (testing).
-			//for i := range api_responses_from_restaurant {
-			//	api_responses = append(api_responses, i)
-			//}
-			// test over
-			available_time_slots, err := extract_available_time_intervals_from_response(api_responses_from_restaurant, current_time, kitchen_office_hours, all_time_intervals)
+			all_available_time_slots := []string{}
+			for api_response := range api_responses_from_restaurant {
+				available_time_slots, err := extract_available_time_intervals_from_response(api_response, current_time, kitchen_office_hours, all_time_intervals)
+				if err != nil {
+					// TODO: do something
+				}
+				all_available_time_slots = append(all_available_time_slots, available_time_slots...)
+			}
 
 			// If this is err, the restaurant is already closed.
 			if err != nil {
@@ -89,7 +83,7 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 
 			// Capturing all the available time slots into a shell variable which we made for this purpose.
 			// We add it here instead of in add_additional_fields because we only just now know the times, not when we were assigning the other additional fields.
-			restaurant.Available_time_slots = available_time_slots
+			restaurant.Available_time_slots = all_available_time_slots
 
 			// Saving the restaurant for later.
 			restaurants_with_opening_times <- restaurant
