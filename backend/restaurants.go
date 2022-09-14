@@ -4,11 +4,14 @@ import (
 	"errors"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/gammazero/workerpool"
 )
 
 // TODO: Even after our recent changes, this function is unfortunately still too slow (10 seconds for helsinki restaurants), we NEED to optimize it. Now is the time.
+// @Add to above: The worker pool implementation is fucked only use it for requests.
+// Simplify this, there is legit no reason for this to be so fucking complex you fucking monkey shit dev.
 func get_available_tables(city string, amount_of_eaters int) []response_fields {
 	// Using channel because this function would block for around ~2 seconds otherwise.
 	raflaamo_api_response := make(chan []response_fields)
@@ -23,53 +26,82 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 	// All possible time slots we need to check, it does not contain time slots from the past.
 	time_slots_to_check_from_graph_api := get_graph_time_slots_from_current_point_forward(current_time.time)
 
+	// All possible time intervals that can be reserved in the raflaamo reservation page.
 	// 11:00, 11:15, 11:30 and so on.
 	all_time_intervals := get_all_raflaamo_time_intervals()
 
-	// Checking if there was an error when requesting the raflaamo API.
+	wp := workerpool.New(8)
+
+	// We capture it here to avoid blocking for the duration of the request of get_all_restaurants_from_raflaamo_api.
 	if <-raflaamo_api_response_error != nil {
 		return nil
 	}
-
-	// We capture it here to avoid blocking for the duration of the request.
-	// Here we have already checked that it wasn't an error and can treat it as valid.
 	raflaamo_api_restaurants := <-raflaamo_api_response
+	//
 
-	// Channel that will hold all the restaurants with additional information related to their opening times.
-	restaurants_chan := make(chan response_fields, len(raflaamo_api_restaurants))
+	restaurants_with_opening_times := make(chan response_fields, len(raflaamo_api_restaurants))
 
-	wp := workerpool.New(8)
 	for _, restaurant := range raflaamo_api_restaurants {
-		restaurant := restaurant
 		wp.Submit(func() {
+			restaurant := restaurant
 			if restaurant_format_is_incorrect(city, restaurant) {
-				return
+				return // skip restaurant
 			}
-			// If we can't find the id from url, just return on to the next one because without the id we can't find the reservation page.
+
+			// The reservation page url was not valid, or we could not find an id.
+			// The reservation page urls are sometimes incorrect, so we just skip over that specific restaurant in that case.
+			// Without a valid id the restaurant is useless to us, so we just skip it.
 			id_from_reservation_page_url, err := get_id_from_reservation_page_url(restaurant)
 			if err != nil {
-				// Not finding a valid id results in an err, without a valid id we can't check any restaurant related to the id, so we just return.
 				return
 			}
 
 			kitchen_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
-			restaurant_office_hours := get_opening_and_closing_time_from_restaurant_time(restaurant)
-			available_intervals_from_graph_api, err := get_available_time_intervals_from_graph_api(kitchen_office_hours.opening, kitchen_office_hours.closing, id_from_reservation_page_url, time_slots_to_check_from_graph_api, amount_of_eaters, all_time_intervals, current_time)
+
+			// Here we add some fields into the restaurant struct which we already have and will be needing in the future.
+			restaurant = add_additional_fields(restaurant, id_from_reservation_page_url, kitchen_office_hours)
+
+			// until here were good.
+
+			api_responses_from_restaurant := make(chan parsed_graph_data, len(time_slots_to_check_from_graph_api))
+			var wg sync.WaitGroup
+			// Checking all the possible time slots from the restaurant.
+			for _, time_slot := range time_slots_to_check_from_graph_api {
+				wg.Add(1)
+				go interact_with_api(&wg, api_responses_from_restaurant, time_slot, id_from_reservation_page_url, current_time.date, amount_of_eaters)
+			}
+			// TODO: this might close before we want it to, be aware.
+			wg.Wait()
+			close(api_responses_from_restaurant)
+
+			//api_responses := make([]parsed_graph_data, 100)
+			//// capturing results (testing).
+			//for i := range api_responses_from_restaurant {
+			//	api_responses = append(api_responses, i)
+			//}
+			// test over
+			available_time_slots, err := extract_available_time_intervals_from_response(api_responses_from_restaurant, current_time, kitchen_office_hours, all_time_intervals)
+
+			// If this is err, the restaurant is already closed.
 			if err != nil {
 				return
 			}
-			// Here we populate the empty field time slot with all the available time slots.
-			// This is expected behavior because we planned on populating it later on.
 
-			restaurant_with_additional_fields := add_additional_fields(restaurant, available_intervals_from_graph_api, id_from_reservation_page_url, restaurant_office_hours, kitchen_office_hours)
-			restaurants_chan <- *restaurant_with_additional_fields
+			// Capturing all the available time slots into a shell variable which we made for this purpose.
+			// We add it here instead of in add_additional_fields because we only just now know the times, not when we were assigning the other additional fields.
+			restaurant.Available_time_slots = available_time_slots
+
+			// Saving the restaurant for later.
+			restaurants_with_opening_times <- restaurant
 		})
 	}
 	wp.StopWait()
-	close(restaurants_chan)
-	// Appending channel into slice instead of directly returning channel because we serialize the array afterwards.
+	close(restaurants_with_opening_times)
+
+	// Appending channel into slice instead of directly returning channel because we serialize the slice afterwards.
 	restaurants_from_provided_city := make([]response_fields, 0, len(raflaamo_api_restaurants))
-	for restaurant := range restaurants_chan {
+	for restaurant := range restaurants_with_opening_times {
+		// TODO: Why are there duplicates here?
 		restaurants_from_provided_city = append(restaurants_from_provided_city, restaurant)
 	}
 	return restaurants_from_provided_city
@@ -79,8 +111,8 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 // Adding relative times, so we can display them as a countdown on the page later.
 // Adding the relative time to when the restaurant itself closes (Timestamp can be different, then the kitchen time).
 // Adding the relative time to when the restaurants kitchen closes (Timestamp can be different, then the restaurant itself).
-func add_additional_fields(restaurant response_fields, available_intervals_from_graph_api []string, id_from_reservation_page_url string, restaurant_office_hours restaurant_time, kitchen_office_hours restaurant_time) *response_fields {
-	restaurant.Available_time_slots = available_intervals_from_graph_api
+func add_additional_fields(restaurant response_fields, id_from_reservation_page_url string, kitchen_office_hours restaurant_time) response_fields {
+	restaurant_office_hours := get_opening_and_closing_time_from_restaurant_time(restaurant)
 
 	restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
 
@@ -95,7 +127,7 @@ func add_additional_fields(restaurant response_fields, available_intervals_from_
 
 	restaurant.Links.TableReservationLocalizedId = id_from_reservation_page_url
 
-	return &restaurant
+	return restaurant
 }
 
 // We do this because the id from the "Id" field is not always the same as the id needed in the reservation page.

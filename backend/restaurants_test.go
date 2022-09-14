@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// TestGetRestaurants We expect response to be len(470).
+// TestGetRestaurants We expect response len to be over 10.
 func TestGetRestaurants(t *testing.T) {
 	t.Parallel()
 	raflaamo_api_response := make(chan []response_fields)
@@ -112,12 +112,12 @@ func BenchmarkGetAvailableTables(b *testing.B) {
 	}
 }
 
-func BenchmarkInteractWithApi(b *testing.B) {
-	current_time := get_current_date_and_time()
-	id_from_reservation_page_url := "1769"
-	amount_of_eaters := 1
-	time_slots_to_check_from_graph_api := get_graph_time_slots_from_current_point_forward(current_time.time)
-	for i := 0; i < b.N; i++ {
-		interact_with_api(time_slots_to_check_from_graph_api, id_from_reservation_page_url, current_time.date, amount_of_eaters)
-	}
-}
+//func BenchmarkInteractWithApi(b *testing.B) {
+//	current_time := get_current_date_and_time()
+//	id_from_reservation_page_url := "1769"
+//	amount_of_eaters := 1
+//	time_slots_to_check_from_graph_api := get_graph_time_slots_from_current_point_forward(current_time.time)
+//	for i := 0; i < b.N; i++ {
+//		interact_with_api(time_slots_to_check_from_graph_api, id_from_reservation_page_url, current_time.date, amount_of_eaters)
+//	}
+//}
