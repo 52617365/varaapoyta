@@ -28,7 +28,8 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 		return nil
 	}
 	raflaamo_api_restaurants := <-raflaamo_api_response
-	restaurants_from_city := make(chan response_fields)
+	restaurants_with_opening_times := make([]response_fields, 50)
+
 	for _, restaurant := range raflaamo_api_restaurants {
 		if restaurant_format_is_incorrect(city, restaurant) {
 			continue
@@ -40,9 +41,7 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 			continue
 		}
 
-		// Initializing these into buffered channels, so they don't block.
-		restaurant.Graph_api_response = make(chan parsed_graph_data, len(time_slots_to_check_from_graph_api))
-		restaurant.Graph_api_response_err = make(chan error, len(time_slots_to_check_from_graph_api))
+		graph_api_response := make(chan parsed_graph_data, len(time_slots_to_check_from_graph_api))
 
 		kitchen_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
 		// Here we add some fields into the restaurant struct which we already have and will be needing in the future.
@@ -51,27 +50,19 @@ func get_available_tables(city string, amount_of_eaters int) []response_fields {
 		// Looping over each time_slot we need to check, in each restaurant and spawning a job for each one.
 		// The results will be stored in the restaurant struct itself, this is because we want to associate the response with the restaurant later.
 		for _, time_slot := range time_slots_to_check_from_graph_api {
-			go func(time_slot covered_times) {
-				interact_with_api(restaurants_from_city, restaurant, time_slot, id_from_reservation_page_url, current_time, amount_of_eaters)
-			}(time_slot)
+			go func(current_time date_and_time, time_slot covered_times) {
+				response, err := interact_with_api(time_slot, id_from_reservation_page_url, current_time, amount_of_eaters)
+				if err != nil {
+					return
+				}
+				graph_api_response <- response
+			}(current_time, time_slot)
 		}
-		close(restaurant.Graph_api_response)
-		close(restaurant.Graph_api_response_err)
-	}
-	close(restaurants_from_city)
-	// wp.StopWait()
+		close(graph_api_response)
 
-	restaurants_with_opening_times := make([]response_fields, 40)
-	for restaurant := range restaurants_from_city {
-		// The restaurant contains two buffered channels with a length of len(time_slots_to_check_from_graph_api) so we loop over them all.
-		for range time_slots_to_check_from_graph_api {
-			is_err := <-restaurant.Graph_api_response_err
-			if is_err != nil {
-				continue
-			}
-			api_response := <-restaurant.Graph_api_response
+		for response := range graph_api_response {
 			kitchen_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
-			available_time_slots, err := extract_available_time_intervals_from_response(api_response, current_time, kitchen_office_hours, all_time_intervals)
+			available_time_slots, err := extract_available_time_intervals_from_response(response, current_time, kitchen_office_hours, all_time_intervals)
 			// If this is err, the restaurant is already closed, and therefore we don't want it.
 			if err != nil {
 				continue

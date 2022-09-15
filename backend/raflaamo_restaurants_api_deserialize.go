@@ -19,15 +19,13 @@ type response_third_level struct {
 }
 
 type response_fields struct {
-	Id                     string          `json:"id"`
-	Name                   string_field    `json:"name"`
-	Address                address_fields  `json:"address"`
-	Features               features_fields `json:"features"`
-	Openingtime            opening_fields  `json:"openingTime"`
-	Links                  links_fields    `json:"links"`
-	Available_time_slots   []string        `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all time slots.
-	Graph_api_response     chan parsed_graph_data
-	Graph_api_response_err chan error
+	Id                   string          `json:"id"`
+	Name                 string_field    `json:"name"`
+	Address              address_fields  `json:"address"`
+	Features             features_fields `json:"features"`
+	Openingtime          opening_fields  `json:"openingTime"`
+	Links                links_fields    `json:"links"`
+	Available_time_slots []string        `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all time slots.
 }
 
 type string_field struct {

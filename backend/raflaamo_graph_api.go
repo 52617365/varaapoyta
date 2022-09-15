@@ -21,14 +21,13 @@ func construct_payload(id_from_reservation_page_url string, current_date string,
 // Gets timeslots from raflaamo API that is responsible for returning graph data.
 // In the end, instead of drawing a graph with it, we convert it into time to determine which table is open or not.
 // This one sends requests, so we use goroutines in it.
-func interact_with_api(all_restaurants chan<- response_fields, restaurant response_fields, time_slot covered_times, id_from_reservation_page_url string, current_time date_and_time, amount_of_eaters int) {
-	restaurant_local := restaurant
+func interact_with_api(time_slot covered_times, id_from_reservation_page_url string, current_time date_and_time, amount_of_eaters int) (parsed_graph_data, error) {
 	request_url := construct_payload(id_from_reservation_page_url, current_time.date, time_slot, amount_of_eaters)
 
 	r, err := http.NewRequest("GET", request_url, nil)
 
 	if err != nil {
-		restaurant_local.Graph_api_response_err <- errors.New("error connecting to api")
+		return parsed_graph_data{}, errors.New("error connecting to api")
 	}
 
 	r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
@@ -37,16 +36,16 @@ func interact_with_api(all_restaurants chan<- response_fields, restaurant respon
 
 	// Will throw if we call deserialize_graph_response with a status code other than 200, so we handle it here.
 	if err != nil || res.StatusCode != 200 {
-		restaurant_local.Graph_api_response_err <- errors.New("error connecting to api")
+		return parsed_graph_data{}, errors.New("error connecting to api")
 	}
 
 	deserialized_graph_data, err := deserialize_graph_response(&res)
 	// most likely won't jump into this branch but check regardless.
 	if err != nil {
-		restaurant_local.Graph_api_response_err <- errors.New("error deserializing")
+		return parsed_graph_data{}, errors.New("error deserializing")
 	}
 	if time_slot_does_not_contain_open_tables(deserialized_graph_data) {
-		restaurant_local.Graph_api_response_err <- errors.New("no open tables found")
+		return parsed_graph_data{}, errors.New("no open tables found")
 	}
 	// Adding timezone difference into the unix time. (three hours).
 	graph_end_unix := deserialized_graph_data.Intervals[0].To
@@ -54,8 +53,7 @@ func interact_with_api(all_restaurants chan<- response_fields, restaurant respon
 	// because graph unix time fields "to" and "from" come in UTC +0
 	graph_end_unix += 10800000
 	// Capturing the result and associating it with a restaurant.
-	restaurant_local.Graph_api_response <- deserialized_graph_data
-	all_restaurants <- restaurant_local
+	return deserialized_graph_data, nil
 }
 
 // This function interacts with the raflaamo graph API and returns the time slots that we get from that API.
