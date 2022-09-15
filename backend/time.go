@@ -58,6 +58,8 @@ func get_time_intervals_in_between_office_hours(restaurant_starting_time_unix in
 	return captured_times, nil
 }
 
+// Returns all possible time intervals that can be reserved in the raflaamo reservation page.
+// 11:00, 11:15, 11:30 and so on.
 func get_all_raflaamo_time_intervals() []int64 {
 	all_times := make([]int64, 0, 96)
 	for hour := 0; hour < 24; hour++ {

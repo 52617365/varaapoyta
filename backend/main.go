@@ -93,6 +93,7 @@ func main() {
 	r.HandleFunc("/raflaamo/tables/{city}/{amount_of_eaters}", entry_point).Methods("GET")
 	log.Fatal(http.ListenAndServe(":10000", r))
 }
+
 func entry_point(w http.ResponseWriter, r *http.Request) {
 	set_correct_request_headers(&w)
 	vars := mux.Vars(r)
