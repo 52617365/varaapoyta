@@ -34,7 +34,12 @@ func FuzzGetIdFromReservationId(f *testing.F) {
 			Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},
 			Links:       links_fields{TableReservationLocalized: string_field{Fi_FI: url}, HomepageLocalized: string_field{Fi_FI: ""}},
 		}
-		_, err := get_id_from_reservation_page_url(placeholder_restaurant)
+		kitchen_office_hours, _ := get_opening_and_closing_time_from_kitchen_time(placeholder_restaurant)
+		restaurant_additional_information := additional_information{
+			restaurant:           placeholder_restaurant,
+			kitchen_office_hours: kitchen_office_hours,
+		}
+		_, err := restaurant_additional_information.get_id_from_reservation_page_url()
 		if !strings.Contains(placeholder_restaurant.Links.TableReservationLocalized.Fi_FI, "https://s-varaukset.fi/online/reservation/fi") && err == nil {
 			t.Errorf("expected error")
 		}
@@ -66,8 +71,14 @@ func TestGetIdFromReservationPageUrl(t *testing.T) {
 		Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},
 		Links:       links_fields{TableReservationLocalized: string_field{Fi_FI: restaurant_url}, HomepageLocalized: string_field{Fi_FI: ""}},
 	}
+	kitchen_office_hours, _ := get_opening_and_closing_time_from_kitchen_time(placeholder_restaurant)
 
-	id, err := get_id_from_reservation_page_url(placeholder_restaurant)
+	restaurant_additional_information := additional_information{
+		restaurant:           placeholder_restaurant,
+		kitchen_office_hours: kitchen_office_hours,
+	}
+
+	id, err := restaurant_additional_information.get_id_from_reservation_page_url()
 
 	if err != nil {
 		t.Errorf("get_id_from_reservation_page_url threw when we did not expect it to.")
@@ -89,8 +100,13 @@ func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
 		Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},
 		Links:       links_fields{TableReservationLocalized: string_field{Fi_FI: restaurant_url}, HomepageLocalized: string_field{Fi_FI: ""}},
 	}
+	kitchen_office_hours, _ := get_opening_and_closing_time_from_kitchen_time(placeholder_restaurant)
+	restaurant_additional_information := additional_information{
+		restaurant:           placeholder_restaurant,
+		kitchen_office_hours: kitchen_office_hours,
+	}
 
-	_, err := get_id_from_reservation_page_url(placeholder_restaurant)
+	_, err := restaurant_additional_information.get_id_from_reservation_page_url()
 
 	if err == nil {
 		t.Errorf("we expected get_id_from_reservation_page_url to throw but it did not.")

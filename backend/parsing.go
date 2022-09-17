@@ -5,16 +5,23 @@ import (
 	"strings"
 )
 
+type time_utils struct {
+	current_time date_and_time
+	closing_time int64
+}
+
 type relative_time struct {
 	hour    int
 	minutes int
 }
 
-func get_time_till_restaurant_closing_time(closing_time int64) relative_time {
+func (t time_utils) get_time_till_restaurant_closing_time() relative_time {
 	// we minus one hour from it cuz they don't take reservations in that time slot, but they're still technically open, so we add it back here, this is the only place where we add it back.
 	const one_hour_unix int64 = 3600
+	closing_time := t.closing_time
+	current_time := t.current_time
+
 	closing_time += one_hour_unix
-	current_time := get_current_date_and_time()
 
 	// If the following condition hits, restaurant is already closed.
 	if closing_time <= current_time.time {
@@ -40,8 +47,9 @@ func get_time_till_restaurant_closing_time(closing_time int64) relative_time {
 	}
 }
 
-func get_time_left_to_reserve(closing_time int64) relative_time {
-	current_time := get_current_date_and_time()
+func (t time_utils) get_time_left_to_reserve() relative_time {
+	closing_time := t.closing_time
+	current_time := t.current_time
 	// already closed.
 	if closing_time <= current_time.time {
 		return relative_time{hour: -1, minutes: -1}

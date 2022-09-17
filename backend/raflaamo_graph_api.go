@@ -13,7 +13,6 @@ func construct_payload(id_from_reservation_page_url string, current_date string,
 	time_slot_string := get_string_time_from_unix(time.time)
 	// replacing the 17(:)00 to match the format in url.
 	time_slot_string = strings.Replace(time_slot_string, ":", "", -1)
-	// Example of a request_url: https://s-varaukset.fi/api/recommendations/slot/{id}/{date}/{time}/{amount_of_eaters}
 	request_url := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", id_from_reservation_page_url, current_date, time_slot_string, amount_of_eaters)
 	return request_url
 }
@@ -32,6 +31,7 @@ func interact_with_api(time_slot covered_times, id_from_reservation_page_url str
 
 	r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
 	client := &http.Client{}
+
 	res, err := client.Do(r)
 
 	// Will throw if we call deserialize_graph_response with a status code other than 200, so we handle it here.
@@ -60,7 +60,6 @@ func interact_with_api(time_slot covered_times, id_from_reservation_page_url str
 // Function will return error if the provided timestamps were in invalid form (current time is bigger or equal to the last possible time interval returned from the API) it's an error because if that is the case, we don't have any times to check.
 // TODO: This does not work correctly.
 func extract_available_time_intervals_from_response(api_response parsed_graph_data, current_time date_and_time, kitchen_office_hours restaurant_time, all_reservation_times []int64) ([]string, error) {
-	// for api_response := range api_responses {
 	graph_end_unix := api_response.Intervals[0].To
 	if current_time.time >= graph_end_unix {
 		return nil, errors.New("restaurant is already closed")

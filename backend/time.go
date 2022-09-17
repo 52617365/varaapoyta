@@ -19,10 +19,10 @@ func get_string_time_from_unix(unix_time int64) string {
 }
 
 func get_unix_from_time(time_to_convert string) int64 {
-	time_to_convert = strings.Replace(time_to_convert, ":", "", -1)
 	if is_not_valid_format(time_to_convert) {
 		return -1
 	}
+	time_to_convert = strings.Replace(time_to_convert, ":", "", -1)
 
 	minutes, _ := strconv.Atoi(time_to_convert[len(time_to_convert)-2:])
 	hour, _ := strconv.Atoi(time_to_convert[:len(time_to_convert)-2])
