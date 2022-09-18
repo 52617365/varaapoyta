@@ -113,7 +113,14 @@ func entry_point(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	available_tables := get_available_tables(city, amount_of_eaters_int)
+	available_tables, err := get_available_tables(city, amount_of_eaters_int)
+	if err != nil {
+		error_message, _ := json.Marshal(err)
+		_, err2 := w.Write(error_message)
+		if err2 != nil {
+			return
+		}
+	}
 	serialize, _ := json.Marshal(available_tables)
 
 	_, err2 := w.Write(serialize)

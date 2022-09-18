@@ -23,19 +23,19 @@ func Fuzz_get_string_time_from_unix(f *testing.F) {
 func Fuzz_get_unix_from_time(f *testing.F) {
 	f.Add("1230")
 	f.Fuzz(func(t *testing.T, time string) {
-		unix_time := get_unix_from_time(time)
-
 		time = strings.Replace(time, ":", "", -1)
-		if is_not_valid_format(time) && unix_time != -1 {
+
+		unix_time := get_unix_from_time(time)
+		if is_invalid_format(time) && unix_time != -1 {
 			t.Errorf("expected error")
 		}
-		if unix_time == -1 && !is_not_valid_format(time) {
-			t.Errorf("fuzzing resulted in -1 when we did not expect it to")
+		if unix_time == -1 && !is_invalid_format(time) {
+			t.Errorf("we wanted an error but it wasnt one")
 		}
 	})
 }
 
-func Fuzz_time_slots_inbetween(f *testing.F) {
+func Fuzz_time_slots_in_between(f *testing.F) {
 	var number_one int64 = 9882912392
 	var number_two int64 = 98812398123
 	f.Add(number_one, number_two)

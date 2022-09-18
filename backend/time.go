@@ -9,6 +9,31 @@ import (
 	"time"
 )
 
+// We determine if there is a time slot with open tables by looking at the "color" field in the response.
+// The color field will contain "transparent" if it does not contain a graph (open times), else it contains nil (meaning there are open tables)
+func time_slot_does_not_contain_open_tables(data parsed_graph_data) bool {
+	return data.Intervals[0].Color == "transparent"
+}
+
+func get_opening_and_closing_time_from_kitchen_time(restaurant response_fields) (restaurant_time, error) {
+	// Converting restaurant_kitchen_start_time to unix, so we can compare it easily.
+	// restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
+	if len(restaurant.Openingtime.Kitchentime.Ranges) == 0 {
+		return restaurant_time{}, errors.New("no ranges found")
+	}
+	restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Kitchentime.Ranges[0].Start)
+	// We minus 1 hour from the end time because restaurants don't take reservations before that time slot.
+	// IMPORTANT: E.g. if restaurant closes at 22:00, the last possible reservation time is 21:00.
+	const one_hour_unix int64 = 3600
+	// restaurant_kitchen_ending_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].End) - one_hour_unix
+	restaurant_kitchen_ending_time := get_unix_from_time(restaurant.Openingtime.Kitchentime.Ranges[0].End) - one_hour_unix
+
+	return restaurant_time{
+		opening: restaurant_kitchen_start_time,
+		closing: restaurant_kitchen_ending_time,
+	}, nil
+}
+
 func get_string_time_from_unix(unix_time int64) string {
 	time_regex, _ := regexp.Compile(`\d{2}:\d{2}`)
 
@@ -19,10 +44,10 @@ func get_string_time_from_unix(unix_time int64) string {
 }
 
 func get_unix_from_time(time_to_convert string) int64 {
-	if is_not_valid_format(time_to_convert) {
+	time_to_convert = strings.Replace(time_to_convert, ":", "", -1)
+	if is_invalid_format(time_to_convert) {
 		return -1
 	}
-	time_to_convert = strings.Replace(time_to_convert, ":", "", -1)
 
 	minutes, _ := strconv.Atoi(time_to_convert[len(time_to_convert)-2:])
 	hour, _ := strconv.Atoi(time_to_convert[:len(time_to_convert)-2])
@@ -107,7 +132,6 @@ func get_current_date_and_time() date_and_time {
 	dt := time.Now().String()
 	date_to_string := date_regex.FindString(dt)
 	time_to_string := time_regex.FindString(dt)
-	time_to_string = strings.Replace(time_to_string, ":", "", -1) // Reformat E.g. 10:00 to 1000.
 
 	return date_and_time{
 		date: date_to_string,
