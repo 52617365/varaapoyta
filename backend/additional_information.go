@@ -8,7 +8,17 @@ import (
 type additional_information struct {
 	restaurant           response_fields
 	kitchen_office_hours restaurant_time
-	city                 string
+}
+
+func init_additional_information(restaurant response_fields) (additional_information, error) {
+	kitchen_office_hours, err := get_opening_and_closing_time_from_kitchen_time(restaurant)
+	if err != nil {
+		return additional_information{}, err
+	}
+	return additional_information{
+		restaurant:           restaurant,
+		kitchen_office_hours: kitchen_office_hours,
+	}, nil
 }
 
 // Storing reservation id, so we can easily use it later without parsing the reservation url again.

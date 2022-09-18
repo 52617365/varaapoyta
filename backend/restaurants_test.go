@@ -8,15 +8,15 @@ import (
 // TestGetRestaurants We expect response len to be over 10.
 func TestGetRestaurants(t *testing.T) {
 	t.Parallel()
-	raflaamo_api_response := make(chan []response_fields)
-	raflaamo_api_response_error := make(chan error)
-	go get_all_restaurants_from_raflaamo_api(raflaamo_api_response, raflaamo_api_response_error)
+	init_request, _ := init_restaurants_api()
 
-	if <-raflaamo_api_response_error != nil {
-		t.Errorf("got error when we didnt expect to")
+	response, err := init_request.get()
+
+	if err != nil {
+		t.Errorf("unexpected error")
 	}
-	restaurants := <-raflaamo_api_response
-	restaurants_length := len(restaurants)
+
+	restaurants_length := len(response)
 	if restaurants_length < 10 {
 		// Can't check against a static number cuz the amount changes.
 		t.Errorf("len(getRestaurants()) = %d, expected %s", restaurants_length, ">10")
@@ -51,8 +51,11 @@ func TestGetAvailableTables(t *testing.T) {
 	t.Parallel()
 	amount_of_eaters := 1
 	city := "rovaniemi"
-	results := get_available_tables(city, amount_of_eaters)
+	results, err := get_available_tables(city, amount_of_eaters)
 
+	if err != nil {
+		t.Errorf("unexpected error")
+	}
 	if len(results) == 0 {
 		t.Errorf("unexpected results length: %d", len(results))
 	}
@@ -112,11 +115,11 @@ func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
 		t.Errorf("we expected get_id_from_reservation_page_url to throw but it did not.")
 	}
 }
+
 func BenchmarkGetRestaurants(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		raflaamo_api_response := make(chan []response_fields)
-		raflaamo_api_response_error := make(chan error)
-		go get_all_restaurants_from_raflaamo_api(raflaamo_api_response, raflaamo_api_response_error)
+		init_request, _ := init_restaurants_api()
+		init_request.get()
 	}
 }
 

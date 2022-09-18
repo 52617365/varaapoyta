@@ -34,7 +34,7 @@ func (t time_utils) get_time_till_restaurant_closing_time() relative_time {
 	relative_time_string := get_string_time_from_unix(time_left_to_closing_unix)
 	relative_time_string = strings.Replace(relative_time_string, ":", "", -1)
 
-	if is_not_valid_format(relative_time_string) {
+	if is_invalid_format(relative_time_string) {
 		return relative_time{hour: -1, minutes: -1}
 	}
 
@@ -60,7 +60,7 @@ func (t time_utils) get_time_left_to_reserve() relative_time {
 	relative_time_string := get_string_time_from_unix(time_left_to_closing_unix)
 	relative_time_string = strings.Replace(relative_time_string, ":", "", -1)
 
-	if is_not_valid_format(relative_time_string) {
+	if is_invalid_format(relative_time_string) {
 		return relative_time{hour: -1, minutes: -1}
 	}
 
@@ -73,7 +73,7 @@ func (t time_utils) get_time_left_to_reserve() relative_time {
 	}
 }
 
-func is_not_valid_format(our_number string) bool {
+func is_invalid_format(our_number string) bool {
 	if _, err := strconv.ParseInt(our_number, 10, 64); err != nil {
 		return true
 	}
