@@ -6,14 +6,14 @@ import (
 )
 
 type additional_information struct {
-	restaurant    response_fields
+	restaurant    *response_fields
 	time_slots    chan Result
-	kitchen_times restaurant_time
+	kitchen_times *restaurant_time
 }
 
-func init_additional_information(restaurant response_fields, time_slots_to_check_length int) additional_information {
+func init_additional_information(restaurant *response_fields, time_slots_to_check_length int) *additional_information {
 	kitchen_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
-	return additional_information{
+	return &additional_information{
 		restaurant:    restaurant,
 		kitchen_times: kitchen_office_hours,
 		time_slots:    make(chan Result, time_slots_to_check_length),
@@ -59,7 +59,7 @@ Gets the id from a restaurants reservation url.
 We have already checked here that the string we're matching contains the string "https://s-varaukset.fi/online/reservation/fi", so it should return something.
 We return an error in case but in reality it really should not return error.
 */
-func (add additional_information) get_id_from_reservation_page_url() (string, error) {
+func (add *additional_information) get_id_from_reservation_page_url() (string, error) {
 	restaurant := add.restaurant
 	re, _ := regexp.Compile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex101.com/r/NtFMrz/1
 	reservation_page_url := restaurant.Links.TableReservationLocalized.Fi_FI

@@ -5,52 +5,48 @@ import (
 	"strings"
 )
 
-// TODO: Why does get_available_tables work when city is "rovaniemi" but not when city is "helsinki"?
-func get_available_tables(city string, amount_of_eaters int) ([]response_fields, error) {
+func get_available_tables(city string, amount_of_eaters int) ([]*response_fields, error) {
 	current_time := get_current_date_and_time()
 	all_time_intervals := get_all_raflaamo_time_intervals()
 	time_slots_to_check := get_graph_time_slots_from_current_point_forward(current_time.time)
 
 	raflaamo, err := init_restaurants()
 	if err != nil {
-		return []response_fields{}, errors.New("failed to connect to the raflaamo api, contact the developer")
+		return nil, errors.New("failed to connect to the raflaamo api, contact the developer")
 	}
 	response, err := raflaamo.get()
 	if err != nil {
-		return []response_fields{}, errors.New("raflaamo api most likely down")
+		return nil, errors.New("raflaamo api most likely down")
 	}
 
-	all_results := make(chan additional_information, 50)
+	all_results := make(chan *additional_information, 50)
 	for _, restaurant := range response {
-		if restaurant_format_is_incorrect(city, restaurant) {
+		if restaurant_format_is_incorrect(city, &restaurant) {
 			continue
 		}
-		restaurant_additional_information := init_additional_information(restaurant, len(time_slots_to_check))
+		restaurant_additional_information := init_additional_information(&restaurant, len(time_slots_to_check))
 
-		is_err := restaurant_additional_information.add()
-		if is_err != nil {
-			// I.e. if the id was not found (invalid link)
+		id_not_found_err := restaurant_additional_information.add()
+		if id_not_found_err != nil {
 			// This branch is most likely not taken.
 			continue
 		}
 		restaurant_id := restaurant_additional_information.restaurant.Links.TableReservationLocalizedId
-
-		// Demons start here.
 
 		// Storing the result into the slice of all results and modifying the result as a reference later.
 		all_results <- restaurant_additional_information
 
 		jobs := make(chan job, len(time_slots_to_check))
 
-		// Spawning 8 workers.
-		for i := 0; i < 8; i++ {
+		// Spawning n workers, more than n is useless.
+		for i := 0; i <= len(time_slots_to_check); i++ {
 			go worker(jobs, restaurant_additional_information.time_slots)
 		}
 
 		// Spawning the jobs, this is 0-4 jobs every loop iteration on the response.
 		for i := 0; i < len(time_slots_to_check); i++ {
 			our_job := job{
-				slot:             time_slots_to_check[i],
+				slot:             &time_slots_to_check[i],
 				restaurant_id:    restaurant_id,
 				current_time:     current_time,
 				amount_of_eaters: amount_of_eaters,
@@ -60,7 +56,7 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 		close(jobs)
 	}
 
-	restaurants_with_opening_times := make([]response_fields, 0, 50)
+	restaurants_with_opening_times := make([]*response_fields, 0, 50)
 	close(all_results)
 	for result := range all_results {
 		restaurant, kitchen_times := result.restaurant, result.kitchen_times
@@ -78,7 +74,7 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 			restaurants_with_opening_times = append(restaurants_with_opening_times, restaurant)
 		}
 	}
-	// @Notice: If restaurant.Available_time_slots is null, there are no available time slots.
+	// @Notice: If restaurant.Available_time_slots is null/nil, there are no available time slots.
 	return restaurants_with_opening_times, nil
 }
 
@@ -89,7 +85,7 @@ type restaurant_time struct {
 
 // Function contains several conditions which we check to determine if the restaurant is ok to use.
 // We check them all inside of this one function.
-func restaurant_format_is_incorrect(city string, restaurant response_fields) bool {
+func restaurant_format_is_incorrect(city string, restaurant *response_fields) bool {
 	// Converting to lower so that we don't run into problems when comparing it.
 	city = strings.ToLower(city)
 

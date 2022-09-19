@@ -43,7 +43,7 @@ func TestGetRestaurants(t *testing.T) {
 //	})
 //}
 
-// This function is our bottleneck.
+// This function is our bottleneck if any.
 func TestGetAvailableTables(t *testing.T) {
 	t.Parallel()
 	amount_of_eaters := 1
@@ -65,15 +65,15 @@ func TestGetIdFromReservationPageUrl(t *testing.T) {
 	expected_id := "38"
 	placeholder_restaurant := response_fields{
 		Id:          "",
-		Name:        string_field{Fi_FI: ""},
-		Address:     address_fields{Municipality: string_field{Fi_FI: ""}},
-		Features:    features_fields{Accessible: false},
-		Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},
-		Links:       links_fields{TableReservationLocalized: string_field{Fi_FI: restaurant_url}, HomepageLocalized: string_field{Fi_FI: ""}},
+		Name:        &string_field{Fi_FI: ""},
+		Address:     &address_fields{Municipality: &string_field{Fi_FI: ""}},
+		Features:    &features_fields{Accessible: false},
+		Openingtime: &opening_fields{Restauranttime: &opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: &opening_fields_ranges{Ranges: []ranges_times{}}},
+		Links:       &links_fields{TableReservationLocalized: &string_field{Fi_FI: restaurant_url}, HomepageLocalized: &string_field{Fi_FI: ""}},
 	}
 
 	restaurant_additional_information := additional_information{
-		restaurant: placeholder_restaurant,
+		restaurant: &placeholder_restaurant,
 	}
 
 	id, err := restaurant_additional_information.get_id_from_reservation_page_url()
@@ -92,14 +92,14 @@ func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
 
 	placeholder_restaurant := response_fields{
 		Id:          "",
-		Name:        string_field{Fi_FI: ""},
-		Address:     address_fields{Municipality: string_field{Fi_FI: ""}},
-		Features:    features_fields{Accessible: false},
-		Openingtime: opening_fields{Restauranttime: opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: opening_fields_ranges{Ranges: []ranges_times{}}},
-		Links:       links_fields{TableReservationLocalized: string_field{Fi_FI: restaurant_url}, HomepageLocalized: string_field{Fi_FI: ""}},
+		Name:        &string_field{Fi_FI: ""},
+		Address:     &address_fields{Municipality: &string_field{Fi_FI: ""}},
+		Features:    &features_fields{Accessible: false},
+		Openingtime: &opening_fields{Restauranttime: &opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: &opening_fields_ranges{Ranges: []ranges_times{}}},
+		Links:       &links_fields{TableReservationLocalized: &string_field{Fi_FI: restaurant_url}, HomepageLocalized: &string_field{Fi_FI: ""}},
 	}
 	restaurant_additional_information := additional_information{
-		restaurant: placeholder_restaurant,
+		restaurant: &placeholder_restaurant,
 	}
 
 	_, err := restaurant_additional_information.get_id_from_reservation_page_url()

@@ -9,7 +9,7 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func construct_payload(id_from_reservation_page_url string, current_date string, time covered_times, amount_of_eaters int) string {
+func construct_payload(id_from_reservation_page_url string, current_date string, time *covered_times, amount_of_eaters int) string {
 	time_slot_string := get_string_time_from_unix(time.time)
 	// replacing the 17(:)00 to match the format in url.
 	time_slot_string = strings.Replace(time_slot_string, ":", "", -1)
@@ -20,13 +20,13 @@ func construct_payload(id_from_reservation_page_url string, current_date string,
 // Gets timeslots from raflaamo API that is responsible for returning graph data.
 // In the end, instead of drawing a graph with it, we convert it into time to determine which table is open or not.
 // This one sends requests, so we use goroutines in it.
-func interact_with_api(time_slot covered_times, id_from_reservation_page_url string, current_time date_and_time, amount_of_eaters int) (parsed_graph_data, error) {
+func interact_with_api(time_slot *covered_times, id_from_reservation_page_url string, current_time *date_and_time, amount_of_eaters int) (*parsed_graph_data, error) {
 	request_url := construct_payload(id_from_reservation_page_url, current_time.date, time_slot, amount_of_eaters)
 
 	r, err := http.NewRequest("GET", request_url, nil)
 
 	if err != nil {
-		return parsed_graph_data{}, errors.New("error connecting to api")
+		return nil, errors.New("error connecting to api")
 	}
 
 	r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
@@ -36,19 +36,19 @@ func interact_with_api(time_slot covered_times, id_from_reservation_page_url str
 
 	// Will throw if we call deserialize_graph_response with a status code other than 200, so we handle it here.
 	if err != nil || res.StatusCode != 200 {
-		return parsed_graph_data{}, errors.New("error connecting to api")
+		return nil, errors.New("error connecting to api")
 	}
 
 	deserialized_graph_data, err := deserialize_graph_response(&res)
 	// most likely won't jump into this branch but check regardless.
 	if err != nil {
-		return parsed_graph_data{}, errors.New("error deserializing")
+		return nil, errors.New("error deserializing")
 	}
 	if time_slot_does_not_contain_open_tables(deserialized_graph_data) {
-		return parsed_graph_data{}, errors.New("no open tables found")
+		return nil, errors.New("no open tables found")
 	}
 	// Adding timezone difference into the unix time. (three hours).
-	graph_end_unix := deserialized_graph_data.Intervals[0].To
+	graph_end_unix := (*deserialized_graph_data.Intervals)[0].To
 	// Adding 10800000(ms) to the time to match UTC +2 or +3 (finnish time) (10800000 ms corresponds to 3h)
 	// because graph unix time fields "to" and "from" come in UTC +0
 	graph_end_unix += 10800000
@@ -59,8 +59,8 @@ func interact_with_api(time_slot covered_times, id_from_reservation_page_url str
 // This function interacts with the raflaamo graph API and returns the time slots that we get from that API.
 // Function will return error if the provided timestamps were in invalid form (current time is bigger or equal to the last possible time interval returned from the API) it's an error because if that is the case, we don't have any times to check.
 // TODO: This does not work correctly.
-func extract_available_time_intervals_from_response(api_response parsed_graph_data, current_time date_and_time, kitchen_office_hours restaurant_time, all_reservation_times []int64) ([]string, error) {
-	graph_end_unix := api_response.Intervals[0].To
+func extract_available_time_intervals_from_response(api_response *parsed_graph_data, current_time *date_and_time, kitchen_office_hours *restaurant_time, all_reservation_times []int64) ([]string, error) {
+	graph_end_unix := (*api_response.Intervals)[0].To
 	if current_time.time >= graph_end_unix {
 		return nil, errors.New("restaurant is already closed")
 	}
