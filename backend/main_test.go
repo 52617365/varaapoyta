@@ -10,7 +10,7 @@ func BenchmarkMain(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		city := "helsinki"
 
-		init_request, _ := init_restaurants_api()
+		init_request, _ := init_restaurants()
 		response, err := init_request.get()
 
 		if len(response) == 0 && err == nil {

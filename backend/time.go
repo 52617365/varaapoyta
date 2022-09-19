@@ -15,12 +15,9 @@ func time_slot_does_not_contain_open_tables(data parsed_graph_data) bool {
 	return data.Intervals[0].Color == "transparent"
 }
 
-func get_opening_and_closing_time_from_kitchen_time(restaurant response_fields) (restaurant_time, error) {
+func get_opening_and_closing_time_from_kitchen_time(restaurant response_fields) restaurant_time {
 	// Converting restaurant_kitchen_start_time to unix, so we can compare it easily.
 	// restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
-	if len(restaurant.Openingtime.Kitchentime.Ranges) == 0 {
-		return restaurant_time{}, errors.New("no ranges found")
-	}
 	restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Kitchentime.Ranges[0].Start)
 	// We minus 1 hour from the end time because restaurants don't take reservations before that time slot.
 	// IMPORTANT: E.g. if restaurant closes at 22:00, the last possible reservation time is 21:00.
@@ -31,7 +28,7 @@ func get_opening_and_closing_time_from_kitchen_time(restaurant response_fields) 
 	return restaurant_time{
 		opening: restaurant_kitchen_start_time,
 		closing: restaurant_kitchen_ending_time,
-	}, nil
+	}
 }
 
 func get_string_time_from_unix(unix_time int64) string {
@@ -67,21 +64,22 @@ func get_unix_from_time(time_to_convert string) int64 {
 
 // The parameters passed here have already taken into consideration the restaurants starting and closing time.
 // get_time_intervals_in_between_office_hours gets all the possible time_intervals you can reserve inside a start and end time slot.
-func get_time_intervals_in_between_office_hours(restaurant_starting_time_unix int64, restaurant_closing_time_unix int64, all_time_intervals []int64) ([]int64, error) {
-	// Here we check if the starting_time is larger than closing_time.
-	// This will result in an error because the user tried to provide times but failed with the format.
-	if restaurant_starting_time_unix >= restaurant_closing_time_unix {
-		return nil, errors.New("restaurant_start_time was larger or equal to closing_time")
-	}
-	captured_times := make([]int64, 0, len(all_time_intervals))
 
-	for _, time_interval := range all_time_intervals {
-		if time_interval > restaurant_starting_time_unix && time_interval <= restaurant_closing_time_unix {
-			captured_times = append(captured_times, time_interval)
-		}
-	}
-	return captured_times, nil
-}
+// func get_time_intervals_in_between_office_hours(restaurant_starting_time_unix int64, restaurant_closing_time_unix int64, all_time_intervals []int64) ([]int64, error) {
+// 	// Here we check if the starting_time is larger than closing_time.
+// 	// This will result in an error because the user tried to provide times but failed with the format.
+// 	if restaurant_starting_time_unix >= restaurant_closing_time_unix {
+// 		return nil, errors.New("restaurant_start_time was larger or equal to closing_time")
+// 	}
+// 	captured_times := make([]int64, 0, len(all_time_intervals))
+
+// 	for _, time_interval := range all_time_intervals {
+// 		if time_interval > restaurant_starting_time_unix && time_interval <= restaurant_closing_time_unix {
+// 			captured_times = append(captured_times, time_interval)
+// 		}
+// 	}
+// 	return captured_times, nil
+// }
 
 // Returns all possible time intervals that can be reserved in the raflaamo reservation page.
 // 11:00, 11:15, 11:30 and so on.
@@ -113,18 +111,13 @@ func get_all_raflaamo_time_intervals() []int64 {
 }
 
 // This struct contains the time you check the graph api with, and the corresponding start and end time window that the response covers.
-type covered_times struct {
-	time              int64
-	time_window_start int64
-	time_window_end   int64
-}
 
 type date_and_time struct {
 	date string
 	time int64
 }
 
-// 2022-07-21 12:45:54.1414084 +0300 EEST m=+0.001537301
+// Gets the current time and date and initializes a struct with it.
 func get_current_date_and_time() date_and_time {
 	date_regex, _ := regexp.Compile(`\d{4}-\d{2}-\d{2}`)
 	time_regex, _ := regexp.Compile(`\d{2}:\d{2}`)
@@ -139,8 +132,16 @@ func get_current_date_and_time() date_and_time {
 	}
 }
 
-// 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
-// The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
+type covered_times struct {
+	time              int64
+	time_window_start int64
+	time_window_end   int64
+}
+
+/*
+ 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
+ The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
+*/
 func get_graph_time_slots_from_current_point_forward(current_time int64) []covered_times {
 	// Getting current_time, so we can avoid checking times from the past.
 	all_possible_time_slots := [...]covered_times{
@@ -163,6 +164,7 @@ Used to get all the time slots in between the graph start and graph end.
 E.g. if start is 2348 and end is 0100, it will get time slots 0000, 0015, 0030, 0045, 0100.
 */
 // Here reservation_times here has already taken into consideration the restaurants opening and closing time.
+
 func time_slots_in_between(start_time int64, graph_end int64, reservation_times []int64) ([]string, error) {
 	if start_time == graph_end {
 		return nil, errors.New("trying to get a time_slot with 2 identical timestamps")
