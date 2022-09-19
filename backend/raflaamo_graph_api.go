@@ -66,7 +66,7 @@ func extract_available_time_intervals_from_response(api_response parsed_graph_da
 	}
 
 	// TODO: reserve space in advance.
-	restaurant_available_time_slots := make([]string, len(all_reservation_times))
+	restaurant_available_time_slots := make([]string, 0, len(all_reservation_times))
 
 	// Here we capture all the available time intervals into an array by matching against all the possible time intervals.
 	for _, reservation_time := range all_reservation_times {

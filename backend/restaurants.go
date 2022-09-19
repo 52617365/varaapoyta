@@ -3,8 +3,6 @@ package main
 import (
 	"errors"
 	"strings"
-
-	"golang.org/x/exp/slices"
 )
 
 /*
@@ -50,20 +48,24 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 
 		// Demons start here.
 
-		// Here we initialize this struct because we want to filter out all the unwanted restaurants so we don't have to iterate over a massive collection later (400 restaurants).
-		// Also, here we get to associate the time slots that are not instantly known with the restaurant when the channel has the response ready.
+		/*
+		 Here we initialize this struct because we want to filter out all the unwanted restaurants so we don't have to iterate over a massive collection later (400 restaurants).
+		 Also, here we get to associate the time slots that are not instantly known with the restaurant when the channel has the response ready.
+		*/
 		results := restaurant_with_time_slots{
 			restaurant:    restaurant,
 			time_slots:    make(chan parsed_graph_data, len(time_slots_to_check)),
 			kitchen_times: kitchen_times,
 		}
+
+		// Storing the result into the slice of all results and modifying the result as a reference later.
 		all_results <- results
-		graph_api_results := results.time_slots
+
 		jobs := make(chan job, len(time_slots_to_check))
 
 		// Spawning 8 workers.
 		for i := 0; i < 8; i++ {
-			go worker(jobs, graph_api_results)
+			go worker(jobs, results.time_slots)
 		}
 
 		// Spawning the jobs, this is 0-4 jobs every loop iteration on the response.
@@ -80,24 +82,20 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 	}
 	close(all_results)
 
-	restaurants_with_opening_times := make([]response_fields, 50)
+	restaurants_with_opening_times := make([]response_fields, 0, 50)
 	for result := range all_results {
 		restaurant, kitchen_times := result.restaurant, result.kitchen_times
-		for time_slot := range result.time_slots {
-			available_time_slots, err := extract_available_time_intervals_from_response(time_slot, current_time, kitchen_times, all_time_intervals)
+		for i := 0; i <= len(result.time_slots); i++ {
+			available_time_slots, err := extract_available_time_intervals_from_response(<-result.time_slots, current_time, kitchen_times, all_time_intervals)
 			if err != nil {
 				continue
 			}
 
-			// Avoiding duplicates.
-			for _, available_time_slot := range available_time_slots {
-				if slices.Contains(restaurant.Available_time_slots, available_time_slot) {
-					restaurant.Available_time_slots = append(restaurant.Available_time_slots, available_time_slot)
-				}
-			}
+			restaurant.Available_time_slots = available_time_slots
 			restaurants_with_opening_times = append(restaurants_with_opening_times, restaurant)
 		}
 	}
+	// @Notice: If restaurant.Available_time_slots is null, there are no available time slots.
 	return restaurants_with_opening_times, nil
 }
 
