@@ -6,19 +6,26 @@ import (
 )
 
 type additional_information struct {
-	restaurant           response_fields
-	kitchen_office_hours restaurant_time
+	restaurant    response_fields
+	time_slots    chan parsed_graph_data
+	kitchen_times restaurant_time
 }
 
 func init_additional_information(restaurant response_fields, time_slots_to_check []covered_times) additional_information {
 	kitchen_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
 	return additional_information{
-		restaurant:           restaurant,
-		kitchen_office_hours: kitchen_office_hours,
+		restaurant:    restaurant,
+		kitchen_times: kitchen_office_hours,
+		time_slots:    make(chan parsed_graph_data, len(time_slots_to_check)),
 	}
 }
 
 /*
+This struct exists because it lets us filter out the restaurants we're not interested in (E.g. from city we didn't want)
+whilst associating the response with the correct restaurant.
+
+also,
+
 Stores certain additional information about the restaurant that we might be interested in.
 For example:
 - The id from the reservation page url
@@ -33,7 +40,7 @@ func (add *additional_information) add() error {
 	add.restaurant.Links.TableReservationLocalizedId = restaurant_id
 	time := time_utils{
 		current_time: get_current_date_and_time(),
-		closing_time: add.kitchen_office_hours.closing,
+		closing_time: add.kitchen_times.closing,
 	}
 
 	time_till_restaurant_closed := time.get_time_till_restaurant_closing_time()

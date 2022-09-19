@@ -5,17 +5,7 @@ import (
 	"strings"
 )
 
-/*
-This struct exists because it lets us filter out the restaurants we're not interested in (E.g. from city we didn't want)
-whilst associating the response with the correct restaurant.
-*/
-type restaurant_with_time_slots struct {
-	time_slots    chan parsed_graph_data
-	restaurant    response_fields
-	kitchen_times restaurant_time
-}
-
-// TODO: fixes currently being done.
+// TODO: Why does get_available_tables work when city is "rovaniemi" but not when city is "helsinki"?
 func get_available_tables(city string, amount_of_eaters int) ([]response_fields, error) {
 	current_time := get_current_date_and_time()
 	all_time_intervals := get_all_raflaamo_time_intervals()
@@ -30,7 +20,7 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 		return []response_fields{}, errors.New("raflaamo api most likely down")
 	}
 
-	all_results := make(chan restaurant_with_time_slots, 50)
+	all_results := make(chan additional_information, 50)
 	for _, restaurant := range response {
 		if restaurant_format_is_incorrect(city, restaurant) {
 			continue
@@ -44,28 +34,17 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 			continue
 		}
 		restaurant_id := restaurant_additional_information.restaurant.Links.TableReservationLocalizedId
-		kitchen_times := restaurant_additional_information.kitchen_office_hours
 
 		// Demons start here.
 
-		/*
-		 Here we initialize this struct because we want to filter out all the unwanted restaurants so we don't have to iterate over a massive collection later (400 restaurants).
-		 Also, here we get to associate the time slots that are not instantly known with the restaurant when the channel has the response ready.
-		*/
-		results := restaurant_with_time_slots{
-			restaurant:    restaurant,
-			time_slots:    make(chan parsed_graph_data, len(time_slots_to_check)),
-			kitchen_times: kitchen_times,
-		}
-
 		// Storing the result into the slice of all results and modifying the result as a reference later.
-		all_results <- results
+		all_results <- restaurant_additional_information
 
 		jobs := make(chan job, len(time_slots_to_check))
 
 		// Spawning 8 workers.
 		for i := 0; i < 8; i++ {
-			go worker(jobs, results.time_slots)
+			go worker(jobs, restaurant_additional_information.time_slots)
 		}
 
 		// Spawning the jobs, this is 0-4 jobs every loop iteration on the response.
