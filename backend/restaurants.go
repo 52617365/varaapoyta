@@ -13,7 +13,7 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 
 	raflaamo, err := init_restaurants()
 	if err != nil {
-		return []response_fields{}, errors.New("failed to construct the http client, contact the developer")
+		return []response_fields{}, errors.New("failed to connect to the raflaamo api, contact the developer")
 	}
 	response, err := raflaamo.get()
 	if err != nil {
@@ -25,7 +25,7 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 		if restaurant_format_is_incorrect(city, restaurant) {
 			continue
 		}
-		restaurant_additional_information := init_additional_information(restaurant, time_slots_to_check)
+		restaurant_additional_information := init_additional_information(restaurant, len(time_slots_to_check))
 
 		is_err := restaurant_additional_information.add()
 		if is_err != nil {
@@ -59,13 +59,17 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 		}
 		close(jobs)
 	}
-	close(all_results)
 
 	restaurants_with_opening_times := make([]response_fields, 0, 50)
+	close(all_results)
 	for result := range all_results {
 		restaurant, kitchen_times := result.restaurant, result.kitchen_times
+		api_response := <-result.time_slots
+		if api_response.err != nil {
+			continue
+		}
 		for i := 0; i <= len(result.time_slots); i++ {
-			available_time_slots, err := extract_available_time_intervals_from_response(<-result.time_slots, current_time, kitchen_times, all_time_intervals)
+			available_time_slots, err := extract_available_time_intervals_from_response(api_response.value, current_time, kitchen_times, all_time_intervals)
 			if err != nil {
 				continue
 			}

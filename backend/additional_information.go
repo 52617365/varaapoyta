@@ -7,16 +7,16 @@ import (
 
 type additional_information struct {
 	restaurant    response_fields
-	time_slots    chan parsed_graph_data
+	time_slots    chan Result
 	kitchen_times restaurant_time
 }
 
-func init_additional_information(restaurant response_fields, time_slots_to_check []covered_times) additional_information {
+func init_additional_information(restaurant response_fields, time_slots_to_check_length int) additional_information {
 	kitchen_office_hours := get_opening_and_closing_time_from_kitchen_time(restaurant)
 	return additional_information{
 		restaurant:    restaurant,
 		kitchen_times: kitchen_office_hours,
-		time_slots:    make(chan parsed_graph_data, len(time_slots_to_check)),
+		time_slots:    make(chan Result, time_slots_to_check_length),
 	}
 }
 
