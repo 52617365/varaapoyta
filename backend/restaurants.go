@@ -5,7 +5,14 @@ import (
 	"strings"
 )
 
-func get_available_tables(city string, amount_of_eaters int) ([]*response_fields, error) {
+/*
+TODO: We lose kitchenTime at some point even though we want it lol.
+We also lose some data we're interested in once we iterate it from the channel.
+Figure out why we're losing data.
+NOTE: we have the data before we iterate it from the channel.
+*/
+
+func get_available_tables(city string, amount_of_eaters int) ([]response_fields, error) {
 	current_time := get_current_date_and_time()
 	all_time_intervals := get_all_raflaamo_time_intervals()
 	time_slots_to_check := get_graph_time_slots_from_current_point_forward(current_time.time)
@@ -19,7 +26,7 @@ func get_available_tables(city string, amount_of_eaters int) ([]*response_fields
 		return nil, errors.New("raflaamo api most likely down")
 	}
 
-	all_results := make(chan *additional_information, 50)
+	all_results := make(chan additional_information, 50)
 	for _, restaurant := range response {
 		if restaurant_format_is_incorrect(city, &restaurant) {
 			continue
@@ -34,7 +41,7 @@ func get_available_tables(city string, amount_of_eaters int) ([]*response_fields
 		restaurant_id := restaurant_additional_information.restaurant.Links.TableReservationLocalizedId
 
 		// Storing the result into the slice of all results and modifying the result as a reference later.
-		all_results <- restaurant_additional_information
+		all_results <- *restaurant_additional_information
 
 		jobs := make(chan job, len(time_slots_to_check))
 
@@ -56,10 +63,11 @@ func get_available_tables(city string, amount_of_eaters int) ([]*response_fields
 		close(jobs)
 	}
 
-	restaurants_with_opening_times := make([]*response_fields, 0, 50)
+	restaurants_with_opening_times := make([]response_fields, 0, 50)
 	close(all_results)
 	for result := range all_results {
-		restaurant, kitchen_times := result.restaurant, result.kitchen_times
+		restaurant := result.restaurant
+		kitchen_times := result.kitchen_times
 		api_response := <-result.time_slots
 		if api_response.err != nil {
 			continue
@@ -71,7 +79,7 @@ func get_available_tables(city string, amount_of_eaters int) ([]*response_fields
 			}
 
 			restaurant.Available_time_slots = available_time_slots
-			restaurants_with_opening_times = append(restaurants_with_opening_times, restaurant)
+			restaurants_with_opening_times = append(restaurants_with_opening_times, *restaurant)
 		}
 	}
 	// @Notice: If restaurant.Available_time_slots is null/nil, there are no available time slots.

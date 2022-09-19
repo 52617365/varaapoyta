@@ -19,13 +19,12 @@ type response_third_level struct {
 }
 
 type response_fields struct {
-	Id                   string           `json:"id"`
-	Name                 *string_field    `json:"name"`
-	Address              *address_fields  `json:"address"`
-	Features             *features_fields `json:"features"`
-	Openingtime          *opening_fields  `json:"openingTime"`
-	Links                *links_fields    `json:"links"`
-	Available_time_slots []string         `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all time slots.
+	Id                   string          `json:"id"`
+	Name                 *string_field   `json:"name"`
+	Address              *address_fields `json:"address"`
+	Openingtime          *opening_fields `json:"openingTime"`
+	Links                *links_fields   `json:"links"`
+	Available_time_slots []string        `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all time slots.
 }
 
 type string_field struct {
@@ -36,10 +35,6 @@ type address_fields struct {
 	Municipality *string_field `json:"municipality"`
 	Street       *string_field `json:"street"`
 	Zipcode      string        `json:"zipCode"`
-}
-
-type features_fields struct {
-	Accessible bool `json:"accessible"`
 }
 
 type opening_fields struct {
