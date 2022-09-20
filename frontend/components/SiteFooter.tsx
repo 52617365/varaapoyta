@@ -12,8 +12,7 @@ function SiteFooter() {
           <Link href="https://github.com/52617365">
             <GitHubIcon />
           </Link>
-          {/* TODO: fix the link cuz its old and expired  */}
-          <Link href="https://www.linkedin.com/mwlite/in/rasmus-m-4a7195220">
+          <Link href="https://www.linkedin.com/in/rasmus-maki/">
             <LinkedInIcon />
           </Link>
         </div>
