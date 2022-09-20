@@ -1,6 +1,5 @@
 import React from "react";
 
-// TODO: add actual functionality to this function. E.g fetching.
 function Button({
   text,
   setButton,

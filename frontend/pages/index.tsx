@@ -3,7 +3,6 @@ import Button from "../components/Button";
 import React, { useState, useEffect } from "react";
 import Card from "../components/Card";
 import api_response from "../interfaces/api_response_interface";
-import AutoCompleteCities from "../components/AutoCompleteCities";
 
 const Home: NextPage = () => {
   const [buttonLoading, setButtonLoading] = React.useState(false);
@@ -110,22 +109,19 @@ const Home: NextPage = () => {
               <input
                 onKeyDown={handleKeypress}
                 type="text"
-                autoComplete=""
                 placeholder="Kaupunki"
                 className="input w-full max-w-xs"
-                onChange={(event) => asetaKaupunki(event.target.value)}
+                onChange={handleKaupunki}
                 defaultValue={kaupunki}
               />
             </div>
             <div>
-              <form>
-                <Button
-                  text="Hae ravintolat"
-                  setButton={fetchInformation}
-                  buttonLoading={buttonLoading}
-                  textfield_text={kaupunki}
-                />
-              </form>
+              <Button
+                text="Hae ravintolat"
+                setButton={fetchInformation}
+                buttonLoading={buttonLoading}
+                textfield_text={kaupunki}
+              />
             </div>
             {render_results()}
           </div>
