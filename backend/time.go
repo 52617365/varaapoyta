@@ -14,7 +14,7 @@ func time_slot_does_not_contain_open_tables(data *parsed_graph_data) bool {
 	return (*data.Intervals)[0].Color == "transparent"
 }
 
-func get_opening_and_closing_time_from_kitchen_time(restaurant *response_fields) *restaurant_time {
+func get_opening_and_closing_time_from_kitchen_time(restaurant *response_fields) restaurant_time {
 	// Converting restaurant_kitchen_start_time to unix, so we can compare it easily.
 	// restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].Start)
 	restaurant_kitchen_start_time := get_unix_from_time(restaurant.Openingtime.Kitchentime.Ranges[0].Start)
@@ -24,7 +24,7 @@ func get_opening_and_closing_time_from_kitchen_time(restaurant *response_fields)
 	// restaurant_kitchen_ending_time := get_unix_from_time(restaurant.Openingtime.Restauranttime.Ranges[0].End) - one_hour_unix
 	restaurant_kitchen_ending_time := get_unix_from_time(restaurant.Openingtime.Kitchentime.Ranges[0].End) - one_hour_unix
 
-	return &restaurant_time{
+	return restaurant_time{
 		opening: restaurant_kitchen_start_time,
 		closing: restaurant_kitchen_ending_time,
 	}
@@ -119,8 +119,8 @@ type covered_times struct {
 }
 
 /*
- 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
- The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
+02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
+The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
 */
 func get_graph_time_slots_from_current_point_forward(current_time int64) []covered_times {
 	// Getting current_time, so we can avoid checking times from the past.

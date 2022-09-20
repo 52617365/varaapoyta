@@ -67,7 +67,6 @@ func TestGetIdFromReservationPageUrl(t *testing.T) {
 		Id:          "",
 		Name:        &string_field{Fi_FI: ""},
 		Address:     &address_fields{Municipality: &string_field{Fi_FI: ""}},
-		Features:    &features_fields{Accessible: false},
 		Openingtime: &opening_fields{Restauranttime: &opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: &opening_fields_ranges{Ranges: []ranges_times{}}},
 		Links:       &links_fields{TableReservationLocalized: &string_field{Fi_FI: restaurant_url}, HomepageLocalized: &string_field{Fi_FI: ""}},
 	}
@@ -94,7 +93,6 @@ func TestErrorFromGetIdFromReservationPageUrl(t *testing.T) {
 		Id:          "",
 		Name:        &string_field{Fi_FI: ""},
 		Address:     &address_fields{Municipality: &string_field{Fi_FI: ""}},
-		Features:    &features_fields{Accessible: false},
 		Openingtime: &opening_fields{Restauranttime: &opening_fields_ranges{Ranges: []ranges_times{}}, Kitchentime: &opening_fields_ranges{Ranges: []ranges_times{}}},
 		Links:       &links_fields{TableReservationLocalized: &string_field{Fi_FI: restaurant_url}, HomepageLocalized: &string_field{Fi_FI: ""}},
 	}

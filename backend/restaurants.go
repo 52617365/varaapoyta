@@ -5,14 +5,7 @@ import (
 	"strings"
 )
 
-/*
-TODO: We lose kitchenTime at some point even though we want it lol.
-We also lose some data we're interested in once we iterate it from the channel.
-Figure out why we're losing data.
-NOTE: we have the data before we iterate it from the channel.
-*/
-
-func get_available_tables(city string, amount_of_eaters int) ([]response_fields, error) {
+func get_available_tables(city string, amount_of_eaters int) ([]*response_fields, error) {
 	current_time := get_current_date_and_time()
 	all_time_intervals := get_all_raflaamo_time_intervals()
 	time_slots_to_check := get_graph_time_slots_from_current_point_forward(current_time.time)
@@ -31,7 +24,7 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 		if restaurant_format_is_incorrect(city, &restaurant) {
 			continue
 		}
-		restaurant_additional_information := init_additional_information(&restaurant, len(time_slots_to_check))
+		restaurant_additional_information := init_additional_information(restaurant, len(time_slots_to_check))
 
 		id_not_found_err := restaurant_additional_information.add()
 		if id_not_found_err != nil {
@@ -41,7 +34,7 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 		restaurant_id := restaurant_additional_information.restaurant.Links.TableReservationLocalizedId
 
 		// Storing the result into the slice of all results and modifying the result as a reference later.
-		all_results <- *restaurant_additional_information
+		all_results <- restaurant_additional_information
 
 		jobs := make(chan job, len(time_slots_to_check))
 
@@ -63,7 +56,7 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 		close(jobs)
 	}
 
-	restaurants_with_opening_times := make([]response_fields, 0, 50)
+	restaurants_with_opening_times := make([]*response_fields, 0, 50)
 	close(all_results)
 	for result := range all_results {
 		restaurant := result.restaurant
@@ -73,13 +66,13 @@ func get_available_tables(city string, amount_of_eaters int) ([]response_fields,
 			continue
 		}
 		for i := 0; i <= len(result.time_slots); i++ {
-			available_time_slots, err := extract_available_time_intervals_from_response(api_response.value, current_time, kitchen_times, all_time_intervals)
+			available_time_slots, err := extract_available_time_intervals_from_response(api_response.value, current_time, &kitchen_times, all_time_intervals)
 			if err != nil {
 				continue
 			}
 
 			restaurant.Available_time_slots = available_time_slots
-			restaurants_with_opening_times = append(restaurants_with_opening_times, *restaurant)
+			restaurants_with_opening_times = append(restaurants_with_opening_times, &restaurant)
 		}
 	}
 	// @Notice: If restaurant.Available_time_slots is null/nil, there are no available time slots.
