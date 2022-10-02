@@ -106,6 +106,9 @@ func (response *responseFields) doesNotContainOpeningTimes() bool {
 	if restaurantsOpeningTimes == nil || kitchensOpeningTimes == nil {
 		return true
 	}
+	if restaurantsOpeningTimes[0].Start == "" || restaurantsOpeningTimes[0].End == "" {
+		return true
+	}
 	return false
 }
 
@@ -114,8 +117,8 @@ func (response *responseFields) reservationLinkIsNotValid() bool {
 }
 
 func (response *responseFields) cityDoesNotMatchUsersCity(usersCity string) bool {
-	response.Name.FiFi = strings.ToLower(response.Name.FiFi)
-	restaurantsName := response.Name.FiFi
+	response.Address.Municipality.FiFi = strings.ToLower(response.Address.Municipality.FiFi)
+	restaurantsCity := response.Address.Municipality.FiFi
 
-	return restaurantsName != usersCity
+	return restaurantsCity != usersCity
 }
