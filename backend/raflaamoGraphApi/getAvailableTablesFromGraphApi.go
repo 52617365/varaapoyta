@@ -9,7 +9,7 @@ import (
 
 // RaflaamoGraphApi control flow is: getRaflaamoGraphApiRequest -> interactWithGraphApi -> deserializeGraphApiResponse
 type RaflaamoGraphApi struct {
-	httpClient           *http.Client     // This will stay the same because it does not change.
+	httpClient           *http.Client     // This will be initialized once because it does not change.
 	request              *http.Request    // This will be initialized per request.
 	response             *http.Response   // This will be initialized per request.
 	deserializedResponse *parsedGraphData // This will be initialized per request.
@@ -54,4 +54,8 @@ func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse() error {
 
 	graphApi.deserializedResponse = deserializedGraphApiResponse
 	return nil
+}
+
+func (graphApi *RaflaamoGraphApi) getAvailableTablesFromGraphApi() {
+
 }
