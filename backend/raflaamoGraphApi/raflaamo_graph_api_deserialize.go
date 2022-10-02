@@ -3,6 +3,7 @@ package raflaamoGraphApi
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 )
 
@@ -18,16 +19,16 @@ type parsedIntervalData struct {
 	Color string `json:"color"` // Optional field, we can match this to see if the restaurant has available tables. (if not nil it does.)
 }
 
-func deserializeGraphResponse(res *http.Response) (*parsedGraphData, error) {
+func deserializeGraphApiResponse(res *http.Response) (*parsedGraphData, error) {
 	var responseDecoded []parsedGraphData
 	err := json.NewDecoder((res).Body).Decode(&responseDecoded)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("[deserializeGraphResponse] - %w", err)
 	}
 	// Returning only the first index because the api for some reason contains weird data on top of the one we care about.
 	// The relevant data is in the first index.
 	if responseDecoded == nil {
-		return nil, errors.New("there was an error deserializing the data")
+		return nil, errors.New("[deserializeGraphResponse] - there was an error deserializing the data")
 	}
 	return &responseDecoded[0], nil
 }
