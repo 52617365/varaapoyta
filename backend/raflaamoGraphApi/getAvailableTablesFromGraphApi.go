@@ -57,6 +57,12 @@ func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse() error {
 }
 
 // getAvailableTablesFromGraphApi should be called with a requestUrl payload that has already been initialized.
+// TODO: get the time slots here.
+//
+// TODO: Also consider the restaurant kitchens closing time to avoid getting times where
+//	 		 They don't let you reserve anymore (45 minutes before kitchen closes).
+//
+// TODO: don't handle time slots that are in the past from current time.
 func (graphApi *RaflaamoGraphApi) getAvailableTablesFromGraphApi(requestUrl string) error {
 	graphApi.getRaflaamoGraphApiRequest(requestUrl)
 
