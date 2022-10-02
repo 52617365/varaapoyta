@@ -1,6 +1,7 @@
 package raflaamoGraphApi
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -47,12 +48,19 @@ func (graphApi *RaflaamoGraphApi) sendRequestToGraphApi() error {
 }
 
 func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse() error {
-	deserializedGraphApiResponse, err := deserializeGraphApiResponse(graphApi.response)
+	response := graphApi.response
+
+	var deserializedGraphData []parsedGraphData
+	err := json.NewDecoder((response).Body).Decode(&deserializedGraphData)
 	if err != nil {
-		return err
+		return fmt.Errorf("[deserializeGraphResponse] - %w", err)
+	}
+	if deserializedGraphData == nil {
+		return errors.New("[deserializeGraphResponse] - there was an error deserializing the data")
 	}
 
-	graphApi.deserializedResponse = deserializedGraphApiResponse
+	// The relevant data is in the first index only.
+	graphApi.deserializedResponse = &deserializedGraphData[0]
 	return nil
 }
 
