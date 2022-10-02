@@ -10,11 +10,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// @Experimental fix is already in place, if it does not work, revisit the problem. the relative time seems to be off when current time is 22:51 and the closing time is 23:30. Closing time points to 2am.
+// @Experimental fix is already in place, if it does not work, revisit the problem. the relative timeUtils seems to be off when current timeUtils is 22:51 and the closing timeUtils is 23:30. Closing timeUtils points to 2am.
 // TODO: Get some auto completion into the city field on the front end? Figure out how to do this.
 // @Performance: we have to make it faster, it's too slow right now but make it faster once everything else works.
 
-var all_possible_cities = [...]string{
+var allPossibleCities = [...]string{
 	"helsinki",
 	"espoo",
 	"vantaa",
@@ -74,7 +74,7 @@ var all_possible_cities = [...]string{
 	"rovaniemi",
 	"kittilä"}
 
-func set_correct_request_headers(w *http.ResponseWriter) {
+func setCorrectRequestHeaders(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Content-Type", "application/json")
 }
@@ -90,38 +90,38 @@ func Contains[T comparable](arr [58]T, x T) bool {
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/raflaamo/tables/{city}/{amount_of_eaters}", entry_point).Methods("GET")
+	r.HandleFunc("/raflaamo/tables/{city}/{amount_of_eaters}", entryPoint).Methods("GET")
 	log.Fatal(http.ListenAndServe(":10000", r))
 }
 
-func entry_point(w http.ResponseWriter, r *http.Request) {
-	set_correct_request_headers(&w)
+func entryPoint(w http.ResponseWriter, r *http.Request) {
+	setCorrectRequestHeaders(&w)
 	vars := mux.Vars(r)
 	city := vars["city"]
-	if is_not_valid_city(city) {
-		serialized_err, _ := json.Marshal("Sisään syötetyllä kaupungilla ei ole ravintoloita olemassa")
-		w.Write(serialized_err)
+	if isNotValidCity(city) {
+		serializedErr, _ := json.Marshal("Sisään syötetyllä kaupungilla ei ole ravintoloita olemassa")
+		w.Write(serializedErr)
 		return
 	}
 
-	amount_of_eaters := vars["amount_of_eaters"] //  This is the amount of eaters.
-	amount_of_eaters_int := get_int_from_amount_of_eaters(amount_of_eaters)
+	amountOfEaters := vars["amount_of_eaters"] //  This is the amount of eaters.
+	amountOfEatersInt := getIntFromAmountOfEaters(amountOfEaters)
 
-	if amount_of_eaters_int == -1 {
-		serialized_err, _ := json.Marshal("amount of eaters is unknown")
-		w.Write(serialized_err)
+	if amountOfEatersInt == -1 {
+		serializedErr, _ := json.Marshal("amount of eaters is unknown")
+		w.Write(serializedErr)
 		return
 	}
 
-	available_tables, err := get_available_tables(city, amount_of_eaters_int)
+	availableTables, err := get_available_tables(city, amountOfEatersInt)
 	if err != nil {
-		error_message, _ := json.Marshal(err)
-		_, err2 := w.Write(error_message)
+		errorMessage, _ := json.Marshal(err)
+		_, err2 := w.Write(errorMessage)
 		if err2 != nil {
 			return
 		}
 	}
-	serialize, _ := json.Marshal(available_tables)
+	serialize, _ := json.Marshal(availableTables)
 
 	_, err2 := w.Write(serialize)
 	if err2 != nil {
@@ -129,15 +129,15 @@ func entry_point(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func is_not_valid_city(city string) bool {
-	return !Contains(all_possible_cities, strings.ToLower(city))
+func isNotValidCity(city string) bool {
+	return !Contains(allPossibleCities, strings.ToLower(city))
 }
 
-func get_int_from_amount_of_eaters(amount_of_eaters string) int {
-	if amount_of_eaters == "" {
+func getIntFromAmountOfEaters(amountOfEaters string) int {
+	if amountOfEaters == "" {
 		return -1
 	}
-	if val, err := strconv.Atoi(amount_of_eaters); err == nil {
+	if val, err := strconv.Atoi(amountOfEaters); err == nil {
 		return val
 	}
 	return -1

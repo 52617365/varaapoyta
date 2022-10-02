@@ -1,4 +1,4 @@
-package main
+package timeUtils
 
 import (
 	"strings"
@@ -6,12 +6,12 @@ import (
 )
 
 func Fuzz_get_string_time_from_unix(f *testing.F) {
-	var unix_time int64 = 90900
-	f.Add(unix_time)
-	f.Fuzz(func(t *testing.T, unix_time int64) {
-		string_time := get_string_time_from_unix(unix_time)
+	var unixTime int64 = 90900
+	f.Add(unixTime)
+	f.Fuzz(func(t *testing.T, unixTime int64) {
+		stringTime := getStringTimeFromUnix(unixTime)
 
-		if len(string_time) < 4 {
+		if len(stringTime) < 4 {
 			t.Errorf("could not get string_time correctly")
 		}
 	})
@@ -21,11 +21,11 @@ func Fuzz_get_unix_from_time(f *testing.F) {
 	f.Fuzz(func(t *testing.T, time string) {
 		time = strings.Replace(time, ":", "", -1)
 
-		unix_time := get_unix_from_time(time)
-		if is_invalid_format(time) && unix_time != -1 {
+		unixTime := ConvertStringTimeToUnix(time)
+		if relativeTimeFormatIsInvalid(time) && unixTime != -1 {
 			t.Errorf("expected error")
 		}
-		if unix_time == -1 && !is_invalid_format(time) {
+		if unixTime == -1 && !relativeTimeFormatIsInvalid(time) {
 			t.Errorf("we wanted an error but it wasnt one")
 		}
 	})
@@ -72,28 +72,28 @@ func Fuzz_get_unix_from_time(f *testing.F) {
 //	})
 //}
 
-// TestTimeSlotsFromCurrentPointForward | Test to see if the function correctly gets all the graph time windows from current time forward.
+// TestTimeSlotsFromCurrentPointForward | Test to see if the function correctly gets all the graph timeUtils windows from current timeUtils forward.
 func TestTimeSlotsFromCurrentPointForward(t *testing.T) {
 	t.Parallel()
 
-	current_time := "0700"
-	expected_time_slot_windows := []covered_times{
-		{time: 28800, time_window_start: 21600, time_window_end: 43200},
-		{time: 50400, time_window_start: 43200, time_window_end: 64800},
-		{time: 72000, time_window_start: 64800, time_window_end: 86400},
+	currentTime := "0700"
+	expectedTimeSlotWindows := []CoveredTimes{
+		{time: 28800, timeWindowStart: 21600, timeWindowsEnd: 43200},
+		{time: 50400, timeWindowStart: 43200, timeWindowsEnd: 64800},
+		{time: 72000, timeWindowStart: 64800, timeWindowsEnd: 86400},
 	}
 
-	current_time_unix := get_unix_from_time(current_time)
-	second_time_slot_windows := get_graph_time_slots_from_current_point_forward(current_time_unix)
-	for time_slot_window_index, time_slot_window := range second_time_slot_windows {
-		if time_slot_window.time != expected_time_slot_windows[time_slot_window_index].time {
-			t.Fatalf("Expected window time to be %d but it was %d", expected_time_slot_windows[time_slot_window_index].time, time_slot_window.time)
+	currentTimeUnix := ConvertStringTimeToUnix(currentTime)
+	secondTimeSlotWindows := get_graph_time_slots_from_current_point_forward(currentTimeUnix)
+	for timeSlotWindowIndex, timeSlotWindow := range secondTimeSlotWindows {
+		if timeSlotWindow.time != expectedTimeSlotWindows[timeSlotWindowIndex].time {
+			t.Fatalf("Expected window timeUtils to be %d but it was %d", expectedTimeSlotWindows[timeSlotWindowIndex].time, timeSlotWindow.time)
 		}
-		if time_slot_window.time_window_start != expected_time_slot_windows[time_slot_window_index].time_window_start {
-			t.Fatalf("Expected time window start time to be %d but it was %d", expected_time_slot_windows[time_slot_window_index].time_window_start, time_slot_window.time_window_start)
+		if timeSlotWindow.timeWindowStart != expectedTimeSlotWindows[timeSlotWindowIndex].timeWindowStart {
+			t.Fatalf("Expected timeUtils window start timeUtils to be %d but it was %d", expectedTimeSlotWindows[timeSlotWindowIndex].timeWindowStart, timeSlotWindow.timeWindowStart)
 		}
-		if time_slot_window.time_window_end != expected_time_slot_windows[time_slot_window_index].time_window_end {
-			t.Fatalf("Expected time window end time to be %d but it was %d", expected_time_slot_windows[time_slot_window_index].time_window_end, time_slot_window.time_window_end)
+		if timeSlotWindow.timeWindowsEnd != expectedTimeSlotWindows[timeSlotWindowIndex].timeWindowsEnd {
+			t.Fatalf("Expected timeUtils window end timeUtils to be %d but it was %d", expectedTimeSlotWindows[timeSlotWindowIndex].timeWindowsEnd, timeSlotWindow.timeWindowsEnd)
 		}
 	}
 }
@@ -101,11 +101,11 @@ func TestTimeSlotsFromCurrentPointForward(t *testing.T) {
 func Fuzz_times_from_current_point_forward(f *testing.F) {
 	var number int64 = 889282828
 	f.Add(number)
-	f.Fuzz(func(t *testing.T, current_time int64) {
-		time_slot_windows := get_graph_time_slots_from_current_point_forward(current_time)
-		for _, time_slot := range time_slot_windows {
-			if time_slot.time_window_end < current_time {
-				t.Errorf(`Did not expect %d to be in the time_slot but it was.`, current_time)
+	f.Fuzz(func(t *testing.T, currentTime int64) {
+		timeSlotWindows := get_graph_time_slots_from_current_point_forward(currentTime)
+		for _, timeSlot := range timeSlotWindows {
+			if timeSlot.timeWindowsEnd < currentTime {
+				t.Errorf(`Did not expect %d to be in the time_slot but it was.`, currentTime)
 			}
 		}
 	})

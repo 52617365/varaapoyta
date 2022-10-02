@@ -1,4 +1,4 @@
-package main
+package raflaamoGraphApi
 
 import (
 	"encoding/json"
@@ -6,28 +6,28 @@ import (
 	"net/http"
 )
 
-type parsed_graph_data struct {
-	Name      string                  `json:"name"`
-	Intervals *[]parsed_interval_data `json:"intervals"` // were only interested in the first index.
-	Id        int                     `json:"id"`
+type parsedGraphData struct {
+	Name      string                `json:"name"`
+	Intervals *[]parsedIntervalData `json:"intervals"` // were only interested in the first index.
+	Id        int                   `json:"id"`
 }
 
-type parsed_interval_data struct {
+type parsedIntervalData struct {
 	From  int64  `json:"from"`  // From is a unix timestamp in ms.
 	To    int64  `json:"to"`    // To is a unix timestamp in ms.
 	Color string `json:"color"` // Optional field, we can match this to see if the restaurant has available tables. (if not nil it does.)
 }
 
-func deserialize_graph_response(res **http.Response) (*parsed_graph_data, error) {
-	var response_decoded []parsed_graph_data
-	err := json.NewDecoder((*res).Body).Decode(&response_decoded)
+func deserializeGraphResponse(res *http.Response) (*parsedGraphData, error) {
+	var responseDecoded []parsedGraphData
+	err := json.NewDecoder((res).Body).Decode(&responseDecoded)
 	if err != nil {
 		return nil, err
 	}
 	// Returning only the first index because the api for some reason contains weird data on top of the one we care about.
 	// The relevant data is in the first index.
-	if response_decoded == nil {
+	if responseDecoded == nil {
 		return nil, errors.New("there was an error deserializing the data")
 	}
-	return &response_decoded[0], nil
+	return &responseDecoded[0], nil
 }
