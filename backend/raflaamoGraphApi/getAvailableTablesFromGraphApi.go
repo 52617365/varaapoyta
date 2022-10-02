@@ -56,6 +56,20 @@ func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse() error {
 	return nil
 }
 
-func (graphApi *RaflaamoGraphApi) getAvailableTablesFromGraphApi() {
+// getAvailableTablesFromGraphApi should be called with a requestUrl payload that has already been initialized.
+func (graphApi *RaflaamoGraphApi) getAvailableTablesFromGraphApi(requestUrl string) error {
+	graphApi.getRaflaamoGraphApiRequest(requestUrl)
 
+	var err error
+
+	err = graphApi.sendRequestToGraphApi()
+	if err != nil {
+		return err
+	}
+
+	err = graphApi.deserializeGraphApiResponse()
+	if err != nil {
+		return err
+	}
+	return nil
 }
