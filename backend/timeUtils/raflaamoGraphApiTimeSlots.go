@@ -99,7 +99,7 @@ func (times *RaflaamoTimes) hourIsNotInThePast(timeSlotUnix int64) bool {
 	return false
 }
 
-// GetRaflaamoTimes this should be called once somewhere in the code because it's pretty expensive to construct.
+// GetRaflaamoTimes this should be called only once somewhere in the code because it's pretty expensive to construct.
 func GetRaflaamoTimes() *RaflaamoTimes {
 	raflaamoTimes := RaflaamoTimes{}
 	raflaamoTimes.getCurrentTimeAndDate()

@@ -71,7 +71,7 @@ func ConvertStringTimeToUnix(timeToConvert string) int64 {
 	return -1
 }
 
-// Gets the current timeUtils and date and initializes a struct with it.
+// Gets the current timeUtils and currentDate and initializes a struct with it.
 func getDateAndTime() *DateAndTime {
 	dateRegex := regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
 	timeRegex := regexp.MustCompile(`\d{2}:\d{2}`)
