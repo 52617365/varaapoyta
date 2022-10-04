@@ -18,11 +18,11 @@ type DateAndTime struct {
 }
 
 // CoveredTimes This struct contains the timeUtils you check the graph api with, and the corresponding start and end timeUtils window that the response covers.
-type CoveredTimes struct {
-	time            int64
-	timeWindowStart int64
-	timeWindowsEnd  int64
-}
+//type CoveredTimes struct {
+//	time            int64
+//	timeWindowStart int64
+//	timeWindowsEnd  int64
+//}
 
 func (kitchenTime *KitchenTime) getRestaurantTimeFromKitchenTime(restaurant *responseFields) RestaurantTime {
 	// Converting restaurant_kitchen_start_time to unix, so we can compare it easily.

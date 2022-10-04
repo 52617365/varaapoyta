@@ -3,19 +3,19 @@ package raflaamoRestaurantsApi
 import (
 	"bytes"
 	"errors"
-	"log"
+	"fmt"
 	"net/http"
 	"strings"
 )
 
 type RaflaamoRestaurantsApi struct {
-	httpClient *http.Client
-	request    *http.Request
-	response   *http.Response
-	usersCity  string
+	httpClient               *http.Client
+	request                  *http.Request
+	response                 *http.Response
+	cityToGetRestaurantsFrom string
 }
 
-func getRaflaamoRestaurantsApi(city string) (*RaflaamoRestaurantsApi, error) {
+func getRaflaamoRestaurantsApiStruct(city string) (*RaflaamoRestaurantsApi, error) {
 	httpClient := &http.Client{}
 	const data = `{"operationName":"getRestaurantsByLocation","variables":{"first":1000,"input":{"restaurantType":"ALL","locationName":"Helsinki","feature":{"rentableVenues":false}},"after":"eyJmIjowLCJnIjp7ImEiOjYwLjE3MTE2LCJvIjoyNC45MzI1OH19"},"query":"fragment Locales on LocalizedString {fi_FI }fragment Restaurant on Restaurant {  id  name {    ...Locales    }  address {    municipality {      ...Locales       }        street {      ...Locales       }       zipCode     }   openingTime {    restaurantTime {      ranges {        start        end             }             }    kitchenTime {      ranges {        start        end        endNextDay              }             }    }  links {    tableReservationLocalized {      ...Locales        }    homepageLocalized {      ...Locales          }   }     }query getRestaurantsByLocation($first: Int, $after: String, $input: ListRestaurantsByLocationInput!) {  listRestaurantsByLocation(first: $first, after: $after, input: $input) {    totalCount      edges {      ...Restaurant        }     }}"}`
 
@@ -25,37 +25,32 @@ func getRaflaamoRestaurantsApi(city string) (*RaflaamoRestaurantsApi, error) {
 	req.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
 
 	if err != nil {
-		return nil, errors.New("[getRaflaamoRestaurantsApi] error initializing RaflaamoRestaurantsApi")
+		return nil, fmt.Errorf("[getRaflaamoRestaurantsApiStruct] - %w", err)
 	}
 
 	return &RaflaamoRestaurantsApi{
-		httpClient: httpClient,
-		request:    req,
-		usersCity:  city,
+		httpClient:               httpClient,
+		request:                  req,
+		cityToGetRestaurantsFrom: city,
 	}, nil
 }
 
-func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamoApi(city string) ([]ResponseFields, error) {
-	raflaamoRestaurants, err := getRaflaamoRestaurantsApi(city)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamoApi() ([]ResponseFields, error) {
 	httpClient := raflaamoRestaurantsApi.httpClient
 	request := raflaamoRestaurantsApi.request
 
 	res, err := httpClient.Do(request)
 
 	if err != nil {
-		return nil, errors.New("there was an error connecting to the raflaamo api")
+		return nil, fmt.Errorf("[GetRestaurantsFromRaflaamoApi] - %w", errors.New("there was an error connecting to the raflaamo api"))
 	}
 
-	raflaamoRestaurants.response = res
+	raflaamoRestaurantsApi.response = res
 
-	decodedRaflaamoRestaurants, err := raflaamoRestaurants.deserializeRaflaamoRestaurantsResponse()
+	decodedRaflaamoRestaurants, err := raflaamoRestaurantsApi.deserializeRaflaamoRestaurantsResponse()
 
 	if err != nil {
-		return nil, errors.New("there was an error deserializing raflaamo API response")
+		return nil, fmt.Errorf("[GetRestaurantsFromRaflaamoApi] - %w", errors.New("there was an error deserializing raflaamo API response"))
 	}
 
 	validRestaurantsMatchingCriteria := raflaamoRestaurantsApi.filterBadRestaurantsOut(decodedRaflaamoRestaurants)
@@ -69,12 +64,12 @@ func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamo
 //   - Restaurants reservation link does not exist or contains odd contents.
 //   - Restaurant does not contain opening times (Specified in the Ranges array).
 func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) filterBadRestaurantsOut(structureContainingRestaurantData *responseTopLevel) []ResponseFields {
-	raflaamoRestaurantsApi.usersCity = strings.ToLower(raflaamoRestaurantsApi.usersCity)
+	raflaamoRestaurantsApi.cityToGetRestaurantsFrom = strings.ToLower(raflaamoRestaurantsApi.cityToGetRestaurantsFrom)
 	arrayContainingRestaurantData := structureContainingRestaurantData.Data.ListRestaurantsByLocation.Edges
 
 	filteredRestaurantsFromProvidedCity := make([]ResponseFields, 0, 50)
 	for _, restaurant := range arrayContainingRestaurantData {
-		if restaurant.isBad(raflaamoRestaurantsApi.usersCity) {
+		if restaurant.isBad(raflaamoRestaurantsApi.cityToGetRestaurantsFrom) {
 			continue
 		}
 
@@ -119,4 +114,18 @@ func (response *ResponseFields) cityDoesNotMatchUsersCity(usersCity string) bool
 	restaurantsCity := response.Address.Municipality.FiFi
 
 	return restaurantsCity != usersCity
+}
+
+func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) getRestaurants() ([]ResponseFields, error) {
+	restaurantsApi, err := getRaflaamoRestaurantsApiStruct(raflaamoRestaurantsApi.cityToGetRestaurantsFrom)
+	if err != nil {
+		return nil, err
+	}
+
+	restaurantsFromApi, err := restaurantsApi.getRestaurantsFromRaflaamoApi()
+	if err != nil {
+		return nil, err
+	}
+
+	return restaurantsFromApi, nil
 }
