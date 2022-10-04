@@ -14,10 +14,10 @@ type responseSecondLevel struct {
 }
 
 type responseThirdLevel struct {
-	Edges []responseFields `json:"edges"`
+	Edges []ResponseFields `json:"edges"`
 }
 
-type responseFields struct {
+type ResponseFields struct {
 	Id                 string         `json:"id"`
 	Name               *stringField   `json:"name"`
 	Address            *addressFields `json:"address"`

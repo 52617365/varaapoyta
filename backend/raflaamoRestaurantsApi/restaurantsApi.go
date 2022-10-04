@@ -35,14 +35,14 @@ func getRaflaamoRestaurantsApi(city string) (*RaflaamoRestaurantsApi, error) {
 	}, nil
 }
 
-func (restaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamoApi(city string) ([]responseFields, error) {
-	restaurantsApi, err := getRaflaamoRestaurantsApi(city)
+func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamoApi(city string) ([]ResponseFields, error) {
+	raflaamoRestaurants, err := getRaflaamoRestaurantsApi(city)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	httpClient := restaurantsApi.httpClient
-	request := restaurantsApi.request
+	httpClient := raflaamoRestaurantsApi.httpClient
+	request := raflaamoRestaurantsApi.request
 
 	res, err := httpClient.Do(request)
 
@@ -50,56 +50,54 @@ func (restaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamoApi(city
 		return nil, errors.New("there was an error connecting to the raflaamo api")
 	}
 
-	restaurantsApi.response = res
+	raflaamoRestaurants.response = res
 
-	decodedRaflaamoRestaurants, err := restaurantsApi.deserializeRaflaamoRestaurantsResponse()
+	decodedRaflaamoRestaurants, err := raflaamoRestaurants.deserializeRaflaamoRestaurantsResponse()
 
 	if err != nil {
 		return nil, errors.New("there was an error deserializing raflaamo API response")
 	}
 
-	validRestaurantsMatchingCriteria := restaurantsApi.filterBadRestaurantsOut(decodedRaflaamoRestaurants)
+	validRestaurantsMatchingCriteria := raflaamoRestaurantsApi.filterBadRestaurantsOut(decodedRaflaamoRestaurants)
 
 	// TODO: Handle return value being empty in caller.
 	return validRestaurantsMatchingCriteria, nil
 }
 
-//
-// 	A restaurant is considered "Bad" if:
-//		- Restaurants city is not from the provided city.
-//		- Restaurants reservation link does not exist or contains odd contents.
-//		- Restaurant does not contain opening times (Specified in the Ranges array).
-//
-func (restaurantsApi *RaflaamoRestaurantsApi) filterBadRestaurantsOut(structureContainingRestaurantData *responseTopLevel) []responseFields {
-	restaurantsApi.usersCity = strings.ToLower(restaurantsApi.usersCity)
+// A restaurant is considered "Bad" if:
+//   - Restaurants city is not from the provided city.
+//   - Restaurants reservation link does not exist or contains odd contents.
+//   - Restaurant does not contain opening times (Specified in the Ranges array).
+func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) filterBadRestaurantsOut(structureContainingRestaurantData *responseTopLevel) []ResponseFields {
+	raflaamoRestaurantsApi.usersCity = strings.ToLower(raflaamoRestaurantsApi.usersCity)
 	arrayContainingRestaurantData := structureContainingRestaurantData.Data.ListRestaurantsByLocation.Edges
 
-	filteredRestaurantsFromProvidedCity := make([]responseFields, 0, 50)
+	filteredRestaurantsFromProvidedCity := make([]ResponseFields, 0, 50)
 	for _, restaurant := range arrayContainingRestaurantData {
-		if restaurant.isBad(restaurantsApi.usersCity) {
+		if restaurant.isBad(raflaamoRestaurantsApi.usersCity) {
 			continue
 		}
 
-		// Here we have done all of the checks we know to date. There might be more in the future once I figure them out.
+		// Here we have done all the checks we know to date. There might be more in the future once I figure them out.
 		filteredRestaurantsFromProvidedCity = append(filteredRestaurantsFromProvidedCity, restaurant)
 	}
 	return filteredRestaurantsFromProvidedCity
 }
 
-func (restaurant *responseFields) isBad(city string) bool {
-	if restaurant.cityDoesNotMatchUsersCity(city) {
+func (response *ResponseFields) isBad(city string) bool {
+	if response.cityDoesNotMatchUsersCity(city) {
 		return true
 	}
-	if restaurant.reservationLinkIsNotValid() {
+	if response.reservationLinkIsNotValid() {
 		return true
 	}
-	if restaurant.doesNotContainOpeningTimes() {
+	if response.doesNotContainOpeningTimes() {
 		return true
 	}
 	return false
 }
 
-func (response *responseFields) doesNotContainOpeningTimes() bool {
+func (response *ResponseFields) doesNotContainOpeningTimes() bool {
 	restaurantsOpeningTimes := response.Openingtime.Restauranttime.Ranges
 	kitchensOpeningTimes := response.Openingtime.Kitchentime.Ranges
 
@@ -112,11 +110,11 @@ func (response *responseFields) doesNotContainOpeningTimes() bool {
 	return false
 }
 
-func (response *responseFields) reservationLinkIsNotValid() bool {
+func (response *ResponseFields) reservationLinkIsNotValid() bool {
 	return !strings.Contains(response.Links.TableReservationLocalized.FiFi, "https://s-varaukset.fi/online/reservation/fi/")
 }
 
-func (response *responseFields) cityDoesNotMatchUsersCity(usersCity string) bool {
+func (response *ResponseFields) cityDoesNotMatchUsersCity(usersCity string) bool {
 	response.Address.Municipality.FiFi = strings.ToLower(response.Address.Municipality.FiFi)
 	restaurantsCity := response.Address.Municipality.FiFi
 
