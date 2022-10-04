@@ -8,8 +8,14 @@ type CoveredTimes struct {
 }
 
 type AllRaflaamoReservationUnixTimeIntervals = []int64
+
+type TimeAndDate struct {
+	currentTime int64
+	currentDate string
+}
+
 type RaflaamoTimes struct {
-	currentTime                                     int64
+	timeAndDate                                     *TimeAndDate
 	allRaflaamoReservationTimeIntervals             AllRaflaamoReservationUnixTimeIntervals
 	allGraphApiTimeIntervalsFromCurrentPointForward []CoveredTimes
 }
