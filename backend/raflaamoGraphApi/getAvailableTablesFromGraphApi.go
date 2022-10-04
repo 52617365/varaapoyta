@@ -1,6 +1,7 @@
 package raflaamoGraphApi
 
 import (
+	"backend/raflaamoRestaurantsApi"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,12 +9,18 @@ import (
 	"net/http"
 )
 
+type ResponseFields = raflaamoRestaurantsApi.ResponseFields
+
 // RaflaamoGraphApi control flow is: getRaflaamoGraphApiRequest -> interactWithGraphApi -> deserializeGraphApiResponse
 type RaflaamoGraphApi struct {
-	httpClient           *http.Client     // This will be initialized once because it does not change.
-	request              *http.Request    // This will be initialized per request.
-	response             *http.Response   // This will be initialized per request.
-	deserializedResponse *parsedGraphData // This will be initialized per request.
+	httpClient        *http.Client
+	GraphApiResponses chan *Response
+}
+
+// Response TODO: Graph api responses should be stored with this struct.
+type Response struct {
+	availableTimeIntervals *parsedGraphData
+	restaurant             *ResponseFields
 }
 
 func getRaflaamoGraphApi() *RaflaamoGraphApi {
@@ -22,7 +29,7 @@ func getRaflaamoGraphApi() *RaflaamoGraphApi {
 	return &RaflaamoGraphApi{httpClient: httpClient}
 }
 
-func (graphApi *RaflaamoGraphApi) getRaflaamoGraphApiRequest(requestUrl string) {
+func (graphApi *RaflaamoGraphApi) getRaflaamoGraphApiRequest(requestUrl string) *http.Request {
 	r, err := http.NewRequest("GET", requestUrl, nil)
 
 	if err != nil {
@@ -30,60 +37,57 @@ func (graphApi *RaflaamoGraphApi) getRaflaamoGraphApiRequest(requestUrl string) 
 	}
 
 	r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
-	graphApi.request = r
+	return r
 }
 
-func (graphApi *RaflaamoGraphApi) sendRequestToGraphApi() error {
-	response, err := graphApi.httpClient.Do(graphApi.request)
+func (graphApi *RaflaamoGraphApi) sendRequestToGraphApi(graphApiRequest *http.Request) (*http.Response, error) {
+	response, err := graphApi.httpClient.Do(graphApiRequest)
 
 	if err != nil {
-		return fmt.Errorf("[interactWithApi] - %w", err)
+		return nil, fmt.Errorf("[sendRequestToGraphApi] - %w", err)
 	}
 	if response.StatusCode != 200 {
-		return fmt.Errorf("[interactWithApi] - %w", errors.New("raflaamo api returned non 200 status code"))
+		return nil, fmt.Errorf("[sendRequestToGraphApi] - %w", errors.New("raflaamo api returned non 200 status code"))
 	}
 
-	graphApi.response = response
-	return nil
+	return response, nil
 }
 
-func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse() error {
-	response := graphApi.response
-
+func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse(graphApiResponse *http.Response) (*parsedGraphData, error) {
 	var deserializedGraphData []parsedGraphData
-	err := json.NewDecoder((response).Body).Decode(&deserializedGraphData)
+	err := json.NewDecoder((graphApiResponse).Body).Decode(&deserializedGraphData)
 	if err != nil {
-		return fmt.Errorf("[deserializeGraphResponse] - %w", err)
+		return nil, fmt.Errorf("[deserializeGraphApiResponse] - %w", err)
 	}
 	if deserializedGraphData == nil {
-		return errors.New("[deserializeGraphResponse] - there was an error deserializing the data")
+		return nil, errors.New("[deserializeGraphApiResponse] - there was an error deserializing the data")
 	}
-
-	// The relevant data is in the first index only.
-	graphApi.deserializedResponse = &deserializedGraphData[0]
-	return nil
+	// The relevant data from the graph API is in the first index only.
+	return &deserializedGraphData[0], nil
 }
 
 // getAvailableTablesFromGraphApi should be called with a requestUrl payload that has already been initialized.
 // TODO: get the time slots here.
-//
-// TODO: Also consider the restaurant kitchens closing time to avoid getting times where
-//	 		 They don't let you reserve anymore (45 minutes before kitchen closes).
-//
+// TODO: Also consider the restaurant kitchens closing time to avoid getting times when they don't let you reserve anymore (45 minutes before kitchen closes).
 // TODO: don't handle time slots that are in the past from current time.
-func (graphApi *RaflaamoGraphApi) getAvailableTablesFromGraphApi(requestUrl string) error {
-	graphApi.getRaflaamoGraphApiRequest(requestUrl)
+// TODO: Use channels and goroutines.
 
-	var err error
+// Idea is to have something iterating the restaurants that calls this function.
+// The caller should be the one initializing the Response struct and the available tables just get assigned to it here.
+// The restaurant gets assigned in the callee function and this function does not have to worry about that.
+func (graphApi *RaflaamoGraphApi) getAvailableTablesFromGraphApi(requestUrl string, graphApiResponse *Response) error {
+	httpRequest := graphApi.getRaflaamoGraphApiRequest(requestUrl)
 
-	err = graphApi.sendRequestToGraphApi()
+	response, err := graphApi.sendRequestToGraphApi(httpRequest)
 	if err != nil {
 		return err
 	}
 
-	err = graphApi.deserializeGraphApiResponse()
+	deserializedGraphApiResponse, err := graphApi.deserializeGraphApiResponse(response)
 	if err != nil {
 		return err
 	}
+
+	graphApiResponse.availableTimeIntervals = deserializedGraphApiResponse
 	return nil
 }
