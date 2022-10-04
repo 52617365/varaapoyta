@@ -1,28 +1,40 @@
 package raflaamoGraphApi
 
-import "fmt"
+import (
+	"fmt"
+	"regexp"
+)
 
 type GraphApiPayload struct {
-	restaurantId   string
-	amountOfEaters int
-	timeSlot       string
-	currentDate    string
+	reservationPageUrl string
+	restaurantId       string
+	amountOfEaters     int
+	timeSlot           string
+	currentDate        string
 }
 
-func getRaflaamoGraphApiPayload(restaurantId string, amountOfEaters int, timeSlot string, currentDate string) *GraphApiPayload {
+func getRaflaamoGraphApiPayload(reservationPageUrl string, amountOfEaters int, timeSlot string, currentDate string) *GraphApiPayload {
 	return &GraphApiPayload{
-		restaurantId:   restaurantId,
-		amountOfEaters: amountOfEaters,
-		timeSlot:       timeSlot,
-		currentDate:    currentDate,
+		reservationPageUrl: reservationPageUrl,
+		amountOfEaters:     amountOfEaters,
+		timeSlot:           timeSlot,
+		currentDate:        currentDate,
 	}
 }
 
+func (graphApiPayload *GraphApiPayload) getRaflaamoRestaurantIdFromReservationPageUrl() {
+	regexToMatchRestaurantId := regexp.MustCompile(`[^fi/]\d+`) // This regex gets the first number match from the TableReservationLocalized JSON field which is the id we want. https://regex101.com/r/NtFMrz/1
+	reservationPageUrl := graphApiPayload.reservationPageUrl
+	idFromReservationPageUrl := regexToMatchRestaurantId.FindString(reservationPageUrl)
+	graphApiPayload.restaurantId = idFromReservationPageUrl
+}
+
 func (graphApiPayload *GraphApiPayload) getPayload() string {
+	graphApiPayload.getRaflaamoRestaurantIdFromReservationPageUrl()
 	restaurantId := graphApiPayload.restaurantId
-	amountOfEaters := graphApiPayload.amountOfEaters
-	timeSlot := graphApiPayload.timeSlot
 	currentDate := graphApiPayload.currentDate
+	timeSlot := graphApiPayload.timeSlot
+	amountOfEaters := graphApiPayload.amountOfEaters
 
 	requestUrl := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", restaurantId, currentDate, timeSlot, amountOfEaters)
 	return requestUrl
