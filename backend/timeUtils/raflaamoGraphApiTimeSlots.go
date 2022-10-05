@@ -19,13 +19,17 @@ func (times *RaflaamoTimes) getAllGraphApiTimeIntervalsFromCurrentPointForward()
 		{time: 72000, timeWindowStart: 64800, timeWindowsEnd: 86400},
 	}
 
-	timeSlotsFromCurrentTimeForward := make([]CoveredTimes, 0, len(allPossibleGraphApiTimeSlots))
+	timeUtils := TimeUtils{CurrentTime: times.timeAndDate}
+	timeSlotsFromCurrentTimeForward := make([]string, 0, len(allPossibleGraphApiTimeSlots))
 	for _, unixTimeSlot := range allPossibleGraphApiTimeSlots {
 		if currentTimeUnix < unixTimeSlot.timeWindowsEnd {
-			timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, unixTimeSlot)
+			var currentTime string = timeUtils.getStringTimeFromCurrentTime()
+			timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, currentTime)
+			// TODO: figure out if we need unix timestamps from this point forward.
+			//timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, unixTimeSlot)
 		}
 	}
-	times.allGraphApiTimeIntervalsFromCurrentPointForward = timeSlotsFromCurrentTimeForward
+	times.AllGraphApiTimeIntervalsFromCurrentPointForward = timeSlotsFromCurrentTimeForward
 }
 
 // getCurrentTimeAndDate this should be called only once.
@@ -47,7 +51,7 @@ func (times *RaflaamoTimes) getCurrentTimeAndDate() {
 
 // Returns all possible timeUtils intervals that can be reserved in the raflaamo reservation page.
 // 11:00, 11:15, 11:30 and so on.
-func (times *RaflaamoTimes) getAllRaflaamoReservingIntervalsThatAreNotInThePastOrFuture() {
+func (times *RaflaamoTimes) getAllRaflaamoReservingIntervalsThatAreNotInThePast() {
 	allTimes := make([]int64, 0, 96)
 	for hour := 0; hour < 24; hour++ {
 		if hour < 10 {
@@ -103,7 +107,7 @@ func (times *RaflaamoTimes) hourIsNotInThePast(timeSlotUnix int64) bool {
 func GetRaflaamoTimes() *RaflaamoTimes {
 	raflaamoTimes := RaflaamoTimes{}
 	raflaamoTimes.getCurrentTimeAndDate()
-	raflaamoTimes.getAllRaflaamoReservingIntervalsThatAreNotInThePastOrFuture()
+	raflaamoTimes.getAllRaflaamoReservingIntervalsThatAreNotInThePast()
 	raflaamoTimes.getAllGraphApiTimeIntervalsFromCurrentPointForward()
 
 	return &raflaamoTimes
