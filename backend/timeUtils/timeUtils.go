@@ -36,7 +36,7 @@ import (
 func (timeUtils *TimeUtils) getStringTimeFromCurrentTime() string {
 	timeRegex, _ := regexp.Compile(`\d{2}:\d{2}`)
 
-	timeInString := time.Unix(timeUtils.CurrentTime.currentTime, 0).UTC().String()
+	timeInString := time.Unix(timeUtils.CurrentTime.CurrentTime, 0).UTC().String()
 
 	stringTimeFromUnix := timeRegex.FindString(timeInString)
 

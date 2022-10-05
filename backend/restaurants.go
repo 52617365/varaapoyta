@@ -7,7 +7,6 @@ import (
 )
 
 // TODO: iterate restaurants and call getGraphApiResponseFromTimeSlot on each one.
-// TODO: regexes should be compiled in main.go
 
 // All the regex we want compiled in main.go.
 // regexToMatchRestaurantId := regexp.MustCompile(`[^fi/]\d+`)
