@@ -1,13 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
-
-	"github.com/gorilla/mux"
+	"regexp"
 )
 
 // @Experimental fix is already in place, if it does not work, revisit the problem. the relative timeUtils seems to be off when current timeUtils is 22:51 and the closing timeUtils is 23:30. Closing timeUtils points to 2am.
@@ -89,57 +85,64 @@ func Contains[T comparable](arr [58]T, x T) bool {
 }
 
 func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/raflaamo/tables/{city}/{amount_of_eaters}", entryPoint).Methods("GET")
-	log.Fatal(http.ListenAndServe(":10000", r))
-}
-
-func entryPoint(w http.ResponseWriter, r *http.Request) {
-	setCorrectRequestHeaders(&w)
-	vars := mux.Vars(r)
-	city := vars["city"]
-	if isNotValidCity(city) {
-		serializedErr, _ := json.Marshal("Sisään syötetyllä kaupungilla ei ole ravintoloita olemassa")
-		w.Write(serializedErr)
-		return
-	}
-
-	amountOfEaters := vars["amount_of_eaters"] //  This is the amount of eaters.
-	amountOfEatersInt := getIntFromAmountOfEaters(amountOfEaters)
-
-	if amountOfEatersInt == -1 {
-		serializedErr, _ := json.Marshal("amount of eaters is unknown")
-		w.Write(serializedErr)
-		return
-	}
-
-	availableTables, err := get_available_tables(city, amountOfEatersInt)
+	regexToMatchRestaurantId := regexp.MustCompile(`[^fi/]\d+`)
+	regexToMatchTime := regexp.MustCompile(`\d{2}:\d{2}`)
+	regexToMatchDate := regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
+	err := getAvailableTablesFromRestaurants(regexToMatchRestaurantId, regexToMatchTime, regexToMatchDate, "rovaniemi", 1)
 	if err != nil {
-		errorMessage, _ := json.Marshal(err)
-		_, err2 := w.Write(errorMessage)
-		if err2 != nil {
-			return
-		}
+		log.Fatalln("err")
 	}
-	serialize, _ := json.Marshal(availableTables)
-
-	_, err2 := w.Write(serialize)
-	if err2 != nil {
-		return
-	}
+	//r := mux.NewRouter()
+	//r.HandleFunc("/raflaamo/tables/{city}/{amount_of_eaters}", entryPoint).Methods("GET")
+	//log.Fatal(http.ListenAndServe(":10000", r))
 }
 
-func isNotValidCity(city string) bool {
-	return !Contains(allPossibleCities, strings.ToLower(city))
-}
-
-func getIntFromAmountOfEaters(amountOfEaters string) int {
-	if amountOfEaters == "" {
-		return -1
-	}
-	if val, err := strconv.Atoi(amountOfEaters); err == nil {
-		return val
-	}
-	return -1
-
-}
+//func entryPoint(w http.ResponseWriter, r *http.Request) {
+//	setCorrectRequestHeaders(&w)
+//	vars := mux.Vars(r)
+//	city := vars["city"]
+//	if isNotValidCity(city) {
+//		serializedErr, _ := json.Marshal("Sisään syötetyllä kaupungilla ei ole ravintoloita olemassa")
+//		w.Write(serializedErr)
+//		return
+//	}
+//
+//	amountOfEaters := vars["amount_of_eaters"] //  This is the amount of eaters.
+//	amountOfEatersInt := getIntFromAmountOfEaters(amountOfEaters)
+//
+//	if amountOfEatersInt == -1 {
+//		serializedErr, _ := json.Marshal("amount of eaters is unknown")
+//		w.Write(serializedErr)
+//		return
+//	}
+//
+//	availableTables, err := get_available_tables(city, amountOfEatersInt)
+//	if err != nil {
+//		errorMessage, _ := json.Marshal(err)
+//		_, err2 := w.Write(errorMessage)
+//		if err2 != nil {
+//			return
+//		}
+//	}
+//	serialize, _ := json.Marshal(availableTables)
+//
+//	_, err2 := w.Write(serialize)
+//	if err2 != nil {
+//		return
+//	}
+//}
+//
+//func isNotValidCity(city string) bool {
+//	return !Contains(allPossibleCities, strings.ToLower(city))
+//}
+//
+//func getIntFromAmountOfEaters(amountOfEaters string) int {
+//	if amountOfEaters == "" {
+//		return -1
+//	}
+//	if val, err := strconv.Atoi(amountOfEaters); err == nil {
+//		return val
+//	}
+//	return -1
+//
+//}
