@@ -44,6 +44,17 @@ func (timeUtils *TimeUtils) getStringTimeFromCurrentTime() string {
 	return stringTimeFromUnix
 }
 
+func (timeUtils *TimeUtils) getStringTimeFromTimeSlot() string {
+	timeRegex, _ := regexp.Compile(`\d{2}:\d{2}`)
+
+	timeInString := time.Unix(timeUtils.CurrentTime.CurrentTime, 0).UTC().String()
+
+	stringTimeFromUnix := timeRegex.FindString(timeInString)
+
+	stringTimeFromUnix = strings.Replace(stringTimeFromUnix, ":", "", -1)
+	return stringTimeFromUnix
+}
+
 func ConvertStringTimeToUnix(timeToConvert string) int64 {
 	timeToConvert = strings.Replace(timeToConvert, ":", "", -1)
 	if relativeTimeFormatIsInvalid(timeToConvert) {

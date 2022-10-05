@@ -4,7 +4,7 @@ import "strconv"
 
 type TimeUtils struct {
 	CurrentTime *TimeAndDate
-	//closingTime int64
+	closingTime int64
 	//timeLeftTillClosed int64
 }
 

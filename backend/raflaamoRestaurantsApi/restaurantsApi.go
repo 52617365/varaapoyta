@@ -60,7 +60,7 @@ func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) filterBadRestaurantsOut(st
 	raflaamoRestaurantsApi.cityToGetRestaurantsFrom = strings.ToLower(raflaamoRestaurantsApi.cityToGetRestaurantsFrom)
 	arrayContainingRestaurantData := structureContainingRestaurantData.Data.ListRestaurantsByLocation.Edges
 
-	filteredRestaurantsFromProvidedCity := make([]ResponseFields, 0, 50)
+	filteredRestaurantsFromProvidedCity := make([]ResponseFields, 0, 40)
 	for _, restaurant := range arrayContainingRestaurantData {
 		if restaurant.isBad(raflaamoRestaurantsApi.cityToGetRestaurantsFrom) {
 			continue

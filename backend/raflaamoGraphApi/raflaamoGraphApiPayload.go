@@ -14,7 +14,6 @@ type raflaamoGraphApiPayload struct {
 	regexToMatchRestaurantId *regexp.Regexp
 }
 
-// `[^fi/]\d+`
 func GetRaflaamoGraphApiPayload(reservationPageUrl string, amountOfEaters int, currentDate string, regexToMatchRestaurantId *regexp.Regexp) *raflaamoGraphApiPayload {
 	idFromReservationPageUrl := regexToMatchRestaurantId.FindString(reservationPageUrl)
 	return &raflaamoGraphApiPayload{

@@ -3,6 +3,7 @@ package timeUtils
 import (
 	"fmt"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -11,9 +12,9 @@ import (
 The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
 */
 // TODO: Take into consideration restaurant closing.
-func (times *RaflaamoTimes) getAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantClosingTime string) {
+func (times *RaflaamoTimes) GetAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantClosingTime string) {
+	restaurantClosingTime = strings.ReplaceAll(restaurantClosingTime, ":", "")
 	restaurantClosingTimeUnix := ConvertStringTimeToUnix(restaurantClosingTime)
-	currentTimeUnix := times.TimeAndDate.CurrentTime
 	allPossibleGraphApiTimeSlots := &[...]CoveredTimes{
 		{time: 7200, timeWindowStart: 0, timeWindowsEnd: 21600},
 		{time: 28800, timeWindowStart: 21600, timeWindowsEnd: 43200},
@@ -21,17 +22,22 @@ func (times *RaflaamoTimes) getAllGraphApiUnixTimeIntervalsFromCurrentPointForwa
 		{time: 72000, timeWindowStart: 64800, timeWindowsEnd: 86400},
 	}
 
-	timeUtils := TimeUtils{CurrentTime: times.TimeAndDate}
 	timeSlotsFromCurrentTimeForward := make([]string, 0, len(allPossibleGraphApiTimeSlots))
 	for _, unixTimeSlot := range allPossibleGraphApiTimeSlots {
-		if currentTimeUnix < unixTimeSlot.timeWindowsEnd && restaurantClosingTimeUnix > unixTimeSlot.timeWindowStart /* I'm not 100% on this logic. */ {
-			var currentTime = timeUtils.getStringTimeFromCurrentTime()
-			timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, currentTime)
-			// TODO: figure out if we need unix timestamps from this point forward.
-			//timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, unixTimeSlot)
+		if times.unixTimeSlotIsValid(&unixTimeSlot, restaurantClosingTimeUnix) {
+			unixTimeSlotConvertedToString := unixTimeSlot.ConvertUnixTimeToString()
+			timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, unixTimeSlotConvertedToString)
 		}
 	}
 	times.AllGraphApiTimeIntervalsFromCurrentPointForward = timeSlotsFromCurrentTimeForward
+}
+
+func (times *RaflaamoTimes) unixTimeSlotIsValid(unixTimeSlot *CoveredTimes, restaurantClosingTimeUnix int64) bool {
+	currentTimeUnix := times.TimeAndDate.CurrentTime
+	if currentTimeUnix < unixTimeSlot.timeWindowsEnd && restaurantClosingTimeUnix > unixTimeSlot.timeWindowStart /* I'm not 100% on this logic. */ {
+		return true
+	}
+	return false
 }
 
 // getCurrentTimeAndDate this should be called only once.
@@ -110,7 +116,6 @@ func GetRaflaamoTimes(regexToMatchTime *regexp.Regexp, regexToMatchDate *regexp.
 	raflaamoTimes := RaflaamoTimes{}
 	raflaamoTimes.getCurrentTimeAndDate(regexToMatchTime, regexToMatchDate)
 	raflaamoTimes.getAllRaflaamoReservingIntervalsThatAreNotInThePast()
-	// raflaamoTimes.getAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantClosingTimeUnix) // This should be called in caller for each restaurant because closing times change.
 
 	return &raflaamoTimes
 }

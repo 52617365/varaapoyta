@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"regexp"
 )
 
 // @Experimental fix is already in place, if it does not work, revisit the problem. the relative timeUtils seems to be off when current timeUtils is 22:51 and the closing timeUtils is 23:30. Closing timeUtils points to 2am.
@@ -85,10 +84,7 @@ func Contains[T comparable](arr [58]T, x T) bool {
 }
 
 func main() {
-	regexToMatchRestaurantId := regexp.MustCompile(`[^fi/]\d+`)
-	regexToMatchTime := regexp.MustCompile(`\d{2}:\d{2}`)
-	regexToMatchDate := regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
-	err := getAvailableTablesFromRestaurants(regexToMatchRestaurantId, regexToMatchTime, regexToMatchDate, "rovaniemi", 1)
+	err := getAvailableTablesFromRestaurants("rovaniemi", 1)
 	if err != nil {
 		log.Fatalln("err")
 	}
