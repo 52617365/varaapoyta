@@ -28,7 +28,7 @@ package raflaamoGraphApi
 // 	return (*data.Intervals)[0].Color == "transparent"
 // }
 // func (graphApi *RaflaamoGraphApi) constructPayload(idFromReservationPageUrl string, currentDate string, time *timeUtils.CoveredTimes, amountOfEaters int) {
-// 	timeSlotString := timeUtils.GetStringTimeFromUnix(time.time)
+// 	timeSlotString := timeUtils.getStringTimeFromCurrentTime(time.time)
 
 // 	// replacing the 17(:)00 to match the format in url.
 // 	timeSlotString = strings.Replace(timeSlotString, ":", "", -1)

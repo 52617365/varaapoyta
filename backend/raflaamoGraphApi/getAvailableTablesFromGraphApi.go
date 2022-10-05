@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func getRaflaamoGraphApi() *RaflaamoGraphApi {
+func GetRaflaamoGraphApi() *RaflaamoGraphApi {
 	httpClient := &http.Client{}
 
 	return &RaflaamoGraphApi{httpClient: httpClient}

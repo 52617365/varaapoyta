@@ -10,12 +10,12 @@ type CoveredTimes struct {
 type AllRaflaamoReservationUnixTimeIntervals = []int64
 
 type TimeAndDate struct {
-	currentTime int64
-	currentDate string
+	CurrentTime int64
+	CurrentDate string
 }
 
 type RaflaamoTimes struct {
-	timeAndDate                                     *TimeAndDate
-	allRaflaamoReservationTimeIntervals             AllRaflaamoReservationUnixTimeIntervals
-	allGraphApiTimeIntervalsFromCurrentPointForward []CoveredTimes
+	TimeAndDate                                     *TimeAndDate
+	AllRaflaamoReservationTimeIntervals             AllRaflaamoReservationUnixTimeIntervals
+	AllGraphApiTimeIntervalsFromCurrentPointForward []string
 }

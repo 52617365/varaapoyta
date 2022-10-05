@@ -10,8 +10,10 @@ import (
 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
 The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
 */
-func (times *RaflaamoTimes) getAllGraphApiTimeIntervalsFromCurrentPointForward() {
-	currentTimeUnix := times.timeAndDate.currentTime
+// TODO: Take into consideration restaurant closing.
+func (times *RaflaamoTimes) getAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantClosingTime string) {
+	restaurantClosingTimeUnix := ConvertStringTimeToUnix(restaurantClosingTime)
+	currentTimeUnix := times.TimeAndDate.CurrentTime
 	allPossibleGraphApiTimeSlots := &[...]CoveredTimes{
 		{time: 7200, timeWindowStart: 0, timeWindowsEnd: 21600},
 		{time: 28800, timeWindowStart: 21600, timeWindowsEnd: 43200},
@@ -19,11 +21,11 @@ func (times *RaflaamoTimes) getAllGraphApiTimeIntervalsFromCurrentPointForward()
 		{time: 72000, timeWindowStart: 64800, timeWindowsEnd: 86400},
 	}
 
-	timeUtils := TimeUtils{CurrentTime: times.timeAndDate}
+	timeUtils := TimeUtils{CurrentTime: times.TimeAndDate}
 	timeSlotsFromCurrentTimeForward := make([]string, 0, len(allPossibleGraphApiTimeSlots))
 	for _, unixTimeSlot := range allPossibleGraphApiTimeSlots {
-		if currentTimeUnix < unixTimeSlot.timeWindowsEnd {
-			var currentTime string = timeUtils.getStringTimeFromCurrentTime()
+		if currentTimeUnix < unixTimeSlot.timeWindowsEnd && restaurantClosingTimeUnix > unixTimeSlot.timeWindowStart /* I'm not 100% on this logic. */ {
+			var currentTime = timeUtils.getStringTimeFromCurrentTime()
 			timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, currentTime)
 			// TODO: figure out if we need unix timestamps from this point forward.
 			//timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, unixTimeSlot)
@@ -33,24 +35,24 @@ func (times *RaflaamoTimes) getAllGraphApiTimeIntervalsFromCurrentPointForward()
 }
 
 // getCurrentTimeAndDate this should be called only once.
-func (times *RaflaamoTimes) getCurrentTimeAndDate() {
-	regexToMatchTime := regexp.MustCompile(`\d{2}:\d{2}`)
-	regexToMatchDate := regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
+func (times *RaflaamoTimes) getCurrentTimeAndDate(regexToMatchTime *regexp.Regexp, regexToMatchDate *regexp.Regexp) {
 	dt := time.Now().String()
 
 	matchedMinutesAndSeconds := regexToMatchTime.FindString(dt)
 	currentDate := regexToMatchDate.FindString(dt)
 
 	currentTimeAndDate := &TimeAndDate{
-		currentDate: currentDate,
-		currentTime: ConvertStringTimeToUnix(matchedMinutesAndSeconds),
+		CurrentDate: currentDate,
+		CurrentTime: ConvertStringTimeToUnix(matchedMinutesAndSeconds),
 	}
 
-	times.timeAndDate = currentTimeAndDate
+	times.TimeAndDate = currentTimeAndDate
 }
 
 // Returns all possible timeUtils intervals that can be reserved in the raflaamo reservation page.
 // 11:00, 11:15, 11:30 and so on.
+
+// TODO: Take into consideration restaurant closing.
 func (times *RaflaamoTimes) getAllRaflaamoReservingIntervalsThatAreNotInThePast() {
 	allTimes := make([]int64, 0, 96)
 	for hour := 0; hour < 24; hour++ {
@@ -91,12 +93,12 @@ func (times *RaflaamoTimes) getAllRaflaamoReservingIntervalsThatAreNotInThePast(
 				allTimes = append(allTimes, formattedTimeSlotFour)
 			}
 		}
-		times.allRaflaamoReservationTimeIntervals = allTimes
+		times.AllRaflaamoReservationTimeIntervals = allTimes
 	}
 }
 
 func (times *RaflaamoTimes) hourIsNotInThePast(timeSlotUnix int64) bool {
-	currentTime := times.timeAndDate.currentTime
+	currentTime := times.TimeAndDate.CurrentTime
 	if timeSlotUnix > currentTime {
 		return true
 	}
@@ -104,11 +106,11 @@ func (times *RaflaamoTimes) hourIsNotInThePast(timeSlotUnix int64) bool {
 }
 
 // GetRaflaamoTimes this should be called only once somewhere in the code because it's pretty expensive to construct.
-func GetRaflaamoTimes() *RaflaamoTimes {
+func GetRaflaamoTimes(regexToMatchTime *regexp.Regexp, regexToMatchDate *regexp.Regexp) *RaflaamoTimes {
 	raflaamoTimes := RaflaamoTimes{}
-	raflaamoTimes.getCurrentTimeAndDate()
+	raflaamoTimes.getCurrentTimeAndDate(regexToMatchTime, regexToMatchDate)
 	raflaamoTimes.getAllRaflaamoReservingIntervalsThatAreNotInThePast()
-	raflaamoTimes.getAllGraphApiTimeIntervalsFromCurrentPointForward()
+	// raflaamoTimes.getAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantClosingTimeUnix) // This should be called in caller for each restaurant because closing times change.
 
 	return &raflaamoTimes
 }
