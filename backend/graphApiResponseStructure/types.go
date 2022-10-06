@@ -1,4 +1,4 @@
-package raflaamoGraphApi
+package graphApiResponseStructure
 
 type ParsedGraphData struct {
 	Name      string                `json:"name"`

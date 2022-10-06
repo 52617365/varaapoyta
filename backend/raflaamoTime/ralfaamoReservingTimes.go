@@ -1,7 +1,7 @@
 package raflaamoTime
 
 import (
-	"backend/raflaamoGraphApi"
+	"backend/graphApiResponseStructure"
 	"strings"
 	"time"
 )
@@ -14,10 +14,8 @@ type GraphApiReservationTimes struct {
 	capturedPossibleReservationTimes []string
 }
 
-type ParsedGraphData = raflaamoGraphApi.ParsedGraphData
-
 // GetGraphApiReservationTimes TODO: we have to validate that the intervals are valid somewhere before calling the functions in this file.
-func GetGraphApiReservationTimes(graphApiResponse *ParsedGraphData) *GraphApiReservationTimes {
+func GetGraphApiReservationTimes(graphApiResponse *graphApiResponseStructure.ParsedGraphData) *GraphApiReservationTimes {
 	graphApiResponseTimeIntervals := *graphApiResponse.Intervals
 
 	graphApiTimeIntervalStart := graphApiResponseTimeIntervals[0].From
