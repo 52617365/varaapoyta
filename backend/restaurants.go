@@ -4,7 +4,6 @@ import (
 	"backend/raflaamoGraphApi"
 	"backend/raflaamoRestaurantsApi"
 	"backend/timeUtils"
-	"fmt"
 	"regexp"
 )
 
@@ -59,13 +58,14 @@ func getAvailableTablesFromRestaurantRequestUrls(restaurantGraphApiRequestUrls [
 	parsedGraphApiResponses := make([]*parsedGraphData, 0, len(restaurantGraphApiRequestUrls))
 
 	for _, restaurantGraphApiRequestUrl := range restaurantGraphApiRequestUrls {
-		fmt.Println("restaurant api request url is", restaurantGraphApiRequestUrl)
 		graphApiResponseFromRequestUrl, err := graphApi.GetGraphApiResponseFromTimeSlot(restaurantGraphApiRequestUrl)
 		if err != nil {
 			return nil, err
 		}
 
 		// GetRestaurantsAndAvailableTables TODO: capture all the available time slots from the response intervals. 11.15 11.30 etc.
+		// GetRestaurantsAndAvailableTables TODO: remember to take into consideration the kitchens closing time (can't reserve 1h before kitchen closes.)
+		// GetRestaurantsAndAvailableTables TODO: capture restaurants time till kitchen and restaurant closes.
 		parsedGraphApiResponses = append(parsedGraphApiResponses, graphApiResponseFromRequestUrl)
 	}
 	return parsedGraphApiResponses, nil
