@@ -23,7 +23,7 @@ type ResponseFields struct {
 	Address            *addressFields `json:"address"`
 	Openingtime        *openingFields `json:"openingTime"`
 	Links              *linksFields   `json:"links"`
-	AvailableTimeSlots []string       `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all timeUtils slots.
+	AvailableTimeSlots []string       `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all raflaamoTime slots.
 }
 
 type stringField struct {

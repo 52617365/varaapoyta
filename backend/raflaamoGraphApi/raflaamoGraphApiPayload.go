@@ -1,7 +1,6 @@
 package raflaamoGraphApi
 
 import (
-	"backend/timeUtils"
 	"fmt"
 	"regexp"
 )
@@ -31,8 +30,6 @@ func (graphApiPayload *raflaamoGraphApiRequestUrl) getRequestUrlForGraphApi() st
 	requestUrl := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", restaurantId, currentDate, timeSlotToCheck, amountOfEaters)
 	return requestUrl
 }
-
-type RaflaamoTimes = timeUtils.RaflaamoTimes
 
 func (graphApiPayload *raflaamoGraphApiRequestUrl) GenerateGraphApiRequestUrlsForRestaurant(raflaamoTimes *RaflaamoTimes) []string {
 	requestUrls := make([]string, 0, len(raflaamoTimes.AllGraphApiTimeIntervalsFromCurrentPointForward))

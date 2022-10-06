@@ -1,7 +1,6 @@
-package timeUtils
+package raflaamoTime
 
 import (
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -12,7 +11,7 @@ import (
 //	closing int64
 //}
 
-// CoveredTimes This struct contains the timeUtils you check the graph api with, and the corresponding start and end timeUtils window that the response covers.
+// CoveredTimes This struct contains the raflaamoTime you check the graph api with, and the corresponding start and end raflaamoTime window that the response covers.
 //type CoveredTimes struct {
 //	time            int64
 //	timeWindowStart int64
@@ -21,11 +20,11 @@ import (
 
 //func (kitchenTime *KitchenTime) getRestaurantTimeFromKitchenTime(restaurant *responseFields) RestaurantTime {
 //	// Converting restaurant_kitchen_start_time to unix, so we can compare it easily.
-//	restaurantKitchenStartTime := ConvertStringTimeToUnix(restaurant.Openingtime.Kitchentime.Ranges[0].Start)
-//	// We minus 1 hour from the end timeUtils because restaurants don't take reservations before that timeUtils slot.
-//	// IMPORTANT: E.g. if restaurant closes at 22:00, the last possible reservation timeUtils is 21:00.
+//	restaurantKitchenStartTime := ConvertStringTimeToDesiredUnixFormat(restaurant.Openingtime.Kitchentime.Ranges[0].Start)
+//	// We minus 1 hour from the end raflaamoTime because restaurants don't take reservations before that raflaamoTime slot.
+//	// IMPORTANT: E.g. if restaurant closes at 22:00, the last possible reservation raflaamoTime is 21:00.
 //	const oneHourUnix int64 = 3600
-//	restaurantKitchenEndingTime := ConvertStringTimeToUnix(restaurant.Openingtime.Kitchentime.Ranges[0].End) - oneHourUnix
+//	restaurantKitchenEndingTime := ConvertStringTimeToDesiredUnixFormat(restaurant.Openingtime.Kitchentime.Ranges[0].End) - oneHourUnix
 //
 //	return RestaurantTime{
 //		opening: restaurantKitchenStartTime,
@@ -34,8 +33,6 @@ import (
 //}
 
 func (timeUtils *TimeUtils) getStringTimeFromCurrentTime() string {
-	timeRegex, _ := regexp.Compile(`\d{2}:\d{2}`)
-
 	timeInString := time.Unix(timeUtils.CurrentTime.CurrentTime, 0).UTC().String()
 
 	stringTimeFromUnix := timeRegex.FindString(timeInString)
@@ -45,8 +42,6 @@ func (timeUtils *TimeUtils) getStringTimeFromCurrentTime() string {
 }
 
 func (timeUtils *TimeUtils) getStringTimeFromTimeSlot() string {
-	timeRegex, _ := regexp.Compile(`\d{2}:\d{2}`)
-
 	timeInString := time.Unix(timeUtils.CurrentTime.CurrentTime, 0).UTC().String()
 
 	stringTimeFromUnix := timeRegex.FindString(timeInString)
@@ -68,7 +63,7 @@ func relativeTimeFormatIsInvalid(ourNumber string) bool {
 	return false
 }
 
-func ConvertStringTimeToUnix(timeToConvert string) int64 {
+func ConvertStringTimeToDesiredUnixFormat(timeToConvert string) int64 {
 	timeToConvert = strings.Replace(timeToConvert, ":", "", -1)
 	if relativeTimeFormatIsInvalid(timeToConvert) {
 		return -1

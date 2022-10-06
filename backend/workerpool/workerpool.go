@@ -1,14 +1,14 @@
 package main
 
 import (
-	"backend/timeUtils"
+	"backend/raflaamoTime"
 	"net/http"
 )
 
 type job struct {
-	slot           *timeUtils.CoveredTimes
+	slot           *raflaamoTime.CoveredTimes
 	restaurantId   string
-	currentTime    *timeUtils.DateAndTime
+	currentTime    *raflaamoTime.DateAndTime
 	amountOfEaters int
 }
 

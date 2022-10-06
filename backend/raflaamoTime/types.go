@@ -1,6 +1,6 @@
-package timeUtils
+package raflaamoTime
 
-// CoveredTimes This struct contains the timeUtils you check the graph api with, and the corresponding start and end timeUtils window that the response covers.
+// CoveredTimes This struct contains the raflaamoTime you check the graph api with, and the corresponding start and end raflaamoTime window that the response covers.
 type CoveredTimes struct {
 	time            int64
 	timeWindowStart int64
