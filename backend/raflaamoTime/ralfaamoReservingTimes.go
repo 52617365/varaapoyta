@@ -27,7 +27,7 @@ func GetGraphApiReservationTimes(graphApiResponse *ParsedGraphData) *GraphApiRes
 
 	return &graphApiReservationTimes
 }
-func (graphApiReservationTimes *GraphApiReservationTimes) getTimeSlotsInBetweenIntervals(AllRaflaamoReservationUnixTimeIntervals []int64) []string {
+func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenIntervals(AllRaflaamoReservationUnixTimeIntervals []int64) []string {
 	graphApiReservationTimes.convertStartIntervalIntoString()
 	graphApiReservationTimes.convertEndIntervalIntoString()
 

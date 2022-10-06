@@ -1,6 +1,7 @@
 package raflaamoGraphApi
 
 import (
+	"backend/raflaamoTime"
 	"fmt"
 	"regexp"
 )
@@ -31,7 +32,7 @@ func (graphApiPayload *raflaamoGraphApiRequestUrl) getRequestUrlForGraphApi() st
 	return requestUrl
 }
 
-func (graphApiPayload *raflaamoGraphApiRequestUrl) GenerateGraphApiRequestUrlsForRestaurant(raflaamoTimes *RaflaamoTimes) []string {
+func (graphApiPayload *raflaamoGraphApiRequestUrl) GenerateGraphApiRequestUrlsForRestaurant(raflaamoTimes *raflaamoTime.RaflaamoTimes) []string {
 	requestUrls := make([]string, 0, len(raflaamoTimes.AllGraphApiTimeIntervalsFromCurrentPointForward))
 	for _, graphApiTimeInterval := range raflaamoTimes.AllGraphApiTimeIntervalsFromCurrentPointForward {
 		graphApiPayload.timeSlotToCheck = graphApiTimeInterval
