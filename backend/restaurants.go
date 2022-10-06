@@ -12,52 +12,61 @@ var regexToMatchRestaurantId = regexp.MustCompile(`[^fi/]\d+`)
 var regexToMatchTime = regexp.MustCompile(`\d{2}:\d{2}`)
 var regexToMatchDate = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
 
-func IterateAllRestaurants(city string, amountOfEaters int) error {
-	raflaamoRelatedTimes := timeUtils.GetRaflaamoTimes(regexToMatchTime, regexToMatchDate)
-	restaurantsApi, err := raflaamoRestaurantsApi.GetRaflaamoRestaurantsApiStruct(city)
+// GetRestaurantsAndAvailableTables TODO: Use goroutines to speed stuff up.
+func GetRestaurantsAndAvailableTables(city string, amountOfEaters int) error {
+	allNeededRaflaamoTimes := timeUtils.GetAllNeededRaflaamoTimes(regexToMatchTime, regexToMatchDate)
 	graphApi := raflaamoGraphApi.GetRaflaamoGraphApi()
+	restaurantsApi, err := raflaamoRestaurantsApi.GetRaflaamoRestaurantsApi(city)
 	if err != nil {
 		return err
 	}
-	restaurants, err := restaurantsApi.GetRestaurants()
+
+	allRestaurantsFromRaflaamoRestaurantsApi, err := restaurantsApi.GetAllRestaurantsFromRaflaamoRestaurantsApi()
 	if err != nil {
 		return err
 	}
 
-	for _, restaurant := range restaurants {
-		restaurantOpenTables := getAvailableTablesForRestaurant(&restaurant, raflaamoRelatedTimes, amountOfEaters, graphApi)
-		// TODO: store it somewhere
+	for _, restaurant := range allRestaurantsFromRaflaamoRestaurantsApi {
+		openTablesForRestaurant := getAvailableTablesForRestaurant(&restaurant, allNeededRaflaamoTimes, amountOfEaters, graphApi)
+		// GetRestaurantsAndAvailableTables TODO: store openTablesForRestaurant somewhere.
 
 	}
-
-	//raflaamoTimes.getAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantClosingTimeUnix) // This should be called in caller for each restaurant because closing times change.
 	return nil
 }
 
 type RaflaamoGraphApi = raflaamoGraphApi.RaflaamoGraphApi
 
-func getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, raflaamoRelatedTimes *timeUtils.RaflaamoTimes, amountOfEaters int, graphApi *RaflaamoGraphApi) []*parsedGraphData {
-	restaurantClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
-	raflaamoRelatedTimes.GetAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantClosingTime)
-	raflaamoGraphApiPayload := raflaamoGraphApi.GetRaflaamoGraphApiPayload(restaurant.Links.TableReservationLocalized.FiFi, amountOfEaters, raflaamoRelatedTimes.TimeAndDate.CurrentDate, regexToMatchRestaurantId)
-	restaurantGraphApiRequestUrls := raflaamoGraphApiPayload.IterateAllPossibleTimeSlotsAndGenerateRequestUrls(raflaamoRelatedTimes)
+func getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, raflaamoRelatedTimes *timeUtils.RaflaamoTimes, amountOfEaters int, graphApi *RaflaamoGraphApi) ([]*parsedGraphData, error) {
+	restaurantsKitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
+	raflaamoRelatedTimes.GetAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantsKitchenClosingTime)
 
-	availableTablesFromRestaurant := getAvailableTablesFromRestaurantRequestUrls(restaurantGraphApiRequestUrls, graphApi)
-	return availableTablesFromRestaurant
+	raflaamoGraphApiRequestUrlStruct := raflaamoGraphApi.GetRaflaamoGraphApiRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, amountOfEaters, raflaamoRelatedTimes.TimeAndDate.CurrentDate, regexToMatchRestaurantId)
+
+	restaurantGraphApiRequestUrls := raflaamoGraphApiRequestUrlStruct.GenerateGraphApiRequestUrlsForRestaurant(raflaamoRelatedTimes)
+
+	availableTablesFromRestaurant, err := getAvailableTablesFromRestaurantRequestUrls(restaurantGraphApiRequestUrls, graphApi)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return availableTablesFromRestaurant, nil
 }
 
 type parsedGraphData = raflaamoGraphApi.ParsedGraphData
 
-func getAvailableTablesFromRestaurantRequestUrls(restaurantGraphApiRequestUrls []string, graphApi *RaflaamoGraphApi) []*parsedGraphData {
+func getAvailableTablesFromRestaurantRequestUrls(restaurantGraphApiRequestUrls []string, graphApi *RaflaamoGraphApi) ([]*parsedGraphData, error) {
 	parsedGraphApiResponses := make([]*parsedGraphData, 0, len(restaurantGraphApiRequestUrls))
 
 	for _, restaurantGraphApiRequestUrl := range restaurantGraphApiRequestUrls {
 		fmt.Println("restaurant api request url is", restaurantGraphApiRequestUrl)
 		graphApiResponseFromRequestUrl, err := graphApi.GetGraphApiResponseFromTimeSlot(restaurantGraphApiRequestUrl)
 		if err != nil {
-			return nil
+			return nil, err
 		}
+
+		// GetRestaurantsAndAvailableTables TODO: capture all the available time slots from the response intervals. 11.15 11.30 etc.
 		parsedGraphApiResponses = append(parsedGraphApiResponses, graphApiResponseFromRequestUrl)
 	}
-	return parsedGraphApiResponses
+	return parsedGraphApiResponses, nil
 }

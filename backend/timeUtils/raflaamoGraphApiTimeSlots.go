@@ -13,10 +13,9 @@ var timeRegex = regexp.MustCompile(`\d{2}:\d{2}`)
 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
 The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
 */
-// TODO: Take into consideration restaurant closing.
-func (times *RaflaamoTimes) GetAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantClosingTime string) {
-	restaurantClosingTime = strings.ReplaceAll(restaurantClosingTime, ":", "")
-	restaurantClosingTimeUnix := ConvertStringTimeToUnix(restaurantClosingTime)
+func (times *RaflaamoTimes) GetAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantsKitchenClosingTime string) {
+	restaurantsKitchenClosingTime = strings.ReplaceAll(restaurantsKitchenClosingTime, ":", "")
+	restaurantClosingTimeUnix := ConvertStringTimeToUnix(restaurantsKitchenClosingTime)
 	allPossibleGraphApiTimeSlots := &[...]CoveredTimes{
 		{time: 7200, timeWindowStart: 0, timeWindowsEnd: 21600},
 		{time: 28800, timeWindowStart: 21600, timeWindowsEnd: 43200},
@@ -122,8 +121,8 @@ func (times *RaflaamoTimes) hourIsNotInThePast(timeSlotUnix int64) bool {
 	return false
 }
 
-// GetRaflaamoTimes this should be called only once somewhere in the code because it's pretty expensive to construct.
-func GetRaflaamoTimes(regexToMatchTime *regexp.Regexp, regexToMatchDate *regexp.Regexp) *RaflaamoTimes {
+// GetAllNeededRaflaamoTimes this should be called only once somewhere in the code because it's pretty expensive to construct.
+func GetAllNeededRaflaamoTimes(regexToMatchTime *regexp.Regexp, regexToMatchDate *regexp.Regexp) *RaflaamoTimes {
 	raflaamoTimes := RaflaamoTimes{}
 	raflaamoTimes.getCurrentTimeAndDate(regexToMatchTime, regexToMatchDate)
 	raflaamoTimes.getAllRaflaamoReservingIntervalsThatAreNotInThePast()

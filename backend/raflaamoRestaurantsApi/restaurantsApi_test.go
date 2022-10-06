@@ -5,9 +5,9 @@ import (
 )
 
 func TestRaflaamoRestaurantsApi_GetRestaurants(t *testing.T) {
-	raflaamoRestaurantsApi, err := GetRaflaamoRestaurantsApiStruct("rovaniemi")
+	raflaamoRestaurantsApi, err := GetRaflaamoRestaurantsApi("rovaniemi")
 	if err != nil {
-		t.Errorf("[TestRaflaamoRestaurantsApi_GetRestaurants] (GetRaflaamoRestaurantsApiStruct) did not expect error but we got one: %s", err)
+		t.Errorf("[TestRaflaamoRestaurantsApi_GetRestaurants] (GetRaflaamoRestaurantsApi) did not expect error but we got one: %s", err)
 	}
 
 	restaurantsFromApi, err := raflaamoRestaurantsApi.getRestaurantsFromRaflaamoApi()

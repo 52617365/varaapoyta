@@ -6,41 +6,40 @@ import (
 	"regexp"
 )
 
-type raflaamoGraphApiPayload struct {
+type raflaamoGraphApiRequestUrl struct {
 	amountOfEaters           int
-	timeSlot                 string
+	timeSlotToCheck          string
 	currentDate              string
 	idFromReservationPageUrl string
-	regexToMatchRestaurantId *regexp.Regexp
 }
 
-func GetRaflaamoGraphApiPayload(reservationPageUrl string, amountOfEaters int, currentDate string, regexToMatchRestaurantId *regexp.Regexp) *raflaamoGraphApiPayload {
+func GetRaflaamoGraphApiRequestUrl(reservationPageUrl string, amountOfEaters int, currentDate string, regexToMatchRestaurantId *regexp.Regexp) *raflaamoGraphApiRequestUrl {
 	idFromReservationPageUrl := regexToMatchRestaurantId.FindString(reservationPageUrl)
-	return &raflaamoGraphApiPayload{
+	return &raflaamoGraphApiRequestUrl{
 		amountOfEaters:           amountOfEaters,
 		currentDate:              currentDate,
 		idFromReservationPageUrl: idFromReservationPageUrl,
 	}
 }
 
-func (graphApiPayload *raflaamoGraphApiPayload) getRequestUrl() string {
+func (graphApiPayload *raflaamoGraphApiRequestUrl) getRequestUrlForGraphApi() string {
 	restaurantId := graphApiPayload.idFromReservationPageUrl
 	currentDate := graphApiPayload.currentDate
-	timeSlot := graphApiPayload.timeSlot
+	timeSlotToCheck := graphApiPayload.timeSlotToCheck
 	amountOfEaters := graphApiPayload.amountOfEaters
 
-	requestUrl := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", restaurantId, currentDate, timeSlot, amountOfEaters)
+	requestUrl := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", restaurantId, currentDate, timeSlotToCheck, amountOfEaters)
 	return requestUrl
 }
 
 type RaflaamoTimes = timeUtils.RaflaamoTimes
 
-func (graphApiPayload *raflaamoGraphApiPayload) IterateAllPossibleTimeSlotsAndGenerateRequestUrls(raflaamoTimes *RaflaamoTimes) []string {
+func (graphApiPayload *raflaamoGraphApiRequestUrl) GenerateGraphApiRequestUrlsForRestaurant(raflaamoTimes *RaflaamoTimes) []string {
 	requestUrls := make([]string, 0, len(raflaamoTimes.AllGraphApiTimeIntervalsFromCurrentPointForward))
 	for _, graphApiTimeInterval := range raflaamoTimes.AllGraphApiTimeIntervalsFromCurrentPointForward {
-		graphApiPayload.timeSlot = graphApiTimeInterval
-		requestUrl := graphApiPayload.getRequestUrl()
-		requestUrls = append(requestUrls, requestUrl)
+		graphApiPayload.timeSlotToCheck = graphApiTimeInterval
+		graphApiRequestUrl := graphApiPayload.getRequestUrlForGraphApi()
+		requestUrls = append(requestUrls, graphApiRequestUrl)
 	}
 	return requestUrls
 }

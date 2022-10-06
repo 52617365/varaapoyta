@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
-func GetRaflaamoRestaurantsApiStruct(city string) (*RaflaamoRestaurantsApi, error) {
+func GetRaflaamoRestaurantsApi(city string) (*RaflaamoRestaurantsApi, error) {
 	httpClient := &http.Client{}
 	const data = `{"operationName":"getRestaurantsByLocation","variables":{"first":1000,"input":{"restaurantType":"ALL","locationName":"Helsinki","feature":{"rentableVenues":false}},"after":"eyJmIjowLCJnIjp7ImEiOjYwLjE3MTE2LCJvIjoyNC45MzI1OH19"},"query":"fragment Locales on LocalizedString {fi_FI }fragment Restaurant on Restaurant {  id  name {    ...Locales    }  address {    municipality {      ...Locales       }        street {      ...Locales       }       zipCode     }   openingTime {    restaurantTime {      ranges {        start        end             }             }    kitchenTime {      ranges {        start        end        endNextDay              }             }    }  links {    tableReservationLocalized {      ...Locales        }    homepageLocalized {      ...Locales          }   }     }query getRestaurantsByLocation($first: Int, $after: String, $input: ListRestaurantsByLocationInput!) {  listRestaurantsByLocation(first: $first, after: $after, input: $input) {    totalCount      edges {      ...Restaurant        }     }}"}`
 
 	req, err := http.NewRequest("POST", "https://api.raflaamo.fi/query", bytes.NewBuffer([]byte(data)))
 
 	if err != nil {
-		return nil, fmt.Errorf("[GetRaflaamoRestaurantsApiStruct] - %w", err)
+		return nil, fmt.Errorf("[GetRaflaamoRestaurantsApi] - %w", err)
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("client_id", "jNAWMvWD9rp637RaR")
@@ -109,8 +109,8 @@ func (response *ResponseFields) cityDoesNotMatchUsersCity(usersCity string) bool
 	return restaurantsCity != usersCity
 }
 
-func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) GetRestaurants() ([]ResponseFields, error) {
-	restaurantsApi, err := GetRaflaamoRestaurantsApiStruct(raflaamoRestaurantsApi.cityToGetRestaurantsFrom)
+func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) GetAllRestaurantsFromRaflaamoRestaurantsApi() ([]ResponseFields, error) {
+	restaurantsApi, err := GetRaflaamoRestaurantsApi(raflaamoRestaurantsApi.cityToGetRestaurantsFrom)
 	if err != nil {
 		return nil, err
 	}
