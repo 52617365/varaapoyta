@@ -1,17 +1,13 @@
-package main
+package restaurants
 
 import (
 	"backend/raflaamoGraphApi"
 	"backend/raflaamoRestaurantsApi"
 	"backend/timeUtils"
-	"regexp"
+	"fmt"
 )
 
-var regexToMatchRestaurantId = regexp.MustCompile(`[^fi/]\d+`)
-var regexToMatchTime = regexp.MustCompile(`\d{2}:\d{2}`)
-var regexToMatchDate = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
-
-// GetRestaurantsAndAvailableTables TODO: Use goroutines to speed stuff up.
+// GetRestaurantsAndAvailableTables This is the entry point to the functionality.
 func GetRestaurantsAndAvailableTables(city string, amountOfEaters int) error {
 	allNeededRaflaamoTimes := timeUtils.GetAllNeededRaflaamoTimes(regexToMatchTime, regexToMatchDate)
 	graphApi := raflaamoGraphApi.GetRaflaamoGraphApi()
@@ -25,15 +21,14 @@ func GetRestaurantsAndAvailableTables(city string, amountOfEaters int) error {
 		return err
 	}
 
+	// GetRestaurantsAndAvailableTables TODO: Use worker-pool here to speed stuff up.
 	for _, restaurant := range allRestaurantsFromRaflaamoRestaurantsApi {
-		openTablesForRestaurant := getAvailableTablesForRestaurant(&restaurant, allNeededRaflaamoTimes, amountOfEaters, graphApi)
+		openTablesForRestaurant, _ := getAvailableTablesForRestaurant(&restaurant, allNeededRaflaamoTimes, amountOfEaters, graphApi)
 		// GetRestaurantsAndAvailableTables TODO: store openTablesForRestaurant somewhere.
-
+		fmt.Println(openTablesForRestaurant)
 	}
 	return nil
 }
-
-type RaflaamoGraphApi = raflaamoGraphApi.RaflaamoGraphApi
 
 func getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, raflaamoRelatedTimes *timeUtils.RaflaamoTimes, amountOfEaters int, graphApi *RaflaamoGraphApi) ([]*parsedGraphData, error) {
 	restaurantsKitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End

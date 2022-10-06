@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/restaurants"
 	"log"
 	"net/http"
 )
@@ -84,7 +85,7 @@ func Contains[T comparable](arr [58]T, x T) bool {
 }
 
 func main() {
-	err := GetRestaurantsAndAvailableTables("rovaniemi", 1)
+	err := restaurants.GetRestaurantsAndAvailableTables("rovaniemi", 1)
 	if err != nil {
 		log.Fatalln("err")
 	}
