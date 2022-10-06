@@ -35,7 +35,8 @@ func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenI
 	timeSlotsInBetween := make([]string, 0, 50) // TODO: reserve space in advance.
 	for _, raflaamoReservationUnixTimeInterval := range AllRaflaamoReservationUnixTimeIntervals {
 		const oneHour = 3600 // Restaurants don't take reservations one hour before closing.
-		if graphApiStartInDesiredUnixFormat > raflaamoReservationUnixTimeInterval && graphApiEndInDesiredUnixFormat <= raflaamoReservationUnixTimeInterval-oneHour {
+		if raflaamoReservationUnixTimeInterval > graphApiStartInDesiredUnixFormat && raflaamoReservationUnixTimeInterval <= graphApiEndInDesiredUnixFormat {
+			raflaamoReservationUnixTimeInterval += 7200 // To match timezone
 			raflaamoReservationTime := convertUnixToStringTime(raflaamoReservationUnixTimeInterval)
 			timeSlotsInBetween = append(timeSlotsInBetween, raflaamoReservationTime)
 		}
@@ -60,12 +61,14 @@ func (graphApiReservationTimes *GraphApiReservationTimes) convertEndIntervalInto
 func (graphApiReservationTimes *GraphApiReservationTimes) convertStartIntervalBackIntoDesiredUnixFormat() int64 {
 	startIntervalString := graphApiReservationTimes.graphApiIntervalStartString
 	startIntervalStringInDesiredUnixFormat := ConvertStringTimeToDesiredUnixFormat(startIntervalString)
+	startIntervalStringInDesiredUnixFormat += 3600 // Adding one hour because of timezone stuff
 	return startIntervalStringInDesiredUnixFormat
 }
 
 func (graphApiReservationTimes *GraphApiReservationTimes) convertEndIntervalBackIntoDesiredUnixFormat() int64 {
 	endIntervalString := graphApiReservationTimes.graphApiIntervalEndString
 	endIntervalStringInDesiredUnixFormat := ConvertStringTimeToDesiredUnixFormat(endIntervalString)
+	endIntervalStringInDesiredUnixFormat += 3600 // Adding one hour because of timezone stuff
 	return endIntervalStringInDesiredUnixFormat
 }
 

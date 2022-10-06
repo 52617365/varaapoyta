@@ -31,7 +31,7 @@ func GetRestaurantsAndAvailableTables(city string, amountOfEaters int) error {
 	return nil
 }
 
-func getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, raflaamoRelatedTimes *raflaamoTime.RaflaamoTimes, amountOfEaters int, graphApi *RaflaamoGraphApi) ([]string, error) {
+func getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, raflaamoRelatedTimes *raflaamoTime.RaflaamoTimes, amountOfEaters int, graphApi *raflaamoGraphApi.RaflaamoGraphApi) ([]string, error) {
 	restaurantsKitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
 	raflaamoRelatedTimes.GetAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantsKitchenClosingTime)
 
@@ -49,7 +49,7 @@ func getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.Response
 	return availableTablesFromRestaurant, nil
 }
 
-func getAvailableTableTimesFromRestaurantRequestUrls(restaurant *raflaamoRestaurantsApi.ResponseFields, raflaamoRelatedTimes *raflaamoTime.RaflaamoTimes, restaurantGraphApiRequestUrls []string, graphApi *RaflaamoGraphApi) ([]string, error) {
+func getAvailableTableTimesFromRestaurantRequestUrls(restaurant *raflaamoRestaurantsApi.ResponseFields, raflaamoRelatedTimes *raflaamoTime.RaflaamoTimes, restaurantGraphApiRequestUrls []string, graphApi *raflaamoGraphApi.RaflaamoGraphApi) ([]string, error) {
 	parsedGraphApiTimeSlots := make([]string, 0, len(restaurantGraphApiRequestUrls))
 
 	for _, restaurantGraphApiRequestUrl := range restaurantGraphApiRequestUrls {

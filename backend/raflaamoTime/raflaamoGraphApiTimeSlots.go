@@ -63,43 +63,34 @@ func (times *RaflaamoTimes) getAllRaflaamoReservingIntervalsThatAreNotInThePast(
 	for hour := 0; hour < 24; hour++ {
 		if hour < 10 {
 			formattedTimeSlotOne := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d00", hour))
-			if times.hourIsNotInThePast(formattedTimeSlotOne) {
-				allTimes = append(allTimes, formattedTimeSlotOne)
-			}
+			formattedTimeSlotOne += 10800 // To match finnish timezone.
+			allTimes = append(allTimes, formattedTimeSlotOne)
 			formattedTimeSlotTwo := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d15", hour))
-			if times.hourIsNotInThePast(formattedTimeSlotTwo) {
-				allTimes = append(allTimes, formattedTimeSlotTwo)
-			}
+			formattedTimeSlotTwo += 10800 // To match finnish timezone.
+			allTimes = append(allTimes, formattedTimeSlotTwo)
 			formattedTimeSlotThree := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d30", hour))
-			if times.hourIsNotInThePast(formattedTimeSlotThree) {
-				allTimes = append(allTimes, formattedTimeSlotThree)
-			}
-
+			formattedTimeSlotThree += 10800 // To match finnish timezone.
+			allTimes = append(allTimes, formattedTimeSlotThree)
 			formattedTimeSlotFour := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d45", hour))
-			if times.hourIsNotInThePast(formattedTimeSlotFour) {
-				allTimes = append(allTimes, formattedTimeSlotFour)
-			}
+			formattedTimeSlotFour += 10800 // To match finnish timezone.
+			allTimes = append(allTimes, formattedTimeSlotFour)
 		}
 		if hour >= 10 {
 			formattedTimeSlotOne := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d00", hour))
-			if times.hourIsNotInThePast(formattedTimeSlotOne) {
-				allTimes = append(allTimes, formattedTimeSlotOne)
-			}
+			formattedTimeSlotOne += 10800 // To match finnish timezone.
+			allTimes = append(allTimes, formattedTimeSlotOne)
 			formattedTimeSlotTwo := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d15", hour))
-			if times.hourIsNotInThePast(formattedTimeSlotTwo) {
-				allTimes = append(allTimes, formattedTimeSlotTwo)
-			}
+			formattedTimeSlotTwo += 10800 // To match finnish timezone.
+			allTimes = append(allTimes, formattedTimeSlotTwo)
 			formattedTimeSlotThree := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d30", hour))
-			if times.hourIsNotInThePast(formattedTimeSlotThree) {
-				allTimes = append(allTimes, formattedTimeSlotThree)
-			}
+			formattedTimeSlotThree += 10800 // To match finnish timezone.
+			allTimes = append(allTimes, formattedTimeSlotThree)
 			formattedTimeSlotFour := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d45", hour))
-			if times.hourIsNotInThePast(formattedTimeSlotFour) {
-				allTimes = append(allTimes, formattedTimeSlotFour)
-			}
+			formattedTimeSlotFour += 10800 // To match finnish timezone.
+			allTimes = append(allTimes, formattedTimeSlotFour)
 		}
-		times.AllRaflaamoReservationTimeIntervals = allTimes
 	}
+	times.AllRaflaamoReservationTimeIntervals = allTimes
 }
 
 func (coveredTimes *CoveredTimes) ConvertUnixTimeToString() string {
