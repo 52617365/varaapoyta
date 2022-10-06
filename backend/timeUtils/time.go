@@ -1,18 +1,5 @@
 package timeUtils
 
-import "strconv"
-
-type TimeUtils struct {
-	CurrentTime *TimeAndDate
-	closingTime int64
-	//timeLeftTillClosed int64
-}
-
-type RelativeTime struct {
-	hour    int
-	minutes int
-}
-
 //func (relativeTimeStruct *RelativeTime) getHourAndMinutesFromTime(relativeTime string) {
 //	if relativeTimeFormatIsInvalid(relativeTime) {
 //		relativeTimeStruct.hour = -1
@@ -58,15 +45,3 @@ type RelativeTime struct {
 //
 //		return relativeTime
 //	}
-func relativeTimeFormatIsInvalid(ourNumber string) bool {
-	if _, err := strconv.ParseInt(ourNumber, 10, 64); err != nil {
-		return true
-	}
-	if len(ourNumber) != 4 {
-		return true
-	}
-	if ourNumber == "" {
-		return true
-	}
-	return false
-}

@@ -1,6 +1,6 @@
 package raflaamoGraphApi
 
-type parsedGraphData struct {
+type ParsedGraphData struct {
 	Name      string                `json:"name"`
 	Intervals *[]parsedIntervalData `json:"intervals"` // were only interested in the first index.
 	Id        int                   `json:"id"`

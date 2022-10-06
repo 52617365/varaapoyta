@@ -39,8 +39,8 @@ func (graphApi *RaflaamoGraphApi) sendRequestToGraphApi(graphApiRequest *http.Re
 	return response, nil
 }
 
-func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse(graphApiResponse *http.Response) (*parsedGraphData, error) {
-	var deserializedGraphData []parsedGraphData
+func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse(graphApiResponse *http.Response) (*ParsedGraphData, error) {
+	var deserializedGraphData []ParsedGraphData
 	err := json.NewDecoder((graphApiResponse).Body).Decode(&deserializedGraphData)
 	if err != nil {
 		return nil, fmt.Errorf("[deserializeGraphApiResponse] - %w", err)
@@ -52,7 +52,7 @@ func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse(graphApiResponse *
 	return &deserializedGraphData[0], nil
 }
 
-func (graphApi *RaflaamoGraphApi) getGraphApiResponseFromTimeSlot(requestUrlContainingTimeSlot string) (*parsedGraphData, error) {
+func (graphApi *RaflaamoGraphApi) GetGraphApiResponseFromTimeSlot(requestUrlContainingTimeSlot string) (*ParsedGraphData, error) {
 	httpRequest := graphApi.getRaflaamoGraphApiRequest(requestUrlContainingTimeSlot)
 	response, err := graphApi.sendRequestToGraphApi(httpRequest)
 	if err != nil {

@@ -84,7 +84,7 @@ func Contains[T comparable](arr [58]T, x T) bool {
 }
 
 func main() {
-	err := getAvailableTablesFromRestaurants("rovaniemi", 1)
+	err := IterateAllRestaurants("rovaniemi", 1)
 	if err != nil {
 		log.Fatalln("err")
 	}

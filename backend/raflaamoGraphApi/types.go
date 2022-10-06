@@ -7,7 +7,7 @@ import (
 
 type ResponseFields = raflaamoRestaurantsApi.ResponseFields
 
-// RaflaamoGraphApi control flow is: getRaflaamoGraphApiRequest -> interactWithGraphApi -> deserializeGraphApiResponse
+// RaflaamoGraphApi control flow is: getRaflaamoGraphApiRequest -> InteractWithGraphApi -> DeserializeGraphApiResponse
 type RaflaamoGraphApi struct {
 	httpClient        *http.Client
 	GraphApiResponses chan *Response
@@ -15,6 +15,6 @@ type RaflaamoGraphApi struct {
 
 // Response TODO: Graph api responses should be stored with this struct.
 type Response struct {
-	availableTimeIntervals chan *parsedGraphData
+	availableTimeIntervals chan *ParsedGraphData
 	restaurant             *ResponseFields
 }

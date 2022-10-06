@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+var timeRegex = regexp.MustCompile(`\d{2}:\d{2}`)
+
 /*
 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
 The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
@@ -101,6 +103,15 @@ func (times *RaflaamoTimes) getAllRaflaamoReservingIntervalsThatAreNotInThePast(
 		}
 		times.AllRaflaamoReservationTimeIntervals = allTimes
 	}
+}
+
+func (coveredTimes *CoveredTimes) ConvertUnixTimeToString() string {
+	timeInString := time.Unix(coveredTimes.time, 0).UTC().String()
+
+	stringTimeFromUnix := timeRegex.FindString(timeInString)
+
+	stringTimeFromUnix = strings.Replace(stringTimeFromUnix, ":", "", -1)
+	return stringTimeFromUnix
 }
 
 func (times *RaflaamoTimes) hourIsNotInThePast(timeSlotUnix int64) bool {

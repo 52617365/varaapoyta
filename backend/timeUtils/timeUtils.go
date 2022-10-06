@@ -55,6 +55,19 @@ func (timeUtils *TimeUtils) getStringTimeFromTimeSlot() string {
 	return stringTimeFromUnix
 }
 
+func relativeTimeFormatIsInvalid(ourNumber string) bool {
+	if _, err := strconv.ParseInt(ourNumber, 10, 64); err != nil {
+		return true
+	}
+	if len(ourNumber) != 4 {
+		return true
+	}
+	if ourNumber == "" {
+		return true
+	}
+	return false
+}
+
 func ConvertStringTimeToUnix(timeToConvert string) int64 {
 	timeToConvert = strings.Replace(timeToConvert, ":", "", -1)
 	if relativeTimeFormatIsInvalid(timeToConvert) {
