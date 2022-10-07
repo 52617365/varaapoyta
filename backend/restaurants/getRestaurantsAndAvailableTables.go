@@ -20,7 +20,7 @@ func GetRestaurantsAndAvailableTables(city string, amountOfEaters int) ([]raflaa
 		return nil, err
 	}
 
-	// GetRestaurantsAndAvailableTables TODO: Use worker-pool here to speed stuff up.
+	// TODO: use goroutines here to speed stuff up.
 	for index, restaurant := range allRestaurantsFromRaflaamoRestaurantsApi {
 		openTablesForRestaurant, err := getAvailableTablesForRestaurant(&restaurant, allNeededRaflaamoTimes, amountOfEaters, initializedRaflaamoGraphApi)
 		if err != nil {
