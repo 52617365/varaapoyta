@@ -16,14 +16,19 @@ type responseSecondLevel struct {
 type responseThirdLevel struct {
 	Edges []ResponseFields `json:"edges"`
 }
+type AvailableTimeSlotsResult struct {
+	AvailableTimeSlots chan []string
+	Err                error
+}
 
 type ResponseFields struct {
-	Id                 string         `json:"id"`
-	Name               *stringField   `json:"name"`
-	Address            *addressFields `json:"address"`
-	Openingtime        *openingFields `json:"openingTime"`
-	Links              *linksFields   `json:"links"`
-	AvailableTimeSlots []string       `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all raflaamoTime slots.
+	Id          string         `json:"id"`
+	Name        *stringField   `json:"name"`
+	Address     *addressFields `json:"address"`
+	Openingtime *openingFields `json:"openingTime"`
+	Links       *linksFields   `json:"links"`
+	//AvailableTimeSlots *AvailableTimeSlotsResult `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all raflaamoTime slots.
+	AvailableTimeSlots []string `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all raflaamoTime slots.
 }
 
 type stringField struct {
