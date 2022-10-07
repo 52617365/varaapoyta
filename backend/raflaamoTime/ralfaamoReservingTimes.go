@@ -13,7 +13,7 @@ type GraphApiReservationTimes struct {
 	graphApiIntervalEndString   string
 }
 
-// GetGraphApiReservationTimes TODO: we have to validate that the intervals are valid somewhere before calling the functions in this file.
+// GetGraphApiReservationTimes TODO: we have to validate that the intervals are valid and exist somewhere before calling the functions in this file.
 func GetGraphApiReservationTimes(graphApiResponse *graphApiResponseStructure.ParsedGraphData) *GraphApiReservationTimes {
 	graphApiResponseTimeIntervals := *graphApiResponse.Intervals
 
@@ -25,20 +25,20 @@ func GetGraphApiReservationTimes(graphApiResponse *graphApiResponseStructure.Par
 	graphApiReservationTimes.convertStartIntervalIntoString()
 	graphApiReservationTimes.convertEndIntervalIntoString()
 
-	graphApiTimeIntervalStart = graphApiReservationTimes.convertStartIntervalBackIntoDesiredUnixFormat()
-	graphApiTimeIntervalEnd = graphApiReservationTimes.convertEndIntervalBackIntoDesiredUnixFormat()
+	graphApiReservationTimes.graphApiIntervalStart = graphApiReservationTimes.convertStartIntervalBackIntoDesiredUnixFormat()
+	graphApiReservationTimes.graphApiIntervalEnd = graphApiReservationTimes.convertEndIntervalBackIntoDesiredUnixFormat()
 
 	return &graphApiReservationTimes
 }
 
 // GetTimeSlotsInBetweenIntervals TODO: debug this and find what's wrong with the function.
-func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenIntervals(AllRaflaamoReservationUnixTimeIntervals []int64) []string {
-	timeSlotsInBetween := make([]string, 0, 50) // TODO: reserve space in advance.
-	for _, raflaamoReservationUnixTimeInterval := range AllRaflaamoReservationUnixTimeIntervals {
+func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenIntervals(allRaflaamoReservationUnixTimeIntervals []int64) []string {
+	timeSlotsInBetween := make([]string, 0, len(allRaflaamoReservationUnixTimeIntervals)) // TODO: reserve space in advance.
+	for _, raflaamoReservationUnixTimeInterval := range allRaflaamoReservationUnixTimeIntervals {
 		const oneHour = 3600 // Restaurants don't take reservations one hour before closing.
 		if raflaamoReservationUnixTimeInterval > graphApiReservationTimes.graphApiIntervalStart && raflaamoReservationUnixTimeInterval <= graphApiReservationTimes.graphApiIntervalEnd {
-			raflaamoReservationUnixTimeInterval += 7200 // To match timezone
-			raflaamoReservationTime := ConvertUnixMillisecondsToString(raflaamoReservationUnixTimeInterval)
+			//raflaamoReservationUnixTimeInterval += 7200 // To match timezone
+			raflaamoReservationTime := ConvertUnixSecondsToString(raflaamoReservationUnixTimeInterval)
 			timeSlotsInBetween = append(timeSlotsInBetween, raflaamoReservationTime)
 		}
 	}
@@ -72,6 +72,15 @@ func (graphApiReservationTimes *GraphApiReservationTimes) convertEndIntervalBack
 	return endIntervalStringInDesiredUnixFormat
 }
 
+func ConvertUnixSecondsToString(unixTimeToConvert int64) string {
+	timeInString := time.Unix(unixTimeToConvert, 0).UTC().String()
+
+	stringTimeFromUnix := timeRegex.FindString(timeInString)
+
+	stringTimeFromUnix = strings.Replace(stringTimeFromUnix, ":", "", -1)
+
+	return stringTimeFromUnix
+}
 func ConvertUnixMillisecondsToString(unixTimeToConvert int64) string {
 	timeInString := time.UnixMilli(unixTimeToConvert).UTC().String()
 
