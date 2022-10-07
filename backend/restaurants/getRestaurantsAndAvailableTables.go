@@ -21,9 +21,12 @@ func GetRestaurantsAndAvailableTables(city string, amountOfEaters int) ([]raflaa
 	}
 
 	// GetRestaurantsAndAvailableTables TODO: Use worker-pool here to speed stuff up.
-	for _, restaurant := range allRestaurantsFromRaflaamoRestaurantsApi {
-		openTablesForRestaurant, _ := getAvailableTablesForRestaurant(&restaurant, allNeededRaflaamoTimes, amountOfEaters, initializedRaflaamoGraphApi)
-		restaurant.AvailableTimeSlots = openTablesForRestaurant
+	for index, restaurant := range allRestaurantsFromRaflaamoRestaurantsApi {
+		openTablesForRestaurant, err := getAvailableTablesForRestaurant(&restaurant, allNeededRaflaamoTimes, amountOfEaters, initializedRaflaamoGraphApi)
+		if err != nil {
+			continue
+		}
+		allRestaurantsFromRaflaamoRestaurantsApi[index].AvailableTimeSlots = openTablesForRestaurant
 	}
 	return allRestaurantsFromRaflaamoRestaurantsApi, nil
 }
