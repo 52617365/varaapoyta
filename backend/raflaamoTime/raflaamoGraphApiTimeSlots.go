@@ -30,7 +30,7 @@ func (times *RaflaamoTimes) GetAllGraphApiUnixTimeIntervalsFromCurrentPointForwa
 			timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, unixTimeSlotConvertedToString)
 		}
 	}
-	times.AllGraphApiTimeIntervalsFromCurrentPointForward = timeSlotsFromCurrentTimeForward
+	times.AllGraphApiTimeIntervals = timeSlotsFromCurrentTimeForward
 }
 
 func (times *RaflaamoTimes) unixTimeSlotIsValid(unixTimeSlot *CoveredTimes, restaurantClosingTimeUnix int64) bool {

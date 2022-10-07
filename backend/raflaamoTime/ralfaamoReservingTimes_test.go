@@ -10,6 +10,7 @@ import (
 var regexToMatchTime = regexp.MustCompile(`\d{2}:\d{2}`)
 var regexToMatchDate = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
 
+// Test passed at 15:44, try again later.
 func TestGraphApiReservationTimes_GetTimeSlotsInBetweenIntervals(t *testing.T) {
 
 	want := []string{"1615", "1630", "1645", "1700"}

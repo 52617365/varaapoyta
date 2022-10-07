@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/restaurants"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -85,9 +86,12 @@ func Contains[T comparable](arr [58]T, x T) bool {
 }
 
 func main() {
-	err := restaurants.GetRestaurantsAndAvailableTables("rovaniemi", 1)
+	raflaamoRestaurants, err := restaurants.GetRestaurantsAndAvailableTables("rovaniemi", 1)
 	if err != nil {
 		log.Fatalln("err")
+	}
+	for _, restaurant := range raflaamoRestaurants {
+		fmt.Println(restaurant.Name.FiFi)
 	}
 	//r := mux.NewRouter()
 	//r.HandleFunc("/raflaamo/tables/{city}/{amount_of_eaters}", entryPoint).Methods("GET")

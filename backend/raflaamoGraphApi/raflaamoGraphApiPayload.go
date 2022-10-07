@@ -10,7 +10,7 @@ type raflaamoGraphApiRequestUrl struct {
 	amountOfEaters           int
 	timeSlotToCheck          string
 	currentDate              string
-	idFromReservationPageUrl string
+	IdFromReservationPageUrl string
 }
 
 func GetRaflaamoGraphApiRequestUrl(reservationPageUrl string, amountOfEaters int, currentDate string, regexToMatchRestaurantId *regexp.Regexp) *raflaamoGraphApiRequestUrl {
@@ -18,12 +18,12 @@ func GetRaflaamoGraphApiRequestUrl(reservationPageUrl string, amountOfEaters int
 	return &raflaamoGraphApiRequestUrl{
 		amountOfEaters:           amountOfEaters,
 		currentDate:              currentDate,
-		idFromReservationPageUrl: idFromReservationPageUrl,
+		IdFromReservationPageUrl: idFromReservationPageUrl,
 	}
 }
 
 func (graphApiPayload *raflaamoGraphApiRequestUrl) getRequestUrlForGraphApi() string {
-	restaurantId := graphApiPayload.idFromReservationPageUrl
+	restaurantId := graphApiPayload.IdFromReservationPageUrl
 	currentDate := graphApiPayload.currentDate
 	timeSlotToCheck := graphApiPayload.timeSlotToCheck
 	amountOfEaters := graphApiPayload.amountOfEaters
@@ -33,8 +33,8 @@ func (graphApiPayload *raflaamoGraphApiRequestUrl) getRequestUrlForGraphApi() st
 }
 
 func (graphApiPayload *raflaamoGraphApiRequestUrl) GenerateGraphApiRequestUrlsForRestaurant(raflaamoTimes *raflaamoTime.RaflaamoTimes) []string {
-	requestUrls := make([]string, 0, len(raflaamoTimes.AllGraphApiTimeIntervalsFromCurrentPointForward))
-	for _, graphApiTimeInterval := range raflaamoTimes.AllGraphApiTimeIntervalsFromCurrentPointForward {
+	requestUrls := make([]string, 0, len(raflaamoTimes.AllGraphApiTimeIntervals))
+	for _, graphApiTimeInterval := range raflaamoTimes.AllGraphApiTimeIntervals {
 		graphApiPayload.timeSlotToCheck = graphApiTimeInterval
 		graphApiRequestUrl := graphApiPayload.getRequestUrlForGraphApi()
 		requestUrls = append(requestUrls, graphApiRequestUrl)
