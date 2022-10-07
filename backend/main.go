@@ -76,14 +76,17 @@ func setCorrectRequestHeaders(w *http.ResponseWriter) {
 	(*w).Header().Set("Content-Type", "application/json")
 }
 
+// Current execution time of GetRestaurantsAndAvailableTables before goroutines is:
 func main() {
-	raflaamoRestaurants, err := restaurants.GetRestaurantsAndAvailableTables("rovaniemi", 1)
+	raflaamoRestaurants, err := restaurants.GetRestaurantsAndAvailableTables("helsinki", 1)
 	if err != nil {
 		log.Fatalln("err")
 	}
 	for _, restaurant := range raflaamoRestaurants {
 		fmt.Println(restaurant.Name.FiFi)
+		fmt.Println(restaurant.AvailableTimeSlots)
 	}
+
 	//r := mux.NewRouter()
 	//r.HandleFunc("/raflaamo/tables/{city}/{amount_of_eaters}", entryPoint).Methods("GET")
 	//log.Fatal(http.ListenAndServe(":10000", r))
