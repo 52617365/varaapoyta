@@ -76,15 +76,6 @@ func setCorrectRequestHeaders(w *http.ResponseWriter) {
 	(*w).Header().Set("Content-Type", "application/json")
 }
 
-func Contains[T comparable](arr [58]T, x T) bool {
-	for _, v := range arr {
-		if v == x {
-			return true
-		}
-	}
-	return false
-}
-
 func main() {
 	raflaamoRestaurants, err := restaurants.GetRestaurantsAndAvailableTables("rovaniemi", 1)
 	if err != nil {

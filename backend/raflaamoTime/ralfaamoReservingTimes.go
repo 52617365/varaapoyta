@@ -46,17 +46,17 @@ func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenI
 }
 
 func (graphApiReservationTimes *GraphApiReservationTimes) convertStartIntervalIntoString() {
-	graphApiReservationTimes.graphApiIntervalStart += 3600000 * 3 // Adding three hours into the time to match finnish timezone.
-	startIntervalString := ConvertUnixMillisecondsToString(graphApiReservationTimes.graphApiIntervalStart)
+	graphApiReservationTimes.graphApiIntervalStart += 3600 * 3 // Adding three hours into the time to match finnish timezone.
+	startIntervalString := ConvertUnixSecondsToString(graphApiReservationTimes.graphApiIntervalStart)
 
 	graphApiReservationTimes.graphApiIntervalStartString = startIntervalString
 }
 
 func (graphApiReservationTimes *GraphApiReservationTimes) convertEndIntervalIntoString() {
-	endInterval := graphApiReservationTimes.graphApiIntervalEnd
-	endInterval += 3600000 * 3 // Adding three hours into the time to match finnish timezone.
-	endIntervalString := ConvertUnixMillisecondsToString(endInterval)
+	graphApiReservationTimes.graphApiIntervalEnd += 3600 * 3 // Adding three hours into the time to match finnish timezone.
+	// Adding three hours into the time to match finnish timezone.
 
+	endIntervalString := ConvertUnixSecondsToString(graphApiReservationTimes.graphApiIntervalEnd)
 	graphApiReservationTimes.graphApiIntervalEndString = endIntervalString
 }
 
@@ -74,15 +74,6 @@ func (graphApiReservationTimes *GraphApiReservationTimes) convertEndIntervalBack
 
 func ConvertUnixSecondsToString(unixTimeToConvert int64) string {
 	timeInString := time.Unix(unixTimeToConvert, 0).UTC().String()
-
-	stringTimeFromUnix := timeRegex.FindString(timeInString)
-
-	stringTimeFromUnix = strings.Replace(stringTimeFromUnix, ":", "", -1)
-
-	return stringTimeFromUnix
-}
-func ConvertUnixMillisecondsToString(unixTimeToConvert int64) string {
-	timeInString := time.UnixMilli(unixTimeToConvert).UTC().String()
 
 	stringTimeFromUnix := timeRegex.FindString(timeInString)
 
