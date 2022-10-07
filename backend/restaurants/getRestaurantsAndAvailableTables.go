@@ -42,7 +42,6 @@ func getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.Response
 
 	availableTablesFromRestaurant, err := getAvailableTableTimesFromRestaurantRequestUrls(restaurant, raflaamoRelatedTimes, restaurantGraphApiRequestUrls, graphApi)
 
-	//restaurant.AvailableTimeSlots = availableTablesFromRestaurant
 	if err != nil {
 		return nil, err
 	}

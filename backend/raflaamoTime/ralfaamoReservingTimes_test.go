@@ -17,8 +17,8 @@ func TestGraphApiReservationTimes_GetTimeSlotsInBetweenIntervals(t *testing.T) {
 
 	allNeededRaflaamoTimes := GetAllNeededRaflaamoTimes(regexToMatchTime, regexToMatchDate)
 	mockParsedGraphData := graphApiResponseStructure.ParsedGraphData{Name: "something"}
-	mockParsedIntervalData := make([]graphApiResponseStructure.ParsedIntervalData, 2, 2)
-	mockParsedIntervalData[0] = graphApiResponseStructure.ParsedIntervalData{From: 1665061200, To: 1665064800}
+	mockParsedIntervalData := make([]graphApiResponseStructure.ParsedIntervalData, 1)
+	mockParsedIntervalData[0] = graphApiResponseStructure.ParsedIntervalData{From: 1665144157000 /*3pm*/, To: 1665147757000 /*5pm*/}
 	mockParsedGraphData.Intervals = &mockParsedIntervalData
 
 	graphApiReservationTimes := GetGraphApiReservationTimes(&mockParsedGraphData)
