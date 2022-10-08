@@ -78,7 +78,12 @@ func setCorrectRequestHeaders(w *http.ResponseWriter) {
 
 // Current execution time of GetRestaurantsAndAvailableTables before goroutines is:
 func main() {
-	raflaamoRestaurants, err := restaurants.GetRestaurantsAndAvailableTables("helsinki", 1)
+	restaurantsInstance, err := restaurants.GetRestaurants("helsinki", 1)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	raflaamoRestaurants, err := restaurantsInstance.GetRestaurantsAndAvailableTables()
 	if err != nil {
 		log.Fatalln("err")
 	}
