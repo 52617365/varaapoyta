@@ -99,6 +99,10 @@ func main() {
 		fmt.Println("kitchen end:", restaurant.Openingtime.Kitchentime.Ranges[0].End)
 		fmt.Println("restaurant start:", restaurant.Openingtime.Restauranttime.Ranges[0].Start)
 		fmt.Println("restaurant end:", restaurant.Openingtime.Restauranttime.Ranges[0].Start)
+		fmt.Println("time till restaurant close hours:", restaurant.Openingtime.TimeTillRestaurantClosedHours)
+		fmt.Println("time till restaurant close minutes:", restaurant.Openingtime.TimeTillRestaurantClosedMinutes)
+		fmt.Println("time till kitchen close hours:", restaurant.Openingtime.TimeLeftToReserveHours)
+		fmt.Println("time till kitchen close minutes:", restaurant.Openingtime.TimeLeftToReserveMinutes)
 		fmt.Println("id", restaurant.Links.TableReservationLocalizedId)
 		for range restaurant.GraphApiResults.AvailableTimeSlotsBuffer {
 			time := <-restaurant.GraphApiResults.AvailableTimeSlotsBuffer

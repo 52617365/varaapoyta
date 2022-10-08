@@ -7,19 +7,24 @@ package raflaamoTime
 import (
 	"errors"
 	"fmt"
+	"strconv"
 )
 
 type calculateClosingTime struct {
 	currentTime int64
-	closingTime string // @Notice: should mby be a string and later calculated to unix.
+	closingTime string
+}
+
+func GetCalculateClosingTime(currentTime int64, closingTime string) *calculateClosingTime {
+	return &calculateClosingTime{currentTime: currentTime, closingTime: closingTime}
 }
 
 type relativeHoursAndMinutes struct {
-	relativeHours   string
-	relativeMinutes string
+	RelativeHours   int
+	RelativeMinutes int
 }
 
-func (calculation *calculateClosingTime) calculateRelative() (*relativeHoursAndMinutes, error) {
+func (calculation *calculateClosingTime) CalculateRelativeTime() (*relativeHoursAndMinutes, error) {
 	closingTimeConvertedToUnix := ConvertStringTimeToDesiredUnixFormat(calculation.closingTime)
 	relativeCalculation := closingTimeConvertedToUnix - calculation.currentTime
 
@@ -28,9 +33,9 @@ func (calculation *calculateClosingTime) calculateRelative() (*relativeHoursAndM
 	}
 
 	humanReadableRelativeCalculation := ConvertUnixSecondsToString(relativeCalculation, false)
-	humanReadableRelativeHours := humanReadableRelativeCalculation[:2]
-	humanReadableRelativeMinutes := humanReadableRelativeCalculation[2:]
-	return &relativeHoursAndMinutes{relativeMinutes: humanReadableRelativeMinutes, relativeHours: humanReadableRelativeHours}, nil
+	humanReadableRelativeHours, _ := strconv.Atoi(humanReadableRelativeCalculation[:2]) // todo convert these to int
+	humanReadableRelativeMinutes, _ := strconv.Atoi(humanReadableRelativeCalculation[2:])
+	return &relativeHoursAndMinutes{RelativeMinutes: humanReadableRelativeMinutes, RelativeHours: humanReadableRelativeHours}, nil
 }
 
 func (calculation *calculateClosingTime) relativeCalculationIsNegative(relativeCalculation int64) bool {

@@ -52,7 +52,49 @@ func (restaurants *Restaurants) getAvailableTablesForRestaurant(restaurant *rafl
 
 	restaurantGraphApiRequestUrls := raflaamoGraphApiRequestUrlStruct.GenerateGraphApiRequestUrlsForRestaurant(restaurants.AllNeededRaflaamoTimes)
 
+	err := restaurants.addRelativeTimesToRestaurant(restaurant, restaurantsKitchenClosingTime)
+	if err != nil {
+		restaurant.GraphApiResults.Err <- err
+		return
+	}
+
 	restaurants.getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel(restaurant, restaurantGraphApiRequestUrls)
+}
+
+func (restaurants *Restaurants) addRelativeTimesToRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, restaurantsKitchenClosingTime string) error {
+	currentTime := restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
+	err := restaurants.addRelativeKitchenTime(restaurant, restaurantsKitchenClosingTime, currentTime)
+	if err != nil {
+		return err
+	}
+	err = restaurants.addRelativeRestaurantTime(restaurant, currentTime)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (restaurants *Restaurants) addRelativeRestaurantTime(restaurant *raflaamoRestaurantsApi.ResponseFields, currentTime int64) error {
+	calculateTimeTillRestaurantCloses := raflaamoTime.GetCalculateClosingTime(currentTime, restaurant.Openingtime.Restauranttime.Ranges[0].End)
+	restaurantRelativeTime, err := calculateTimeTillRestaurantCloses.CalculateRelativeTime()
+	if err != nil {
+		return fmt.Errorf("[addRelativeRestaurantTime] error getting relative restaurant time - %w", err)
+	}
+	restaurant.Openingtime.TimeTillRestaurantClosedMinutes = restaurantRelativeTime.RelativeMinutes
+	restaurant.Openingtime.TimeTillRestaurantClosedHours = restaurantRelativeTime.RelativeHours
+	return nil
+}
+
+func (restaurants *Restaurants) addRelativeKitchenTime(restaurant *raflaamoRestaurantsApi.ResponseFields, restaurantsKitchenClosingTime string, currentTime int64) error {
+	calculateTimeTillKitchenCloses := raflaamoTime.GetCalculateClosingTime(currentTime, restaurantsKitchenClosingTime)
+
+	kitchenRelativeTime, err := calculateTimeTillKitchenCloses.CalculateRelativeTime()
+	if err != nil {
+		return err
+	}
+	restaurant.Openingtime.TimeLeftToReserveMinutes = kitchenRelativeTime.RelativeMinutes
+	restaurant.Openingtime.TimeLeftToReserveHours = kitchenRelativeTime.RelativeHours
+	return nil
 }
 
 func (restaurants *Restaurants) getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel(restaurant *raflaamoRestaurantsApi.ResponseFields, restaurantGraphApiRequestUrls []string) {
@@ -67,6 +109,7 @@ func (restaurants *Restaurants) getAvailableTableTimesFromRestaurantRequestUrlsI
 				restaurant.GraphApiResults.Err <- err
 				return
 			}
+
 			// getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel TODO: capture restaurants time till kitchen and restaurant closes.
 
 			graphApiReservationTimes := raflaamoTime.GetGraphApiReservationTimes(graphApiResponseFromRequestUrl)
