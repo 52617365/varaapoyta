@@ -45,10 +45,12 @@ type addressFields struct {
 }
 
 type openingFields struct {
-	Restauranttime        *openingFieldsRanges `json:"restaurantTime"`
-	Kitchentime           *openingFieldsRanges `json:"kitchenTime"`
-	kitchenClosingTime    *timeTillKitchenClosingTime
-	restaurantClosingTime *timeTillRestaurantClosingTime
+	Restauranttime                  *openingFieldsRanges `json:"restaurantTime"`
+	Kitchentime                     *openingFieldsRanges `json:"kitchenTime"`
+	TimeTillRestaurantClosedHours   int                  `json:"time_till_restaurant_closed_hours"`
+	TimeTillRestaurantClosedMinutes int                  `json:"time_till_restaurant_closed_minutes"`
+	TimeLeftToReserveHours          int                  `json:"time_left_to_reserve_hours"`
+	TimeLeftToReserveMinutes        int                  `json:"time_left_to_reserve_minutes"`
 }
 
 type openingFieldsRanges struct {
@@ -69,26 +71,6 @@ type linksFields struct {
 type GraphApiResult struct {
 	AvailableTimeSlotsBuffer chan string
 	Err                      chan error
-}
-
-type timeTillRestaurantClosingTime struct {
-	RestaurantClosingHours   int `json:"time_till_restaurant_closed_hours"`
-	RestaurantClosingMinutes int `json:"time_till_restaurant_closed_minutes"`
-}
-
-// Kitchen closing time - 1 hour determines the time left to reserve.
-// This is because the restaurants don't take reservations one hour before the kitchen closes.
-type timeTillKitchenClosingTime struct {
-	KitchenClosingHours   int `json:"time_left_to_reserve_hours"`
-	KitchenClosingMinutes int `json:"time_left_to_reserve_minutes"`
-}
-
-// They have the same structure so I'm reusing.
-func newKitchenClosingTime(closingHours int, closingMinutes int) *timeTillKitchenClosingTime {
-	return &timeTillKitchenClosingTime{KitchenClosingHours: closingHours, KitchenClosingMinutes: closingMinutes}
-}
-func newRestaurantClosingTime(closingHours int, closingMinutes int) *timeTillRestaurantClosingTime {
-	return &timeTillRestaurantClosingTime{RestaurantClosingHours: closingHours, RestaurantClosingMinutes: closingMinutes}
 }
 
 func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) deserializeRaflaamoRestaurantsResponse() (*responseTopLevel, error) {
