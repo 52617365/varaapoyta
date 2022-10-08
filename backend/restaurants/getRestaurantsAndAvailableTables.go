@@ -76,7 +76,7 @@ func (restaurants *Restaurants) getAvailableTableTimesFromRestaurantRequestUrlsI
 
 			graphApiReservationTimes := raflaamoTime.GetGraphApiReservationTimes(graphApiResponseFromRequestUrl)
 
-			graphApiReservationTimes.GetTimeSlotsInBetweenIntervals(restaurant.GraphApiResults.AvailableTimeSlotsBuffer, restaurants.AllNeededRaflaamoTimes.AllRaflaamoReservationTimeIntervals)
+			graphApiReservationTimes.GetTimeSlotsInBetweenIntervals(restaurant, restaurants.AllNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)
 		}()
 	}
 	wg.Wait()

@@ -13,9 +13,9 @@ type TimeAndDate struct {
 }
 
 type RaflaamoTimes struct {
-	TimeAndDate                         *TimeAndDate
-	AllRaflaamoReservationTimeIntervals []int64
-	AllGraphApiTimeIntervals            []string
+	TimeAndDate                               *TimeAndDate
+	AllFutureRaflaamoReservationTimeIntervals []int64
+	AllFutureGraphApiTimeIntervals            []string
 }
 type TimeUtils struct {
 	CurrentTime *TimeAndDate

@@ -23,7 +23,7 @@ func TestGraphApiReservationTimes_GetTimeSlotsInBetweenIntervals(t *testing.T) {
 
 	graphApiReservationTimes := GetGraphApiReservationTimes(&mockParsedGraphData)
 
-	timeSlotsInBetween := graphApiReservationTimes.GetTimeSlotsInBetweenIntervals(allNeededRaflaamoTimes.AllRaflaamoReservationTimeIntervals)
+	timeSlotsInBetween := graphApiReservationTimes.GetTimeSlotsInBetweenIntervals(allNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)
 
 	if !reflect.DeepEqual(want, timeSlotsInBetween) {
 		t.Errorf("[raflaamoReservingTimes_test.go] (TestGraphApiReservationTimes_GetTimeSlotsInBetweenIntervals) expected %s but got %s", want, timeSlotsInBetween)

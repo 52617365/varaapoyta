@@ -30,7 +30,7 @@ func (times *RaflaamoTimes) GetAllGraphApiUnixTimeIntervalsFromCurrentPointForwa
 			timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, unixTimeSlotConvertedToString)
 		}
 	}
-	times.AllGraphApiTimeIntervals = timeSlotsFromCurrentTimeForward
+	times.AllFutureGraphApiTimeIntervals = timeSlotsFromCurrentTimeForward
 }
 
 func (times *RaflaamoTimes) unixTimeSlotIsValid(unixTimeSlot *CoveredTimes, restaurantClosingTimeUnix int64) bool {
@@ -109,7 +109,7 @@ func (times *RaflaamoTimes) getAllRaflaamoReservingIntervalsThatAreNotInThePast(
 			}
 		}
 	}
-	times.AllRaflaamoReservationTimeIntervals = allTimes
+	times.AllFutureRaflaamoReservationTimeIntervals = allTimes
 }
 
 func (coveredTimes *CoveredTimes) ConvertUnixTimeToString() string {

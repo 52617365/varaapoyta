@@ -33,8 +33,8 @@ func (graphApiPayload *raflaamoGraphApiRequestUrl) getRequestUrlForGraphApi() st
 }
 
 func (graphApiPayload *raflaamoGraphApiRequestUrl) GenerateGraphApiRequestUrlsForRestaurant(raflaamoTimes *raflaamoTime.RaflaamoTimes) []string {
-	requestUrls := make([]string, 0, len(raflaamoTimes.AllGraphApiTimeIntervals))
-	for _, graphApiTimeInterval := range raflaamoTimes.AllGraphApiTimeIntervals {
+	requestUrls := make([]string, 0, len(raflaamoTimes.AllFutureGraphApiTimeIntervals))
+	for _, graphApiTimeInterval := range raflaamoTimes.AllFutureGraphApiTimeIntervals {
 		graphApiPayload.timeSlotToCheck = graphApiTimeInterval
 		graphApiRequestUrl := graphApiPayload.getRequestUrlForGraphApi()
 		requestUrls = append(requestUrls, graphApiRequestUrl)

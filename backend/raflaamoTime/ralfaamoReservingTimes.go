@@ -2,6 +2,7 @@ package raflaamoTime
 
 import (
 	"backend/graphApiResponseStructure"
+	"backend/raflaamoRestaurantsApi"
 	"strings"
 	"time"
 )
@@ -22,39 +23,56 @@ func GetGraphApiReservationTimes(graphApiResponse *graphApiResponseStructure.Par
 
 	graphApiReservationTimes := GraphApiReservationTimes{graphApiIntervalStart: graphApiTimeIntervalStart, graphApiIntervalEnd: graphApiTimeIntervalEnd}
 
-	graphApiReservationTimes.convertStartIntervalIntoString()
-	graphApiReservationTimes.convertEndIntervalIntoString()
-
-	graphApiReservationTimes.graphApiIntervalStart = graphApiReservationTimes.convertStartIntervalBackIntoDesiredUnixFormat()
-	graphApiReservationTimes.graphApiIntervalEnd = graphApiReservationTimes.convertEndIntervalBackIntoDesiredUnixFormat()
+	convertReservationTimesIntoDesiredFormat(&graphApiReservationTimes)
 
 	return &graphApiReservationTimes
 }
 
-// GetTimeSlotsInBetweenIntervals TODO: debug this and find what's wrong with the function.
-func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenIntervals(timeSlotResults chan<- string, allRaflaamoReservationUnixTimeIntervals []int64) /*[]string */ {
-	//timeSlotsInBetween := make([]string, 0, len(allRaflaamoReservationUnixTimeIntervals)) // TODO: reserve space in advance.
-	for _, raflaamoReservationUnixTimeInterval := range allRaflaamoReservationUnixTimeIntervals {
-		const oneHour = 3600 // Restaurants don't take reservations one hour before closing.
-		if raflaamoReservationUnixTimeInterval > graphApiReservationTimes.graphApiIntervalStart && raflaamoReservationUnixTimeInterval <= graphApiReservationTimes.graphApiIntervalEnd {
-			//raflaamoReservationUnixTimeInterval += 7200 // To match timezone
-			raflaamoReservationTime := ConvertUnixSecondsToString(raflaamoReservationUnixTimeInterval)
-			timeSlotResults <- raflaamoReservationTime
-			//timeSlotsInBetween = append(timeSlotsInBetween, raflaamoReservationTime)
-		}
-	}
-	//return timeSlotsInBetween
+func convertReservationTimesIntoDesiredFormat(graphApiReservationTimes *GraphApiReservationTimes) {
+	graphApiReservationTimes.convertStartIntervalIntoString(true)
+	graphApiReservationTimes.convertEndIntervalIntoString(true)
+
+	graphApiReservationTimes.graphApiIntervalStart = graphApiReservationTimes.convertStartIntervalBackIntoDesiredUnixFormat()
+	graphApiReservationTimes.graphApiIntervalEnd = graphApiReservationTimes.convertEndIntervalBackIntoDesiredUnixFormat()
 }
 
-func (graphApiReservationTimes *GraphApiReservationTimes) convertStartIntervalIntoString() {
-	graphApiReservationTimes.graphApiIntervalStart += 3600000 * 4 // Adding four hours into the time to match finnish timezone.
+func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenIntervals(restaurant *raflaamoRestaurantsApi.ResponseFields, allRaflaamoReservationUnixTimeIntervals []int64) {
+	lastPossibleReservationTime := graphApiReservationTimes.getLastPossibleReservationTime(restaurant)
+	for _, raflaamoReservationUnixTimeInterval := range allRaflaamoReservationUnixTimeIntervals {
+		if graphApiReservationTimes.reservationUnixTimeIntervalIsValid(raflaamoReservationUnixTimeInterval, lastPossibleReservationTime) {
+			raflaamoReservationTime := ConvertUnixSecondsToString(raflaamoReservationUnixTimeInterval, false)
+			restaurant.GraphApiResults.AvailableTimeSlotsBuffer <- raflaamoReservationTime
+		}
+	}
+}
+
+// reservationUnixTimeIntervalIsValid TODO: debug this and find what's wrong with the function.
+func (graphApiReservationTimes *GraphApiReservationTimes) reservationUnixTimeIntervalIsValid(raflaamoReservationUnixTimeInterval int64, lastPossibleReservationTime int64) bool {
+	if raflaamoReservationUnixTimeInterval > graphApiReservationTimes.graphApiIntervalStart && raflaamoReservationUnixTimeInterval <= lastPossibleReservationTime { // TODO: this logic is wrong
+		return true
+	}
+	return false
+}
+func (graphApiReservationTimes *GraphApiReservationTimes) getLastPossibleReservationTime(restaurant *raflaamoRestaurantsApi.ResponseFields) int64 {
+	const oneHour = 3600 // Restaurants don't take reservations one hour before closing.
+	restaurantsKitchenClosingTimeUnix := ConvertStringTimeToDesiredUnixFormat(restaurant.Openingtime.Kitchentime.Ranges[0].End)
+	lastPossibleReservationTime := restaurantsKitchenClosingTimeUnix - oneHour
+	return lastPossibleReservationTime
+}
+
+func (graphApiReservationTimes *GraphApiReservationTimes) convertStartIntervalIntoString(convertToFinnishTime bool) {
+	if convertToFinnishTime {
+		graphApiReservationTimes.graphApiIntervalStart += 3600000 * 3 // Adding three hours into the time to match finnish timezone.
+	}
 	startIntervalString := ConvertUnixMilliSecondsToString(graphApiReservationTimes.graphApiIntervalStart)
 
 	graphApiReservationTimes.graphApiIntervalStartString = startIntervalString
 }
 
-func (graphApiReservationTimes *GraphApiReservationTimes) convertEndIntervalIntoString() {
-	graphApiReservationTimes.graphApiIntervalEnd += 3600000 * 4 // Adding four hours into the time to match finnish timezone.
+func (graphApiReservationTimes *GraphApiReservationTimes) convertEndIntervalIntoString(convertToFinnishTime bool) {
+	if convertToFinnishTime {
+		graphApiReservationTimes.graphApiIntervalEnd += 3600000 * 3 // Adding three hours into the time to match finnish timezone.
+	}
 
 	endIntervalString := ConvertUnixMilliSecondsToString(graphApiReservationTimes.graphApiIntervalEnd)
 	graphApiReservationTimes.graphApiIntervalEndString = endIntervalString
@@ -72,7 +90,10 @@ func (graphApiReservationTimes *GraphApiReservationTimes) convertEndIntervalBack
 	return endIntervalStringInDesiredUnixFormat
 }
 
-func ConvertUnixSecondsToString(unixTimeToConvert int64) string {
+func ConvertUnixSecondsToString(unixTimeToConvert int64, convertToFinnishTimezone bool) string {
+	if convertToFinnishTimezone {
+		unixTimeToConvert += 3 * 3600 // adding 3 hours to match finnish timezone.
+	}
 	timeInString := time.Unix(unixTimeToConvert, 0).UTC().String()
 
 	stringTimeFromUnix := timeRegex.FindString(timeInString)

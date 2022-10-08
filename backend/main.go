@@ -92,9 +92,14 @@ func main() {
 			continue
 		}
 		fmt.Println(restaurant.Name.FiFi)
+		fmt.Println("kitchen start:", restaurant.Openingtime.Kitchentime.Ranges[0].Start)
+		fmt.Println("kitchen end:", restaurant.Openingtime.Kitchentime.Ranges[0].End)
+		fmt.Println("restaurant start:", restaurant.Openingtime.Restauranttime.Ranges[0].Start)
+		fmt.Println("restaurant end:", restaurant.Openingtime.Restauranttime.Ranges[0].Start)
 		fmt.Println("id", restaurant.Links.TableReservationLocalizedId)
 		for range restaurant.GraphApiResults.AvailableTimeSlotsBuffer {
-			fmt.Println(<-restaurant.GraphApiResults.AvailableTimeSlotsBuffer)
+			time := <-restaurant.GraphApiResults.AvailableTimeSlotsBuffer
+			fmt.Println(time)
 		}
 		fmt.Println("-----------------")
 	}
