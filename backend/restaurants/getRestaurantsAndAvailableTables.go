@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
 package restaurants
 
 import (
@@ -8,14 +12,6 @@ import (
 	"fmt"
 	"sync"
 )
-
-type Restaurants struct {
-	City                   string
-	AmountOfEaters         int
-	AllNeededRaflaamoTimes *raflaamoTime.RaflaamoTimes
-	GraphApi               *raflaamoGraphApi.RaflaamoGraphApi
-	RestaurantsApi         *raflaamoRestaurantsApi.RaflaamoRestaurantsApi
-}
 
 func GetRestaurants(city string, amountOfEaters int) (*Restaurants, error) {
 	allNeededRaflaamoTimes := raflaamoTime.GetAllNeededRaflaamoTimes(RegexToMatchTime, RegexToMatchDate)
@@ -59,7 +55,6 @@ func (restaurants *Restaurants) getAvailableTablesForRestaurant(restaurant *rafl
 	restaurants.getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel(restaurant, restaurantGraphApiRequestUrls)
 }
 
-// TODO: make the channel stuff work here.
 func (restaurants *Restaurants) getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel(restaurant *raflaamoRestaurantsApi.ResponseFields, restaurantGraphApiRequestUrls []string) {
 	var wg sync.WaitGroup
 	for _, restaurantGraphApiRequestUrl := range restaurantGraphApiRequestUrls {

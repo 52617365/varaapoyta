@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
 package raflaamoTime
 
 import (
@@ -14,7 +18,6 @@ type GraphApiReservationTimes struct {
 	graphApiIntervalEndString   string
 }
 
-// GetGraphApiReservationTimes TODO: we have to validate that the intervals are valid and exist somewhere before calling the functions in this file.
 func GetGraphApiReservationTimes(graphApiResponse *graphApiResponseStructure.ParsedGraphData) *GraphApiReservationTimes {
 	graphApiResponseTimeIntervals := *graphApiResponse.Intervals
 
@@ -46,9 +49,8 @@ func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenI
 	}
 }
 
-// reservationUnixTimeIntervalIsValid TODO: debug this and find what's wrong with the function.
 func (graphApiReservationTimes *GraphApiReservationTimes) reservationUnixTimeIntervalIsValid(raflaamoReservationUnixTimeInterval int64, lastPossibleReservationTime int64) bool {
-	if raflaamoReservationUnixTimeInterval > graphApiReservationTimes.graphApiIntervalStart && raflaamoReservationUnixTimeInterval <= lastPossibleReservationTime { // TODO: this logic is wrong
+	if raflaamoReservationUnixTimeInterval > graphApiReservationTimes.graphApiIntervalStart && raflaamoReservationUnixTimeInterval <= lastPossibleReservationTime {
 		return true
 	}
 	return false

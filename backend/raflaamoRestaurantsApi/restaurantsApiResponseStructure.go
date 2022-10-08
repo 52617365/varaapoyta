@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
 package raflaamoRestaurantsApi
 
 import (
@@ -22,13 +26,11 @@ type AvailableTimeSlotsResult struct {
 }
 
 type ResponseFields struct {
-	Id          string         `json:"id"`
-	Name        *stringField   `json:"name"`
-	Address     *addressFields `json:"address"`
-	Openingtime *openingFields `json:"openingTime"`
-	Links       *linksFields   `json:"links"`
-	//AvailableTimeSlotsBuffer *AvailableTimeSlotsResult `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all raflaamoTime slots.
-	//AvailableTimeSlotsBuffer []string `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all raflaamoTime slots.
+	Id              string          `json:"id"`
+	Name            *stringField    `json:"name"`
+	Address         *addressFields  `json:"address"`
+	Openingtime     *openingFields  `json:"openingTime"`
+	Links           *linksFields    `json:"links"`
 	GraphApiResults *GraphApiResult `json:"available_time_slots"` // This will be populated later on when we iterate this list and get all raflaamoTime slots.
 }
 
@@ -43,12 +45,10 @@ type addressFields struct {
 }
 
 type openingFields struct {
-	Restauranttime                  *openingFieldsRanges `json:"restaurantTime"`
-	Kitchentime                     *openingFieldsRanges `json:"kitchenTime"`
-	TimeTillRestaurantClosedHours   int                  `json:"time_till_restaurant_closed_hours"`
-	TimeTillRestaurantClosedMinutes int                  `json:"time_till_restaurant_closed_minutes"`
-	TimeLeftToReserveHours          int                  `json:"time_left_to_reserve_hours"`
-	TimeLeftToReserveMinutes        int                  `json:"time_left_to_reserve_minutes"`
+	Restauranttime        *openingFieldsRanges `json:"restaurantTime"`
+	Kitchentime           *openingFieldsRanges `json:"kitchenTime"`
+	kitchenClosingTime    *timeTillKitchenClosingTime
+	restaurantClosingTime *timeTillRestaurantClosingTime
 }
 
 type openingFieldsRanges struct {
@@ -69,6 +69,26 @@ type linksFields struct {
 type GraphApiResult struct {
 	AvailableTimeSlotsBuffer chan string
 	Err                      chan error
+}
+
+type timeTillRestaurantClosingTime struct {
+	RestaurantClosingHours   int `json:"time_till_restaurant_closed_hours"`
+	RestaurantClosingMinutes int `json:"time_till_restaurant_closed_minutes"`
+}
+
+// Kitchen closing time - 1 hour determines the time left to reserve.
+// This is because the restaurants don't take reservations one hour before the kitchen closes.
+type timeTillKitchenClosingTime struct {
+	KitchenClosingHours   int `json:"time_left_to_reserve_hours"`
+	KitchenClosingMinutes int `json:"time_left_to_reserve_minutes"`
+}
+
+// They have the same structure so I'm reusing.
+func newKitchenClosingTime(closingHours int, closingMinutes int) *timeTillKitchenClosingTime {
+	return &timeTillKitchenClosingTime{KitchenClosingHours: closingHours, KitchenClosingMinutes: closingMinutes}
+}
+func newRestaurantClosingTime(closingHours int, closingMinutes int) *timeTillRestaurantClosingTime {
+	return &timeTillRestaurantClosingTime{RestaurantClosingHours: closingHours, RestaurantClosingMinutes: closingMinutes}
 }
 
 func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) deserializeRaflaamoRestaurantsResponse() (*responseTopLevel, error) {

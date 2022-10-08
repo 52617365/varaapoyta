@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
 package raflaamoTime
 
 import (
@@ -5,32 +9,6 @@ import (
 	"strings"
 	"time"
 )
-
-//type RestaurantTime struct {
-//	opening int64
-//	closing int64
-//}
-
-// CoveredTimes This struct contains the raflaamoTime you check the graph api with, and the corresponding start and end raflaamoTime window that the response covers.
-//type CoveredTimes struct {
-//	time            int64
-//	timeWindowStart int64
-//	timeWindowsEnd  int64
-//}
-
-//func (kitchenTime *KitchenTime) getRestaurantTimeFromKitchenTime(restaurant *responseFields) RestaurantTime {
-//	// Converting restaurant_kitchen_start_time to unix, so we can compare it easily.
-//	restaurantKitchenStartTime := ConvertStringTimeToDesiredUnixFormat(restaurant.Openingtime.Kitchentime.Ranges[0].Start)
-//	// We minus 1 hour from the end raflaamoTime because restaurants don't take reservations before that raflaamoTime slot.
-//	// IMPORTANT: E.g. if restaurant closes at 22:00, the last possible reservation raflaamoTime is 21:00.
-//	const oneHourUnix int64 = 3600
-//	restaurantKitchenEndingTime := ConvertStringTimeToDesiredUnixFormat(restaurant.Openingtime.Kitchentime.Ranges[0].End) - oneHourUnix
-//
-//	return RestaurantTime{
-//		opening: restaurantKitchenStartTime,
-//		closing: restaurantKitchenEndingTime,
-//	}
-//}
 
 func (timeUtils *TimeUtils) getStringTimeFromCurrentTime() string {
 	timeInString := time.Unix(timeUtils.CurrentTime.CurrentTime, 0).UTC().String()

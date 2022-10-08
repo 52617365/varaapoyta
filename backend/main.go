@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
 package main
 
 import (
@@ -8,7 +12,6 @@ import (
 )
 
 // @Experimental fix is already in place, if it does not work, revisit the problem. the relative raflaamoTime seems to be off when current raflaamoTime is 22:51 and the closing raflaamoTime is 23:30. Closing raflaamoTime points to 2am.
-// TODO: Get some auto-completion into the city field on the front end? Figure out how to do this.
 // @Performance: we have to make it faster, it's too slow right now but make it faster once everything else works.
 
 var allPossibleCities = [...]string{

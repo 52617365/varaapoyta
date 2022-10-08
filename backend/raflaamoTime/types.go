@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
 package raflaamoTime
 
 // CoveredTimes This struct contains the raflaamoTime you check the graph api with, and the corresponding start and end raflaamoTime window that the response covers.
@@ -20,7 +24,6 @@ type RaflaamoTimes struct {
 type TimeUtils struct {
 	CurrentTime *TimeAndDate
 	closingTime int64
-	//timeLeftTillClosed int64
 }
 
 type RelativeTime struct {

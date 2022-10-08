@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
 package raflaamoGraphApi
 
 import (
@@ -12,7 +16,6 @@ type RaflaamoGraphApi struct {
 	GraphApiResponses chan *Response
 }
 
-// Response TODO: Graph api responses should be stored with this struct.
 type Response struct {
 	availableTimeIntervals chan *graphApiResponseStructure.ParsedGraphData
 	restaurant             *raflaamoRestaurantsApi.ResponseFields
