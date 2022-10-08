@@ -83,13 +83,15 @@ func main() {
 		log.Fatalln("err")
 	}
 	for _, restaurant := range raflaamoRestaurants {
-		fmt.Println(restaurant.Name.FiFi)
 		if <-restaurant.GraphApiResults.Err != nil {
 			continue
 		}
-		for timeSlot := range restaurant.GraphApiResults.AvailableTimeSlotsBuffer {
-			fmt.Println(timeSlot)
+		fmt.Println(restaurant.Name.FiFi)
+		fmt.Println("id", restaurant.Links.TableReservationLocalizedId)
+		for range restaurant.GraphApiResults.AvailableTimeSlotsBuffer {
+			fmt.Println(<-restaurant.GraphApiResults.AvailableTimeSlotsBuffer)
 		}
+		fmt.Println("-----------------")
 	}
 
 	//r := mux.NewRouter()

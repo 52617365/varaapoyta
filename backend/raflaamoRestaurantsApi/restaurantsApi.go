@@ -66,6 +66,7 @@ func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) filterBadRestaurantsOut(st
 			continue
 		}
 
+		restaurant.GraphApiResults = &GraphApiResult{AvailableTimeSlotsBuffer: make(chan string, 96), Err: make(chan error, 96)}
 		// Here we have done all the checks we know to date. There might be more in the future once I figure them out.
 		filteredRestaurantsFromProvidedCity = append(filteredRestaurantsFromProvidedCity, restaurant)
 	}

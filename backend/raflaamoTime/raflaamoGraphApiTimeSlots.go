@@ -60,34 +60,53 @@ func (times *RaflaamoTimes) getCurrentTimeAndDate(regexToMatchTime *regexp.Regex
 // 11:00, 11:15, 11:30 and so on.
 func (times *RaflaamoTimes) getAllRaflaamoReservingIntervalsThatAreNotInThePast() {
 	allTimes := make([]int64, 0, 96)
+	currentTime := times.TimeAndDate.CurrentTime
 	for hour := 0; hour < 24; hour++ {
 		if hour < 10 {
 			formattedTimeSlotOne := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d00", hour))
 			formattedTimeSlotOne += 10800 // To match finnish timezone.
-			allTimes = append(allTimes, formattedTimeSlotOne)
+			if formattedTimeSlotOne > currentTime {
+				allTimes = append(allTimes, formattedTimeSlotOne)
+			}
+
 			formattedTimeSlotTwo := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d15", hour))
 			formattedTimeSlotTwo += 10800 // To match finnish timezone.
-			allTimes = append(allTimes, formattedTimeSlotTwo)
+			if formattedTimeSlotTwo > currentTime {
+				allTimes = append(allTimes, formattedTimeSlotTwo)
+			}
+
 			formattedTimeSlotThree := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d30", hour))
 			formattedTimeSlotThree += 10800 // To match finnish timezone.
-			allTimes = append(allTimes, formattedTimeSlotThree)
+			if formattedTimeSlotThree > currentTime {
+				allTimes = append(allTimes, formattedTimeSlotThree)
+			}
 			formattedTimeSlotFour := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d45", hour))
 			formattedTimeSlotFour += 10800 // To match finnish timezone.
-			allTimes = append(allTimes, formattedTimeSlotFour)
+			if formattedTimeSlotFour > currentTime {
+				allTimes = append(allTimes, formattedTimeSlotFour)
+			}
 		}
 		if hour >= 10 {
 			formattedTimeSlotOne := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d00", hour))
 			formattedTimeSlotOne += 10800 // To match finnish timezone.
-			allTimes = append(allTimes, formattedTimeSlotOne)
+			if formattedTimeSlotOne > currentTime {
+				allTimes = append(allTimes, formattedTimeSlotOne)
+			}
 			formattedTimeSlotTwo := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d15", hour))
 			formattedTimeSlotTwo += 10800 // To match finnish timezone.
-			allTimes = append(allTimes, formattedTimeSlotTwo)
+			if formattedTimeSlotTwo > currentTime {
+				allTimes = append(allTimes, formattedTimeSlotTwo)
+			}
 			formattedTimeSlotThree := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d30", hour))
 			formattedTimeSlotThree += 10800 // To match finnish timezone.
-			allTimes = append(allTimes, formattedTimeSlotThree)
+			if formattedTimeSlotThree > currentTime {
+				allTimes = append(allTimes, formattedTimeSlotThree)
+			}
 			formattedTimeSlotFour := ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d45", hour))
 			formattedTimeSlotFour += 10800 // To match finnish timezone.
-			allTimes = append(allTimes, formattedTimeSlotFour)
+			if formattedTimeSlotFour > currentTime {
+				allTimes = append(allTimes, formattedTimeSlotFour)
+			}
 		}
 	}
 	times.AllRaflaamoReservationTimeIntervals = allTimes

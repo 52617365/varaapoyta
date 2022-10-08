@@ -4,6 +4,8 @@ import (
 	"backend/raflaamoGraphApi"
 	"backend/raflaamoRestaurantsApi"
 	"backend/raflaamoTime"
+	"fmt"
+	"sync"
 )
 
 // GetRestaurantsAndAvailableTables This is the entry point to the functionality.
@@ -23,7 +25,7 @@ func GetRestaurantsAndAvailableTables(city string, amountOfEaters int) ([]raflaa
 	// TODO: use goroutines here to speed stuff up.
 	for index, _ := range allRestaurantsFromRaflaamoRestaurantsApi {
 		restaurant := &allRestaurantsFromRaflaamoRestaurantsApi[index]
-		getAvailableTablesForRestaurant(restaurant, allNeededRaflaamoTimes, amountOfEaters, initializedRaflaamoGraphApi)
+		go getAvailableTablesForRestaurant(restaurant, allNeededRaflaamoTimes, amountOfEaters, initializedRaflaamoGraphApi)
 	}
 	return allRestaurantsFromRaflaamoRestaurantsApi, nil
 }
@@ -37,34 +39,32 @@ func getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.Response
 
 	restaurantGraphApiRequestUrls := raflaamoGraphApiRequestUrlStruct.GenerateGraphApiRequestUrlsForRestaurant(raflaamoRelatedTimes)
 
-	getAvailableTableTimesFromRestaurantRequestUrls(restaurant, raflaamoRelatedTimes, restaurantGraphApiRequestUrls, graphApi)
+	getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel(restaurant, raflaamoRelatedTimes, restaurantGraphApiRequestUrls, graphApi)
 }
 
-func getAvailableTableTimesFromRestaurantRequestUrls(restaurant *raflaamoRestaurantsApi.ResponseFields, raflaamoRelatedTimes *raflaamoTime.RaflaamoTimes, restaurantGraphApiRequestUrls []string, graphApi *raflaamoGraphApi.RaflaamoGraphApi) {
-	//restaurant.GraphApiResults.AvailableTimeSlotsBuffer = make(chan string, 96) // 96 is worst case scenario.
-	//restaurant.AvailableTimeSlots = make([]string, 0, len(raflaamoRelatedTimes.AllRaflaamoReservationTimeIntervals))
-
-	graphApiResultsFromRequestUrls := raflaamoRestaurantsApi.GraphApiResult{AvailableTimeSlotsBuffer: make(chan string, 96), Err: make(chan error, 96)}
+// TODO: make the channel stuff work here.
+func getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel(restaurant *raflaamoRestaurantsApi.ResponseFields, raflaamoRelatedTimes *raflaamoTime.RaflaamoTimes, restaurantGraphApiRequestUrls []string, graphApi *raflaamoGraphApi.RaflaamoGraphApi) {
+	var wg sync.WaitGroup
 	for _, restaurantGraphApiRequestUrl := range restaurantGraphApiRequestUrls {
 		restaurantGraphApiRequestUrl := restaurantGraphApiRequestUrl
+		fmt.Println(restaurantGraphApiRequestUrl)
+		wg.Add(1)
 		go func() {
+			defer wg.Done()
 			graphApiResponseFromRequestUrl, err := graphApi.GetGraphApiResponseFromTimeSlot(restaurantGraphApiRequestUrl)
 			if err != nil {
 				restaurant.GraphApiResults.Err <- err
 				return
 			}
 
-			// getAvailableTableTimesFromRestaurantRequestUrls TODO: remember to take into consideration the kitchens closing time (can't reserve 1h before kitchen closes.)
-			// getAvailableTableTimesFromRestaurantRequestUrls TODO: capture restaurants time till kitchen and restaurant closes.
+			// getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel TODO: remember to take into consideration the kitchens closing time (can't reserve 1h before kitchen closes.)
+			// getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel TODO: capture restaurants time till kitchen and restaurant closes.
 			graphApiReservationTimes := raflaamoTime.GetGraphApiReservationTimes(graphApiResponseFromRequestUrl)
 
-			timeSlotIntervalsFromRestaurant := graphApiReservationTimes.GetTimeSlotsInBetweenIntervals(raflaamoRelatedTimes.AllRaflaamoReservationTimeIntervals)
-			for _, timeSlotInterval := range timeSlotIntervalsFromRestaurant {
-				graphApiResultsFromRequestUrls.AvailableTimeSlotsBuffer <- timeSlotInterval
-			}
+			graphApiReservationTimes.GetTimeSlotsInBetweenIntervals(restaurant.GraphApiResults.AvailableTimeSlotsBuffer, raflaamoRelatedTimes.AllRaflaamoReservationTimeIntervals)
 		}()
 	}
-	close(graphApiResultsFromRequestUrls.AvailableTimeSlotsBuffer)
-	close(graphApiResultsFromRequestUrls.Err)
-	restaurant.GraphApiResults = &graphApiResultsFromRequestUrls
+	wg.Wait()
+	close(restaurant.GraphApiResults.Err)
+	close(restaurant.GraphApiResults.AvailableTimeSlotsBuffer)
 }

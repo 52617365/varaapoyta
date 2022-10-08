@@ -32,17 +32,18 @@ func GetGraphApiReservationTimes(graphApiResponse *graphApiResponseStructure.Par
 }
 
 // GetTimeSlotsInBetweenIntervals TODO: debug this and find what's wrong with the function.
-func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenIntervals(allRaflaamoReservationUnixTimeIntervals []int64) []string {
-	timeSlotsInBetween := make([]string, 0, len(allRaflaamoReservationUnixTimeIntervals)) // TODO: reserve space in advance.
+func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenIntervals(timeSlotResults chan<- string, allRaflaamoReservationUnixTimeIntervals []int64) /*[]string */ {
+	//timeSlotsInBetween := make([]string, 0, len(allRaflaamoReservationUnixTimeIntervals)) // TODO: reserve space in advance.
 	for _, raflaamoReservationUnixTimeInterval := range allRaflaamoReservationUnixTimeIntervals {
 		const oneHour = 3600 // Restaurants don't take reservations one hour before closing.
 		if raflaamoReservationUnixTimeInterval > graphApiReservationTimes.graphApiIntervalStart && raflaamoReservationUnixTimeInterval <= graphApiReservationTimes.graphApiIntervalEnd {
 			//raflaamoReservationUnixTimeInterval += 7200 // To match timezone
 			raflaamoReservationTime := ConvertUnixSecondsToString(raflaamoReservationUnixTimeInterval)
-			timeSlotsInBetween = append(timeSlotsInBetween, raflaamoReservationTime)
+			timeSlotResults <- raflaamoReservationTime
+			//timeSlotsInBetween = append(timeSlotsInBetween, raflaamoReservationTime)
 		}
 	}
-	return timeSlotsInBetween
+	//return timeSlotsInBetween
 }
 
 func (graphApiReservationTimes *GraphApiReservationTimes) convertStartIntervalIntoString() {

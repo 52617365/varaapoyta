@@ -63,5 +63,9 @@ func (graphApi *RaflaamoGraphApi) GetGraphApiResponseFromTimeSlot(requestUrlCont
 	if err != nil {
 		return nil, err
 	}
+	timeIntervals := *deserializedGraphApiResponse.Intervals
+	if timeIntervals[0].Color == "transparent" {
+		return nil, fmt.Errorf("[GetGraphResponseFromTimeSlot] - %w", errors.New("no available timeslots found"))
+	}
 	return deserializedGraphApiResponse, nil
 }
