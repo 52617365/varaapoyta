@@ -29,12 +29,13 @@ func (calculation *calculateClosingTime) CalculateRelativeTime() (*relativeHours
 	relativeCalculation := closingTimeConvertedToUnix - calculation.currentTime
 
 	if calculation.relativeCalculationIsNegative(relativeCalculation) {
-		return nil, fmt.Errorf("[calculateRelative] - %w", errors.New("relative calculation was negative"))
+		return nil, fmt.Errorf("[calculateRelative] - %w", errors.New("relative calculation was negative")) // TODO: handle.
 	}
 
 	humanReadableRelativeCalculation := ConvertUnixSecondsToString(relativeCalculation, false)
-	humanReadableRelativeHours, _ := strconv.Atoi(humanReadableRelativeCalculation[:2]) // todo convert these to int
-	humanReadableRelativeMinutes, _ := strconv.Atoi(humanReadableRelativeCalculation[2:])
+
+	humanReadableRelativeMinutes, _ := strconv.Atoi(humanReadableRelativeCalculation[len(humanReadableRelativeCalculation)-2:])
+	humanReadableRelativeHours, _ := strconv.Atoi(humanReadableRelativeCalculation[:len(humanReadableRelativeCalculation)-2])
 	return &relativeHoursAndMinutes{RelativeMinutes: humanReadableRelativeMinutes, RelativeHours: humanReadableRelativeHours}, nil
 }
 

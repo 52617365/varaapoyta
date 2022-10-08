@@ -98,7 +98,7 @@ func main() {
 		fmt.Println("kitchen start:", restaurant.Openingtime.Kitchentime.Ranges[0].Start)
 		fmt.Println("kitchen end:", restaurant.Openingtime.Kitchentime.Ranges[0].End)
 		fmt.Println("restaurant start:", restaurant.Openingtime.Restauranttime.Ranges[0].Start)
-		fmt.Println("restaurant end:", restaurant.Openingtime.Restauranttime.Ranges[0].Start)
+		fmt.Println("restaurant end:", restaurant.Openingtime.Restauranttime.Ranges[0].End)
 		fmt.Println("time till restaurant close hours:", restaurant.Openingtime.TimeTillRestaurantClosedHours)
 		fmt.Println("time till restaurant close minutes:", restaurant.Openingtime.TimeTillRestaurantClosedMinutes)
 		fmt.Println("time till kitchen close hours:", restaurant.Openingtime.TimeLeftToReserveHours)
