@@ -7,8 +7,6 @@ package main
 import (
 	"backend/raflaamoRestaurantsApi"
 	"backend/restaurants"
-	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slices"
 	"log"
@@ -116,19 +114,13 @@ func iterateAndCaptureRestaurantTimeSlots(restaurant *raflaamoRestaurantsApi.Res
 	}
 }
 
-// TODO: figure out why response body is 500 even though the response seems to be fine.
 func main() {
 	r := gin.Default()
 	r.GET("/raflaamo/tables/:city/:amountOfEaters", func(c *gin.Context) {
 		city := checkIfCityIsInvalid(c)
 		amountOfEaters := c.Param("amountOfEaters")
 		collectedRestaurants := GetRestaurantsAndCollectResults(city, amountOfEaters)
-		collectedRestaurantsJson, err := json.Marshal(collectedRestaurants)
-		if err != nil {
-			// TODO: fix why this is unsupportedtype.
-			fmt.Println("todo")
-		}
-		c.JSON(http.StatusOK, collectedRestaurantsJson)
+		c.JSON(http.StatusOK, collectedRestaurants)
 	})
 	log.Fatalln(r.Run(":10000"))
 } // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

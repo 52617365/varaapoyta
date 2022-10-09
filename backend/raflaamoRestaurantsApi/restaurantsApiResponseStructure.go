@@ -27,7 +27,7 @@ type ResponseFields struct {
 	Address            *AddressFields  `json:"address"`
 	Openingtime        *OpeningFields  `json:"openingTime"`
 	Links              *linksFields    `json:"links"`
-	GraphApiResults    *GraphApiResult // This will be populated later on when we iterate this list and get all raflaamoTime slots.
+	GraphApiResults    *GraphApiResult `json:"-"` // This will be populated later on when we iterate this list and get all raflaamoTime slots.
 	AvailableTimeSlots []string        `json:"available_time_slots"`
 }
 
@@ -66,8 +66,8 @@ type linksFields struct {
 }
 
 type GraphApiResult struct {
-	AvailableTimeSlotsBuffer chan string
-	Err                      chan error
+	AvailableTimeSlotsBuffer chan string `json:"-"`
+	Err                      chan error  `json:"-"`
 }
 
 func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) deserializeRaflaamoRestaurantsResponse() (*responseTopLevel, error) {
