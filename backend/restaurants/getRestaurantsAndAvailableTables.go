@@ -94,14 +94,18 @@ func (restaurants *Restaurants) getAvailableTableTimesFromRestaurantRequestUrlsI
 			defer wg.Done()
 			graphApiResponseFromRequestUrl, err := restaurants.GraphApi.GetGraphApiResponseFromTimeSlot(restaurantGraphApiRequestUrl)
 
+			if err != nil {
+				// TODO: handle if this is an error just because some time slot wasn't visible (transparent).
+				restaurant.GraphApiResults.Err <- err
+				restaurant.GraphApiResults.AvailableTimeSlotsBuffer <- ""
+				return
+			}
+
 			timeIntervals := *graphApiResponseFromRequestUrl.Intervals
 			if timeIntervals[0].Color == "transparent" {
 				// TODO: handle it somehow, we are forced to send something in to the channel.
 				restaurant.GraphApiResults.AvailableTimeSlotsBuffer <- ""
-			}
-			if err != nil {
-				// TODO: handle if this is an error just because some time slot wasn't visible (transparent).
-				restaurant.GraphApiResults.Err <- err
+				restaurant.GraphApiResults.Err <- nil
 				return
 			}
 

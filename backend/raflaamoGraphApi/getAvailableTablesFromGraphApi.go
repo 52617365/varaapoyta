@@ -13,8 +13,6 @@ import (
 	"net/http"
 )
 
-var NoTablesFound = errors.New("no available timeslots found")
-
 func GetRaflaamoGraphApi() *RaflaamoGraphApi {
 	httpClient := &http.Client{}
 
