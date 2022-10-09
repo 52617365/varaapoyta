@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
 package raflaamoRestaurantsApi
 
 import (
@@ -10,7 +14,8 @@ func TestRaflaamoRestaurantsApi_GetRestaurants(t *testing.T) {
 		t.Errorf("[TestRaflaamoRestaurantsApi_GetRestaurants] (GetRaflaamoRestaurantsApi) did not expect error but we got one: %s", err)
 	}
 
-	restaurantsFromApi, err := raflaamoRestaurantsApi.getRestaurantsFromRaflaamoApi()
+	var currentTime int64 = 43200
+	restaurantsFromApi, err := raflaamoRestaurantsApi.getRestaurantsFromRaflaamoApi(currentTime)
 	if err != nil {
 		t.Errorf("[TestRaflaamoRestaurantsApi_GetRestaurants] (getRestaurantsFromRaflaamoApi) did not expect error but we got one: %s", err)
 	}
