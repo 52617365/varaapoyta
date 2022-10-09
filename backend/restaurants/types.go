@@ -17,7 +17,7 @@ var RegexToMatchDate = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
 
 type Restaurants struct {
 	City                   string
-	AmountOfEaters         int
+	AmountOfEaters         string
 	AllNeededRaflaamoTimes *raflaamoTime.RaflaamoTimes
 	GraphApi               *raflaamoGraphApi.RaflaamoGraphApi
 	RestaurantsApi         *raflaamoRestaurantsApi.RaflaamoRestaurantsApi

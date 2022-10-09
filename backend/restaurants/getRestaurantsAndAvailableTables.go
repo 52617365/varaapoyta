@@ -13,7 +13,7 @@ import (
 	"sync"
 )
 
-func GetRestaurants(city string, amountOfEaters int) (*Restaurants, error) {
+func GetRestaurants(city string, amountOfEaters string) (*Restaurants, error) {
 	allNeededRaflaamoTimes := raflaamoTime.GetAllNeededRaflaamoTimes(RegexToMatchTime, RegexToMatchDate)
 	graphApi := raflaamoGraphApi.GetRaflaamoGraphApi()
 	initializedRaflaamoRestaurantsApi, err := raflaamoRestaurantsApi.GetRaflaamoRestaurantsApi(city)
@@ -97,7 +97,14 @@ func (restaurants *Restaurants) getAvailableTableTimesFromRestaurantRequestUrlsI
 		go func() {
 			defer wg.Done()
 			graphApiResponseFromRequestUrl, err := restaurants.GraphApi.GetGraphApiResponseFromTimeSlot(restaurantGraphApiRequestUrl)
+
+			timeIntervals := *graphApiResponseFromRequestUrl.Intervals
+			if timeIntervals[0].Color == "transparent" {
+				// TODO: handle it somehow, we are forced to send something in to the channel.
+				restaurant.GraphApiResults.AvailableTimeSlotsBuffer <- ""
+			}
 			if err != nil {
+				// TODO: handle if this is an error just because some time slot wasn't visible (transparent).
 				restaurant.GraphApiResults.Err <- err
 				return
 			}

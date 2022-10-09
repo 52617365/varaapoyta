@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
 package raflaamoGraphApi
 
 import (
@@ -7,13 +11,13 @@ import (
 )
 
 type raflaamoGraphApiRequestUrl struct {
-	amountOfEaters           int
+	amountOfEaters           string
 	timeSlotToCheck          string
 	currentDate              string
 	IdFromReservationPageUrl string
 }
 
-func GetRaflaamoGraphApiRequestUrl(reservationPageUrl string, amountOfEaters int, currentDate string, regexToMatchRestaurantId *regexp.Regexp) *raflaamoGraphApiRequestUrl {
+func GetRaflaamoGraphApiRequestUrl(reservationPageUrl string, amountOfEaters string, currentDate string, regexToMatchRestaurantId *regexp.Regexp) *raflaamoGraphApiRequestUrl {
 	idFromReservationPageUrl := regexToMatchRestaurantId.FindString(reservationPageUrl)
 	return &raflaamoGraphApiRequestUrl{
 		amountOfEaters:           amountOfEaters,
@@ -28,7 +32,7 @@ func (graphApiPayload *raflaamoGraphApiRequestUrl) getRequestUrlForGraphApi() st
 	timeSlotToCheck := graphApiPayload.timeSlotToCheck
 	amountOfEaters := graphApiPayload.amountOfEaters
 
-	requestUrl := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%d", restaurantId, currentDate, timeSlotToCheck, amountOfEaters)
+	requestUrl := fmt.Sprintf("https://s-varaukset.fi/api/recommendations/slot/%s/%s/%s/%s", restaurantId, currentDate, timeSlotToCheck, amountOfEaters)
 	return requestUrl
 }
 
