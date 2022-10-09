@@ -7,6 +7,7 @@ package main
 import (
 	"backend/raflaamoRestaurantsApi"
 	"backend/restaurants"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slices"
 	"log"
@@ -116,6 +117,8 @@ func iterateAndCaptureRestaurantTimeSlots(restaurant *raflaamoRestaurantsApi.Res
 
 func main() {
 	r := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"https://raflaamo.rasmusmaki.com"}
 	r.GET("/raflaamo/tables/:city/:amountOfEaters", func(c *gin.Context) {
 		city := checkIfCityIsInvalid(c)
 		amountOfEaters := c.Param("amountOfEaters")
