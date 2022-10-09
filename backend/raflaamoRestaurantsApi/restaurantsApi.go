@@ -1,6 +1,11 @@
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
 package raflaamoRestaurantsApi
 
 import (
+	"backend/unixHelpers"
 	"bytes"
 	"errors"
 	"fmt"
@@ -28,9 +33,11 @@ func GetRaflaamoRestaurantsApi(city string) (*RaflaamoRestaurantsApi, error) {
 	}, nil
 }
 
-func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamoApi() ([]ResponseFields, error) {
+func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamoApi(currentTime int64) ([]ResponseFields, error) {
 	httpClient := raflaamoRestaurantsApi.httpClient
 	request := raflaamoRestaurantsApi.request
+
+	raflaamoRestaurantsApi.currentTime = currentTime
 
 	res, err := httpClient.Do(request)
 
@@ -56,13 +63,14 @@ func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamo
 //   - Restaurants city is not from the provided city.
 //   - Restaurants reservation link does not exist or contains odd contents.
 //   - Restaurant does not contain opening times (Specified in the Ranges array).
+//   - Restaurant or restaurants kitchen is already closed.
 func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) filterBadRestaurantsOut(structureContainingRestaurantData *responseTopLevel) []ResponseFields {
 	raflaamoRestaurantsApi.cityToGetRestaurantsFrom = strings.ToLower(raflaamoRestaurantsApi.cityToGetRestaurantsFrom)
 	arrayContainingRestaurantData := structureContainingRestaurantData.Data.ListRestaurantsByLocation.Edges
 
 	filteredRestaurantsFromProvidedCity := make([]ResponseFields, 0, 40)
 	for _, restaurant := range arrayContainingRestaurantData {
-		if restaurant.isBad(raflaamoRestaurantsApi.cityToGetRestaurantsFrom) {
+		if restaurant.isBad(raflaamoRestaurantsApi.cityToGetRestaurantsFrom, raflaamoRestaurantsApi.currentTime) {
 			continue
 		}
 
@@ -73,7 +81,7 @@ func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) filterBadRestaurantsOut(st
 	return filteredRestaurantsFromProvidedCity
 }
 
-func (response *ResponseFields) isBad(city string) bool {
+func (response *ResponseFields) isBad(city string, currentTime int64) bool {
 	if response.cityDoesNotMatchUsersCity(city) {
 		return true
 	}
@@ -81,6 +89,9 @@ func (response *ResponseFields) isBad(city string) bool {
 		return true
 	}
 	if response.doesNotContainOpeningTimes() {
+		return true
+	}
+	if response.restaurantOrKitchenIsAlreadyClosed(currentTime) {
 		return true
 	}
 	return false
@@ -99,6 +110,17 @@ func (response *ResponseFields) doesNotContainOpeningTimes() bool {
 	return false
 }
 
+func (response *ResponseFields) restaurantOrKitchenIsAlreadyClosed(currentTime int64) bool {
+	restaurantsClosingTime := unixHelpers.ConvertStringTimeToDesiredUnixFormat(response.Openingtime.Restauranttime.Ranges[0].End)
+	kitchenClosingTime := unixHelpers.ConvertStringTimeToDesiredUnixFormat(response.Openingtime.Kitchentime.Ranges[0].End)
+
+	if currentTime > restaurantsClosingTime || currentTime > kitchenClosingTime {
+		return true
+	}
+
+	return false
+}
+
 func (response *ResponseFields) reservationLinkIsNotValid() bool {
 	return !strings.Contains(response.Links.TableReservationLocalized.FiFi, "https://s-varaukset.fi/online/reservation/fi/")
 }
@@ -110,13 +132,13 @@ func (response *ResponseFields) cityDoesNotMatchUsersCity(usersCity string) bool
 	return restaurantsCity != usersCity
 }
 
-func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) GetAllRestaurantsFromRaflaamoRestaurantsApi() ([]ResponseFields, error) {
+func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) GetAllRestaurantsFromRaflaamoRestaurantsApi(currentTime int64) ([]ResponseFields, error) {
 	restaurantsApi, err := GetRaflaamoRestaurantsApi(raflaamoRestaurantsApi.cityToGetRestaurantsFrom)
 	if err != nil {
 		return nil, err
 	}
 
-	restaurantsFromApi, err := restaurantsApi.getRestaurantsFromRaflaamoApi()
+	restaurantsFromApi, err := restaurantsApi.getRestaurantsFromRaflaamoApi(currentTime)
 	if err != nil {
 		return nil, err
 	}

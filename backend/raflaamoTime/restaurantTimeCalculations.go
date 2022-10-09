@@ -5,41 +5,36 @@
 package raflaamoTime
 
 import (
-	"errors"
-	"fmt"
+	"backend/unixHelpers"
 	"strconv"
 )
 
-type calculateClosingTime struct {
-	currentTime int64
-	closingTime string
+type CalculateClosingTime struct {
+	CurrentTime int64
+	ClosingTime int64
 }
 
-func GetCalculateClosingTime(currentTime int64, closingTime string) *calculateClosingTime {
-	return &calculateClosingTime{currentTime: currentTime, closingTime: closingTime}
-}
-
-type relativeHoursAndMinutes struct {
+type CalculateClosingTimeResult struct {
 	RelativeHours   int
 	RelativeMinutes int
 }
 
-func (calculation *calculateClosingTime) CalculateRelativeTime() (*relativeHoursAndMinutes, error) {
-	closingTimeConvertedToUnix := ConvertStringTimeToDesiredUnixFormat(calculation.closingTime)
-	relativeCalculation := closingTimeConvertedToUnix - calculation.currentTime
+func GetCalculateClosingTime(currentTime int64, closingTime string) *CalculateClosingTime {
+	closingTimeConvertedToUnix := unixHelpers.ConvertStringTimeToDesiredUnixFormat(closingTime)
+	return &CalculateClosingTime{CurrentTime: currentTime, ClosingTime: closingTimeConvertedToUnix}
+}
 
-	if calculation.relativeCalculationIsNegative(relativeCalculation) {
-		return nil, fmt.Errorf("[calculateRelative] - %w", errors.New("relative calculation was negative")) // TODO: handle.
-	}
+func (calculation *CalculateClosingTime) CalculateRelativeTime() *CalculateClosingTimeResult {
+	relativeCalculation := calculation.ClosingTime - calculation.CurrentTime
 
-	humanReadableRelativeCalculation := ConvertUnixSecondsToString(relativeCalculation, false)
+	humanReadableRelativeCalculation := unixHelpers.ConvertUnixSecondsToString(relativeCalculation, false)
 
 	humanReadableRelativeMinutes, _ := strconv.Atoi(humanReadableRelativeCalculation[len(humanReadableRelativeCalculation)-2:])
 	humanReadableRelativeHours, _ := strconv.Atoi(humanReadableRelativeCalculation[:len(humanReadableRelativeCalculation)-2])
-	return &relativeHoursAndMinutes{RelativeMinutes: humanReadableRelativeMinutes, RelativeHours: humanReadableRelativeHours}, nil
+	return &CalculateClosingTimeResult{RelativeMinutes: humanReadableRelativeMinutes, RelativeHours: humanReadableRelativeHours}
 }
 
-func (calculation *calculateClosingTime) relativeCalculationIsNegative(relativeCalculation int64) bool {
+func (calculation *CalculateClosingTime) relativeCalculationIsNegative(relativeCalculation int64) bool {
 	if relativeCalculation < 0 {
 		return true
 	}

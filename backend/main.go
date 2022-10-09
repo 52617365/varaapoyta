@@ -85,7 +85,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 	raflaamoRestaurants, err := restaurantsInstance.GetRestaurantsAndAvailableTables()
 	if err != nil {
 		log.Fatalln("err")

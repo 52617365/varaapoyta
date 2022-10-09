@@ -12,7 +12,7 @@ func Test_calculateClosingTime_calculateRelative(t *testing.T) {
 	const eightAM int64 = 28800
 	const twoPM string = "1400"
 
-	relative := calculateClosingTime{currentTime: eightAM, closingTime: twoPM}
+	relative := CalculateClosingTime{CurrentTime: eightAM, ClosingTime: twoPM}
 	relativeHoursAndMinutes, err := relative.CalculateRelativeTime()
 	if err != nil {
 		t.Errorf("[Test_calculateClosingTime_calculateRelative] - didn't expect error")

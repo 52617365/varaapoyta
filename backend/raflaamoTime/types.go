@@ -21,10 +21,6 @@ type RaflaamoTimes struct {
 	AllFutureRaflaamoReservationTimeIntervals []int64
 	AllFutureGraphApiTimeIntervals            []string
 }
-type TimeUtils struct {
-	CurrentTime *TimeAndDate
-	closingTime int64
-}
 
 type RelativeTime struct {
 	hour    int

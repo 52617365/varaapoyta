@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
 package raflaamoRestaurantsApi
 
 import "net/http"
@@ -7,4 +11,5 @@ type RaflaamoRestaurantsApi struct {
 	request                  *http.Request
 	response                 *http.Response
 	cityToGetRestaurantsFrom string
+	currentTime              int64
 }

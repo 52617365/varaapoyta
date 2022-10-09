@@ -20,7 +20,7 @@ package raflaamoTime
 //
 //	graphApiReservationTimes := GetGraphApiReservationTimes(&mockParsedGraphData)
 //
-//	timeSlotsInBetween := graphApiReservationTimes.GetTimeSlotsInBetweenIntervals(allNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)
+//	timeSlotsInBetween := graphApiReservationTimes.GetTimeSlotsInBetweenUnixIntervals(allNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)
 //
 //	if !reflect.DeepEqual(want, timeSlotsInBetween) {
 //		t.Errorf("[raflaamoReservingTimes_test.go] (TestGraphApiReservationTimes_GetTimeSlotsInBetweenIntervals) expected %s but got %s", want, timeSlotsInBetween)
