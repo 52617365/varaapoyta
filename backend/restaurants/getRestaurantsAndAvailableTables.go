@@ -8,40 +8,36 @@ import (
 	"backend/raflaamoGraphApi"
 	"backend/raflaamoRestaurantsApi"
 	"backend/raflaamoTime"
-	"errors"
-	"fmt"
+	"log"
 	"sync"
 )
 
-func GetRestaurants(city string, amountOfEaters string) (*Restaurants, error) {
+func GetRestaurants(city string, amountOfEaters string) *Restaurants {
 	allNeededRaflaamoTimes := raflaamoTime.GetAllNeededRaflaamoTimes(RegexToMatchTime, RegexToMatchDate)
 	graphApi := raflaamoGraphApi.GetRaflaamoGraphApi()
-	initializedRaflaamoRestaurantsApi, err := raflaamoRestaurantsApi.GetRaflaamoRestaurantsApi(city)
-	if err != nil {
-		return nil, fmt.Errorf("[GetRestaurants] - %w", errors.New("error making restaurants api"))
-	}
+	initializedRaflaamoRestaurantsApi := raflaamoRestaurantsApi.GetRaflaamoRestaurantsApi(city)
 	return &Restaurants{
 		City:                   city,
 		AmountOfEaters:         amountOfEaters,
 		AllNeededRaflaamoTimes: allNeededRaflaamoTimes,
 		GraphApi:               graphApi,
 		RestaurantsApi:         initializedRaflaamoRestaurantsApi,
-	}, nil
+	}
 }
 
 // GetRestaurantsAndAvailableTables This is the entry point to the functionality.
-func (restaurants *Restaurants) GetRestaurantsAndAvailableTables() ([]raflaamoRestaurantsApi.ResponseFields, error) {
+func (restaurants *Restaurants) GetRestaurantsAndAvailableTables() []raflaamoRestaurantsApi.ResponseFields {
 	currentTime := restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
 	allRestaurantsFromRaflaamoRestaurantsApi, err := restaurants.RestaurantsApi.GetAllRestaurantsFromRaflaamoRestaurantsApi(currentTime)
 	if err != nil {
-		return nil, err
+		log.Fatalln(err)
 	}
 
 	for index := range allRestaurantsFromRaflaamoRestaurantsApi {
 		restaurant := &allRestaurantsFromRaflaamoRestaurantsApi[index]
 		go restaurants.getAvailableTablesForRestaurant(restaurant)
 	}
-	return allRestaurantsFromRaflaamoRestaurantsApi, nil
+	return allRestaurantsFromRaflaamoRestaurantsApi
 }
 
 func (restaurants *Restaurants) getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields) {

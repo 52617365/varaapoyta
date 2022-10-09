@@ -7,6 +7,7 @@ package main
 import (
 	"backend/raflaamoRestaurantsApi"
 	"backend/restaurants"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slices"
@@ -85,14 +86,8 @@ func graphApiResponseHadNoTimeSlots(timeSlotResult string) bool {
 	return timeSlotResult == ""
 }
 func GetRestaurantsAndCollectResults(city string, amountOfEaters string) []raflaamoRestaurantsApi.ResponseFields {
-	restaurantsInstance, err := restaurants.GetRestaurants(city, amountOfEaters)
-	if err != nil {
-		fmt.Println(err)
-	}
-	raflaamoRestaurants, err := restaurantsInstance.GetRestaurantsAndAvailableTables()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	restaurantsInstance := restaurants.GetRestaurants(city, amountOfEaters)
+	raflaamoRestaurants := restaurantsInstance.GetRestaurantsAndAvailableTables()
 	iterateRestaurants(raflaamoRestaurants)
 	return raflaamoRestaurants
 }
@@ -105,12 +100,12 @@ func iterateRestaurants(raflaamoRestaurants []raflaamoRestaurantsApi.ResponseFie
 			continue
 		}
 		restaurant.AvailableTimeSlots = make([]string, 0, 50)
-		iterateRestaurantTimeSlots(restaurant)
+		iterateAndCaptureRestaurantTimeSlots(restaurant)
 		slices.Sort(restaurant.AvailableTimeSlots)
 	}
 }
 
-func iterateRestaurantTimeSlots(restaurant *raflaamoRestaurantsApi.ResponseFields) {
+func iterateAndCaptureRestaurantTimeSlots(restaurant *raflaamoRestaurantsApi.ResponseFields) {
 	for result := range restaurant.GraphApiResults.AvailableTimeSlotsBuffer {
 		// This exists because some time slots might have "transparent" field set aka no time slots found.
 		// And we are forced to send something down the channel or else it will keep waiting forever expecting n items to iterate.
@@ -124,18 +119,19 @@ func iterateRestaurantTimeSlots(restaurant *raflaamoRestaurantsApi.ResponseField
 // TODO: figure out why response body is 500 even though the response seems to be fine.
 func main() {
 	r := gin.Default()
-	r.GET("raflaamo/tables/:city/:amountOfEaters", func(c *gin.Context) {
+	r.GET("/raflaamo/tables/:city/:amountOfEaters", func(c *gin.Context) {
 		city := checkIfCityIsInvalid(c)
 		amountOfEaters := c.Param("amountOfEaters")
 		collectedRestaurants := GetRestaurantsAndCollectResults(city, amountOfEaters)
-		c.JSON(http.StatusOK, collectedRestaurants)
+		collectedRestaurantsJson, err := json.Marshal(collectedRestaurants)
+		if err != nil {
+			// TODO: fix why this is unsupportedtype.
+			fmt.Println("todo")
+		}
+		c.JSON(http.StatusOK, collectedRestaurantsJson)
 	})
-	err := r.Run(":10000")
-	if err != nil {
-		fmt.Println(err)
-		return
-	} // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
-}
+	log.Fatalln(r.Run(":10000"))
+} // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 
 func checkIfCityIsInvalid(c *gin.Context) string {
 	city := c.Param("city")

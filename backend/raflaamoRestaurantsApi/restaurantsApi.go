@@ -9,18 +9,19 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
 
-func GetRaflaamoRestaurantsApi(city string) (*RaflaamoRestaurantsApi, error) {
+func GetRaflaamoRestaurantsApi(city string) *RaflaamoRestaurantsApi {
 	httpClient := &http.Client{}
 	const data = `{"operationName":"getRestaurantsByLocation","variables":{"first":1000,"input":{"restaurantType":"ALL","locationName":"Helsinki","feature":{"rentableVenues":false}},"after":"eyJmIjowLCJnIjp7ImEiOjYwLjE3MTE2LCJvIjoyNC45MzI1OH19"},"query":"fragment Locales on LocalizedString {fi_FI }fragment Restaurant on Restaurant {  id  name {    ...Locales    }  address {    municipality {      ...Locales       }        street {      ...Locales       }       zipCode     }   openingTime {    restaurantTime {      ranges {        start        end             }             }    kitchenTime {      ranges {        start        end        endNextDay              }             }    }  links {    tableReservationLocalized {      ...Locales        }    homepageLocalized {      ...Locales          }   }     }query getRestaurantsByLocation($first: Int, $after: String, $input: ListRestaurantsByLocationInput!) {  listRestaurantsByLocation(first: $first, after: $after, input: $input) {    totalCount      edges {      ...Restaurant        }     }}"}`
 
 	req, err := http.NewRequest("POST", "https://api.raflaamo.fi/query", bytes.NewBuffer([]byte(data)))
 
 	if err != nil {
-		return nil, fmt.Errorf("[GetRaflaamoRestaurantsApi] - %w", err)
+		log.Fatalln("[GetRaflaamoRestaurantsApi] - err but shouldn't be")
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("client_id", "jNAWMvWD9rp637RaR")
@@ -30,7 +31,7 @@ func GetRaflaamoRestaurantsApi(city string) (*RaflaamoRestaurantsApi, error) {
 		httpClient:               httpClient,
 		request:                  req,
 		cityToGetRestaurantsFrom: city,
-	}, nil
+	}
 }
 
 func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamoApi(currentTime int64) ([]ResponseFields, error) {
@@ -42,7 +43,7 @@ func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamo
 	res, err := httpClient.Do(request)
 
 	if err != nil {
-		return nil, fmt.Errorf("[GetRestaurantsFromRaflaamoApi] - %w", errors.New("there was an error connecting to the raflaamo api"))
+		log.Fatal("[GetRestaurantsFromRaflaamoApi]", errors.New("there was an error connecting to the raflaamo api"))
 	}
 
 	raflaamoRestaurantsApi.response = res
@@ -133,14 +134,11 @@ func (response *ResponseFields) cityDoesNotMatchUsersCity(usersCity string) bool
 }
 
 func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) GetAllRestaurantsFromRaflaamoRestaurantsApi(currentTime int64) ([]ResponseFields, error) {
-	restaurantsApi, err := GetRaflaamoRestaurantsApi(raflaamoRestaurantsApi.cityToGetRestaurantsFrom)
-	if err != nil {
-		return nil, err
-	}
+	restaurantsApi := GetRaflaamoRestaurantsApi(raflaamoRestaurantsApi.cityToGetRestaurantsFrom)
 
 	restaurantsFromApi, err := restaurantsApi.getRestaurantsFromRaflaamoApi(currentTime)
 	if err != nil {
-		return nil, err
+		log.Fatalln("can't get restaurants from raflaamo api, cant proceed")
 	}
 
 	return restaurantsFromApi, nil

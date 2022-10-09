@@ -23,25 +23,25 @@ type responseThirdLevel struct {
 
 type ResponseFields struct {
 	Id                 string          `json:"id"`
-	Name               *stringField    `json:"name"`
-	Address            *addressFields  `json:"address"`
-	Openingtime        *openingFields  `json:"openingTime"`
+	Name               *StringField    `json:"name"`
+	Address            *AddressFields  `json:"address"`
+	Openingtime        *OpeningFields  `json:"openingTime"`
 	Links              *linksFields    `json:"links"`
 	GraphApiResults    *GraphApiResult // This will be populated later on when we iterate this list and get all raflaamoTime slots.
 	AvailableTimeSlots []string        `json:"available_time_slots"`
 }
 
-type stringField struct {
+type StringField struct {
 	FiFi string `json:"fi_FI"`
 }
 
-type addressFields struct {
-	Municipality *stringField `json:"municipality"`
-	Street       *stringField `json:"street"`
+type AddressFields struct {
+	Municipality *StringField `json:"municipality"`
+	Street       *StringField `json:"street"`
 	Zipcode      string       `json:"zipCode"`
 }
 
-type openingFields struct {
+type OpeningFields struct {
 	Restauranttime                  *openingFieldsRanges `json:"restaurantTime"`
 	Kitchentime                     *openingFieldsRanges `json:"kitchenTime"`
 	TimeTillRestaurantClosedHours   int                  `json:"time_till_restaurant_closed_hours"`
@@ -51,18 +51,18 @@ type openingFields struct {
 }
 
 type openingFieldsRanges struct {
-	Ranges []rangesTimes `json:"ranges"`
+	Ranges []RangesTimes `json:"ranges"`
 }
 
-type rangesTimes struct {
+type RangesTimes struct {
 	Start string `json:"start"`
 	End   string `json:"end"`
 }
 
 type linksFields struct {
-	TableReservationLocalized   *stringField `json:"tableReservationLocalized"`
+	TableReservationLocalized   *StringField `json:"tableReservationLocalized"`
 	TableReservationLocalizedId string       `json:"tableReservationLocalizedId"`
-	HomepageLocalized           *stringField `json:"homepageLocalized"`
+	HomepageLocalized           *StringField `json:"homepageLocalized"`
 }
 
 type GraphApiResult struct {
