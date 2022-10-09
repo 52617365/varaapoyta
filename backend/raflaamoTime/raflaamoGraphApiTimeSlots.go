@@ -34,7 +34,7 @@ func (times *RaflaamoTimes) GetAllGraphApiUnixTimeIntervalsFromCurrentPointForwa
 			timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, graphApiUnixTimeSlotIntoString)
 		}
 	}
-	times.AllFutureGraphApiTimeIntervals = timeSlotsFromCurrentTimeForward
+	times.AllFutureGraphApiTimeIntervals = timeSlotsFromCurrentTimeForward // TODO: does this stay?
 }
 
 func (coveredTimes *CoveredTimes) ConvertUnixTimeToString() string {

@@ -13,7 +13,7 @@ import (
 // ~12 seconds after goroutines.
 func BenchmarkGetRestaurantsAndAvailableTables(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		restaurantsInstance, _ := GetRestaurants("helsinki", 1)
+		restaurantsInstance, _ := GetRestaurants("helsinki", "1")
 		raflaamoRestaurants, err := restaurantsInstance.GetRestaurantsAndAvailableTables()
 		if err != nil {
 			log.Fatalln("err")
