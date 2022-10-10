@@ -6,7 +6,8 @@ package restaurants
 
 import (
 	"backend/raflaamoRestaurantsApi"
-
+	"errors"
+	"fmt"
 	"golang.org/x/exp/slices"
 )
 
@@ -21,11 +22,13 @@ func GetRestaurantsAndCollectResults(city string, amountOfEaters string) []rafla
 	return raflaamoRestaurants
 }
 
-// TODO: This function right here is fucked. FIX IT ASAP.
 func iterateRestaurantsAndCaptureAvailableTimeSlotsFromChannel(raflaamoRestaurants []raflaamoRestaurantsApi.ResponseFields) []raflaamoRestaurantsApi.ResponseFields {
 	for index := range raflaamoRestaurants {
 		restaurant := &raflaamoRestaurants[index] // Else it won't actually be a ptr to it.
-		timeSlotsForRestaurant := iterateAndCaptureRestaurantTimeSlots(restaurant)
+		timeSlotsForRestaurant, err := iterateAndCaptureRestaurantTimeSlots(restaurant)
+		if err != nil {
+			continue
+		}
 
 		// We want to remove restaurants that don't have available time slots.
 		if len(timeSlotsForRestaurant) == 0 {
@@ -39,20 +42,21 @@ func iterateRestaurantsAndCaptureAvailableTimeSlotsFromChannel(raflaamoRestauran
 }
 
 // iterateAndCaptureRestaurantTimeSlots captures the results from a channel because we send it over the network as JSON.
-func iterateAndCaptureRestaurantTimeSlots(restaurant *raflaamoRestaurantsApi.ResponseFields) []string {
+
+// TODO: This function right here is fucked. FIX IT ASAP.
+func iterateAndCaptureRestaurantTimeSlots(restaurant *raflaamoRestaurantsApi.ResponseFields) ([]string, error) {
 	availableTimeSlots := make([]string, 0, 50)
 	for i := 0; i < len(restaurant.GraphApiResults.AvailableTimeSlotsBuffer); i++ {
 		select {
 		case result := <-restaurant.GraphApiResults.AvailableTimeSlotsBuffer:
-			if graphApiResponseHadNoTimeSlots(result) {
-				continue
-			}
 			availableTimeSlots = append(availableTimeSlots, result)
-		case _ = <-restaurant.GraphApiResults.Err:
-			continue
+		case err := <-restaurant.GraphApiResults.Err:
+			return nil, err
+		default:
+			return nil, fmt.Errorf("[iterateAndCaptureRestaurantTimeSlots] - %w", errors.New("hit a weird error in iterateAndCaptureRestaurantTimeSlots"))
 		}
 	}
-	return availableTimeSlots
+	return availableTimeSlots, nil
 }
 
 // In other words, if graph API response had the "transparent" field set.

@@ -6,8 +6,7 @@ package main
 
 import (
 	"backend/restaurants"
-	"log"
-	"net/http"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -151,23 +150,26 @@ func (endpoint *Endpoint) usersAmountOfEatersIsNotNumber() bool {
 }
 
 func main() {
-	r := gin.Default()
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"https://raflaamo.rasmusmaki.com"}
-	r.GET("/raflaamo/tables/:city/:amountOfEaters", func(c *gin.Context) {
-		endpoint := &Endpoint{
-			c:    c,
-			cors: config,
-		}
-		endpoint.userParameters = endpoint.getUserRaflaamoParameters()
 
-		if endpoint.userInputIsInvalid() {
-			c.JSON(http.StatusBadRequest, "no results found with that city")
-			return
-		}
-
-		collectedRestaurants := restaurants.GetRestaurantsAndCollectResults(endpoint.userParameters.city, endpoint.userParameters.amountOfEaters)
-		c.JSON(http.StatusOK, collectedRestaurants)
-	})
-	log.Fatalln(r.Run(":10000"))
+	collectedRestaurants := restaurants.GetRestaurantsAndCollectResults("helsinki", "1")
+	fmt.Println(collectedRestaurants)
+	//r := gin.Default()
+	//config := cors.DefaultConfig()
+	//config.AllowOrigins = []string{"https://raflaamo.rasmusmaki.com"}
+	//r.GET("/raflaamo/tables/:city/:amountOfEaters", func(c *gin.Context) {
+	//	endpoint := &Endpoint{
+	//		c:    c,
+	//		cors: config,
+	//	}
+	//	endpoint.userParameters = endpoint.getUserRaflaamoParameters()
+	//
+	//	if endpoint.userInputIsInvalid() {
+	//		c.JSON(http.StatusBadRequest, "no results found with that city")
+	//		return
+	//	}
+	//
+	//	collectedRestaurants := restaurants.GetRestaurantsAndCollectResults(endpoint.userParameters.city, endpoint.userParameters.amountOfEaters)
+	//	c.JSON(http.StatusOK, collectedRestaurants)
+	//})
+	//log.Fatalln(r.Run(":10000"))
 }
