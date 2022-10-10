@@ -26,7 +26,7 @@ func getRestaurants(city string, amountOfEaters string) *Restaurants {
 }
 
 // GetRestaurantsAndAvailableTables This is the entry point to the functionality.
-func (restaurants *Restaurants) getRestaurantsAndAvailableTables() []raflaamoRestaurantsApi.ResponseFields {
+func (restaurants *Restaurants) getRestaurantsAndAvailableTablesIntoChannel() []raflaamoRestaurantsApi.ResponseFields {
 	currentTime := restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
 	allRestaurantsFromRaflaamoRestaurantsApi, err := restaurants.RestaurantsApi.GetAllRestaurantsFromRaflaamoRestaurantsApi(currentTime)
 	if err != nil {
@@ -103,10 +103,10 @@ func (restaurants *Restaurants) getAvailableTableTimesFromRestaurantRequestUrlsI
 
 			timeIntervals := *graphApiResponseFromRequestUrl.Intervals
 			if timeIntervals[0].Color == "transparent" {
-				// TODO: handle it somehow, we are forced to send something in to the channel.
+				// TODO: why is this fucking up everything?
 				restaurant.GraphApiResults.AvailableTimeSlotsBuffer <- ""
 				restaurant.GraphApiResults.Err <- nil
-				return
+				//return
 			}
 
 			// getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel TODO: capture restaurants time till kitchen and restaurant closes.

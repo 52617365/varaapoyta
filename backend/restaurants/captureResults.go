@@ -16,38 +16,41 @@ func removeIndexFromSlice[T any](slice []T, s int) []T {
 
 func GetRestaurantsAndCollectResults(city string, amountOfEaters string) []raflaamoRestaurantsApi.ResponseFields {
 	restaurantsInstance := getRestaurants(city, amountOfEaters)
-	raflaamoRestaurants := restaurantsInstance.getRestaurantsAndAvailableTables()
-	iterateRestaurants(raflaamoRestaurants)
+	raflaamoRestaurants := restaurantsInstance.getRestaurantsAndAvailableTablesIntoChannel()
+	raflaamoRestaurants = iterateRestaurantsAndCaptureAvailableTimeSlotsFromChannel(raflaamoRestaurants)
 	return raflaamoRestaurants
 }
 
-func iterateRestaurants(raflaamoRestaurants []raflaamoRestaurantsApi.ResponseFields) {
+// TODO: This function right here is fucked. FIX IT ASAP.
+func iterateRestaurantsAndCaptureAvailableTimeSlotsFromChannel(raflaamoRestaurants []raflaamoRestaurantsApi.ResponseFields) []raflaamoRestaurantsApi.ResponseFields {
 	for index := range raflaamoRestaurants {
 		restaurant := &raflaamoRestaurants[index] // Else it won't actually be a ptr to it.
-		err := <-restaurant.GraphApiResults.Err
-		if err != nil {
-			continue
-		}
 		timeSlotsForRestaurant := iterateAndCaptureRestaurantTimeSlots(restaurant)
+
 		// We want to remove restaurants that don't have available time slots.
 		if len(timeSlotsForRestaurant) == 0 {
 			removeIndexFromSlice(raflaamoRestaurants, index)
 			continue
 		}
 		restaurant.AvailableTimeSlots = timeSlotsForRestaurant
-
 		slices.Sort(restaurant.AvailableTimeSlots)
 	}
+	return raflaamoRestaurants
 }
 
 // iterateAndCaptureRestaurantTimeSlots captures the results from a channel because we send it over the network as JSON.
 func iterateAndCaptureRestaurantTimeSlots(restaurant *raflaamoRestaurantsApi.ResponseFields) []string {
 	availableTimeSlots := make([]string, 0, 50)
-	for result := range restaurant.GraphApiResults.AvailableTimeSlotsBuffer {
-		if graphApiResponseHadNoTimeSlots(result) {
+	for i := 0; i < len(restaurant.GraphApiResults.AvailableTimeSlotsBuffer); i++ {
+		select {
+		case result := <-restaurant.GraphApiResults.AvailableTimeSlotsBuffer:
+			if graphApiResponseHadNoTimeSlots(result) {
+				continue
+			}
+			availableTimeSlots = append(availableTimeSlots, result)
+		case _ = <-restaurant.GraphApiResults.Err:
 			continue
 		}
-		availableTimeSlots = append(availableTimeSlots, result)
 	}
 	return availableTimeSlots
 }

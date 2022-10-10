@@ -5,7 +5,6 @@
 package raflaamoRestaurantsApi
 
 import (
-	"backend/restaurants"
 	"backend/unixHelpers"
 	"bytes"
 	"errors"
@@ -14,13 +13,6 @@ import (
 	"net/http"
 	"strings"
 )
-
-func GetRestaurantsAndCollectResults(city string, amountOfEaters string) []raflaamoRestaurantsApi.ResponseFields {
-	restaurantsInstance := restaurants.GetRestaurants(city, amountOfEaters)
-	raflaamoRestaurants := restaurantsInstance.GetRestaurantsAndAvailableTables()
-	iterateRestaurants(raflaamoRestaurants)
-	return raflaamoRestaurants
-}
 
 func GetRaflaamoRestaurantsApi(city string) *RaflaamoRestaurantsApi {
 	httpClient := &http.Client{}
@@ -83,7 +75,7 @@ func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) filterBadRestaurantsOut(st
 			continue
 		}
 
-		restaurant.GraphApiResults = &GraphApiResult{AvailableTimeSlotsBuffer: make(chan string, 96), Err: make(chan error, 96)}
+		restaurant.GraphApiResults = &GraphApiResult{AvailableTimeSlotsBuffer: make(chan string, 4), Err: make(chan error, 4)}
 		// Here we have done all the checks we know to date. There might be more in the future once I figure them out.
 		filteredRestaurantsFromProvidedCity = append(filteredRestaurantsFromProvidedCity, restaurant)
 	}
