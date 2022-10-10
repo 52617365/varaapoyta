@@ -5,6 +5,7 @@
 package raflaamoRestaurantsApi
 
 import (
+	"backend/restaurants"
 	"backend/unixHelpers"
 	"bytes"
 	"errors"
@@ -13,6 +14,13 @@ import (
 	"net/http"
 	"strings"
 )
+
+func GetRestaurantsAndCollectResults(city string, amountOfEaters string) []raflaamoRestaurantsApi.ResponseFields {
+	restaurantsInstance := restaurants.GetRestaurants(city, amountOfEaters)
+	raflaamoRestaurants := restaurantsInstance.GetRestaurantsAndAvailableTables()
+	iterateRestaurants(raflaamoRestaurants)
+	return raflaamoRestaurants
+}
 
 func GetRaflaamoRestaurantsApi(city string) *RaflaamoRestaurantsApi {
 	httpClient := &http.Client{}

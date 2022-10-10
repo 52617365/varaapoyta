@@ -92,14 +92,8 @@ func graphApiResponseHadNoTimeSlots(timeSlotResult string) bool {
 	// And we are forced to send something down the channel or else it will keep waiting forever expecting n items to iterate.
 	return timeSlotResult == ""
 }
-func GetRestaurantsAndCollectResults(city string, amountOfEaters string) []raflaamoRestaurantsApi.ResponseFields {
-	restaurantsInstance := restaurants.GetRestaurants(city, amountOfEaters)
-	raflaamoRestaurants := restaurantsInstance.GetRestaurantsAndAvailableTables()
-	iterateRestaurants(raflaamoRestaurants)
-	return raflaamoRestaurants
-}
 
-func remove[T any](slice []T, s int) []T {
+func removeIndexFromSlice[T any](slice []T, s int) []T {
 	return append(slice[:s], slice[s+1:]...)
 }
 
@@ -113,7 +107,7 @@ func iterateRestaurants(raflaamoRestaurants []raflaamoRestaurantsApi.ResponseFie
 		timeSlotsForRestaurant := iterateAndCaptureRestaurantTimeSlots(restaurant)
 		// Making sure that we don't get restaurants that don't have any time slots.
 		if len(timeSlotsForRestaurant) == 0 {
-			remove(raflaamoRestaurants, index)
+			removeIndexFromSlice(raflaamoRestaurants, index)
 			continue
 		}
 		restaurant.AvailableTimeSlots = timeSlotsForRestaurant
@@ -154,33 +148,31 @@ func (endpoint *Endpoint) getUserRaflaamoParameters() *UserParameters {
 }
 
 /*
-* Contract for validateUserInput:
-* userParameters has to be populated.
+* Contract for userInputIsInvalid:
+* endpoint.userParameters has to be populated.
  */
 
 // TODO: add a struct and methods inside of it for endpoint related stuff.
-func (endpoint *Endpoint) userInputIsValid() bool {
+func (endpoint *Endpoint) userInputIsInvalid() bool {
 	usersAmountOfEaters := endpoint.userParameters.amountOfEaters
 	usersCityToCheck := endpoint.userParameters.city
+
 	if usersAmountOfEaters == "" || usersCityToCheck == "" {
-		return false
+		return true
 	}
 
 	if endpoint.usersAmountOfEatersIsNotNumber() {
-		return false
+		return true
 	}
 
 	if endpoint.raflaamoDoesNotContainCity() {
-		return false
-	}
-	return true
-}
-
-func (endpoint *Endpoint) raflaamoDoesNotContainCity() bool {
-	if !slices.Contains(allPossibleCities, endpoint.userParameters.city) {
 		return true
 	}
 	return false
+}
+
+func (endpoint *Endpoint) raflaamoDoesNotContainCity() bool {
+	return !slices.Contains(allPossibleCities, strings.ToLower(endpoint.userParameters.city))
 }
 
 func (endpoint *Endpoint) usersAmountOfEatersIsNotNumber() bool {
@@ -195,20 +187,19 @@ func main() {
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"https://raflaamo.rasmusmaki.com"}
 	r.GET("/raflaamo/tables/:city/:amountOfEaters", func(c *gin.Context) {
-		userParameters := getUserParameters(c)
-		if checkIfCityIsInvalid(userParameters.city) {
+		endpoint := &Endpoint{
+			c:    c,
+			cors: config,
+		}
+		endpoint.userParameters = endpoint.getUserRaflaamoParameters()
+
+		if endpoint.userInputIsInvalid() {
 			c.JSON(http.StatusBadRequest, "no results found with that city")
 			return
 		}
-		collectedRestaurants := GetRestaurantsAndCollectResults(userParameters.city, userParameters.amountOfEaters)
+
+		collectedRestaurants := restaurants.GetRestaurantsAndCollectResults(endpoint.userParameters.city, endpoint.userParameters.amountOfEaters)
 		c.JSON(http.StatusOK, collectedRestaurants)
 	})
 	log.Fatalln(r.Run(":10000"))
-}
-
-func checkIfCityIsInvalid(city string) bool {
-	if !slices.Contains(allPossibleCities, strings.ToLower(city)) {
-		return true
-	}
-	return false
 }

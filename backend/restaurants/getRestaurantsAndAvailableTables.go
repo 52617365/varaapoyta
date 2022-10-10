@@ -12,7 +12,7 @@ import (
 	"sync"
 )
 
-func GetRestaurants(city string, amountOfEaters string) *Restaurants {
+func getRestaurants(city string, amountOfEaters string) *Restaurants {
 	allNeededRaflaamoTimes := raflaamoTime.GetAllNeededRaflaamoTimes(RegexToMatchTime, RegexToMatchDate)
 	graphApi := raflaamoGraphApi.GetRaflaamoGraphApi()
 	initializedRaflaamoRestaurantsApi := raflaamoRestaurantsApi.GetRaflaamoRestaurantsApi(city)
@@ -26,7 +26,7 @@ func GetRestaurants(city string, amountOfEaters string) *Restaurants {
 }
 
 // GetRestaurantsAndAvailableTables This is the entry point to the functionality.
-func (restaurants *Restaurants) GetRestaurantsAndAvailableTables() []raflaamoRestaurantsApi.ResponseFields {
+func (restaurants *Restaurants) getRestaurantsAndAvailableTables() []raflaamoRestaurantsApi.ResponseFields {
 	currentTime := restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
 	allRestaurantsFromRaflaamoRestaurantsApi, err := restaurants.RestaurantsApi.GetAllRestaurantsFromRaflaamoRestaurantsApi(currentTime)
 	if err != nil {
