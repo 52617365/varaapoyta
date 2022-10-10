@@ -109,8 +109,6 @@ func (restaurants *Restaurants) getAvailableTableTimesFromRestaurantRequestUrlsI
 				return
 			}
 
-			// getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel TODO: capture restaurants time till kitchen and restaurant closes.
-
 			graphApiReservationTimes := raflaamoTime.GetGraphApiReservationTimes(graphApiResponseFromRequestUrl)
 
 			graphApiReservationTimes.GetTimeSlotsInBetweenUnixIntervals(restaurant, restaurants.AllNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)

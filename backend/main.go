@@ -5,7 +5,6 @@
 package main
 
 import (
-	"backend/raflaamoRestaurantsApi"
 	"backend/restaurants"
 	"log"
 	"net/http"
@@ -83,51 +82,6 @@ GET http://localhost:10000/raflaamo/tables/tampere/1
 - TODO: some tableReservationLocalized fields are empty for some reason.
 - TODO: some available_time_slots are null for some reason, if they're null they should not even be included.
 */
-
-// Starting from here everything should go into own file.
-
-// In other words, if graph API response had the "transparent" field set.
-func graphApiResponseHadNoTimeSlots(timeSlotResult string) bool {
-	// This exists because some time slots might have "transparent" field set aka no time slots found.
-	// And we are forced to send something down the channel or else it will keep waiting forever expecting n items to iterate.
-	return timeSlotResult == ""
-}
-
-func removeIndexFromSlice[T any](slice []T, s int) []T {
-	return append(slice[:s], slice[s+1:]...)
-}
-
-func iterateRestaurants(raflaamoRestaurants []raflaamoRestaurantsApi.ResponseFields) {
-	for index := range raflaamoRestaurants {
-		restaurant := &raflaamoRestaurants[index]
-		err := <-restaurant.GraphApiResults.Err
-		if err != nil {
-			continue
-		}
-		timeSlotsForRestaurant := iterateAndCaptureRestaurantTimeSlots(restaurant)
-		// Making sure that we don't get restaurants that don't have any time slots.
-		if len(timeSlotsForRestaurant) == 0 {
-			removeIndexFromSlice(raflaamoRestaurants, index)
-			continue
-		}
-		restaurant.AvailableTimeSlots = timeSlotsForRestaurant
-
-		slices.Sort(restaurant.AvailableTimeSlots)
-	}
-}
-
-// Refactor stops here (to own file).
-
-func iterateAndCaptureRestaurantTimeSlots(restaurant *raflaamoRestaurantsApi.ResponseFields) []string {
-	availableTimeSlots := make([]string, 0, 50)
-	for result := range restaurant.GraphApiResults.AvailableTimeSlotsBuffer {
-		if graphApiResponseHadNoTimeSlots(result) {
-			continue
-		}
-		availableTimeSlots = append(availableTimeSlots, result)
-	}
-	return availableTimeSlots
-}
 
 type Endpoint struct {
 	c              *gin.Context

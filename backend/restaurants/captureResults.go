@@ -44,7 +44,7 @@ func iterateRestaurants(raflaamoRestaurants []raflaamoRestaurantsApi.ResponseFie
 func iterateAndCaptureRestaurantTimeSlots(restaurant *raflaamoRestaurantsApi.ResponseFields) []string {
 	availableTimeSlots := make([]string, 0, 50)
 	for result := range restaurant.GraphApiResults.AvailableTimeSlotsBuffer {
-		if graphApiResponseHadNoTimeSlots(result) {
+		if GraphApiResponseHadNoTimeSlots(result) {
 			continue
 		}
 		availableTimeSlots = append(availableTimeSlots, result)
@@ -53,7 +53,7 @@ func iterateAndCaptureRestaurantTimeSlots(restaurant *raflaamoRestaurantsApi.Res
 }
 
 // In other words, if graph API response had the "transparent" field set.
-func graphApiResponseHadNoTimeSlots(timeSlotResult string) bool {
+func GraphApiResponseHadNoTimeSlots(timeSlotResult string) bool {
 	// This exists because some time slots might have "transparent" field set aka no time slots found.
 	// And we are forced to send something down the channel or else it will keep waiting forever expecting n items to iterate.
 	return timeSlotResult == ""
