@@ -34,7 +34,7 @@ func GetRaflaamoRestaurantsApi(city string) *RaflaamoRestaurantsApi {
 	}
 }
 
-func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) getRestaurantsFromRaflaamoApi(currentTime int64) ([]ResponseFields, error) {
+func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) GetRestaurantsFromRaflaamoApi(currentTime int64) ([]ResponseFields, error) {
 	httpClient := raflaamoRestaurantsApi.httpClient
 	request := raflaamoRestaurantsApi.request
 
@@ -131,15 +131,4 @@ func (response *ResponseFields) cityDoesNotMatchUsersCity(usersCity string) bool
 	restaurantsCity := response.Address.Municipality.FiFi
 
 	return restaurantsCity != usersCity
-}
-
-func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) GetAllRestaurantsFromRaflaamoRestaurantsApi(currentTime int64) ([]ResponseFields, error) {
-	restaurantsApi := GetRaflaamoRestaurantsApi(raflaamoRestaurantsApi.cityToGetRestaurantsFrom)
-
-	restaurantsFromApi, err := restaurantsApi.getRestaurantsFromRaflaamoApi(currentTime)
-	if err != nil {
-		log.Fatalln("can't get restaurants from raflaamo api, cant proceed")
-	}
-
-	return restaurantsFromApi, nil
 }
