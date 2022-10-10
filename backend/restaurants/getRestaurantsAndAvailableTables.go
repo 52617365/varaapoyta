@@ -9,6 +9,7 @@ import (
 	"backend/raflaamoRestaurantsApi"
 	"backend/raflaamoTime"
 	"log"
+	"strings"
 	"sync"
 )
 
@@ -45,7 +46,9 @@ func (restaurants *Restaurants) getAvailableTablesForRestaurant(restaurant *rafl
 	restaurants.AllNeededRaflaamoTimes.GetAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantsKitchenClosingTime)
 
 	raflaamoGraphApiRequestUrlStruct := raflaamoGraphApi.GetRaflaamoGraphApiRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, restaurants.AmountOfEaters, restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate, regexToMatchRestaurantId)
-	restaurant.Links.TableReservationLocalizedId = raflaamoGraphApiRequestUrlStruct.IdFromReservationPageUrl // Storing the id for the front end.
+
+	var idFromReservationUrl = strings.Clone(raflaamoGraphApiRequestUrlStruct.IdFromReservationPageUrl) // Taking a copy of the string so it won't go out of scope, without this, it will.
+	restaurant.Links.TableReservationLocalizedId = idFromReservationUrl                                 // Storing the id for the front end.
 
 	restaurantGraphApiRequestUrls := raflaamoGraphApiRequestUrlStruct.GenerateGraphApiRequestUrlsForRestaurant(restaurants.AllNeededRaflaamoTimes)
 
