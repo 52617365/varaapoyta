@@ -14,6 +14,9 @@ import (
 
 // TODO: capture results into channel first then into a string slice.
 func (initProgram *InitializeProgram) getAvailableTableTimeSlotsFromRestaurantUrls(restaurantGraphApiUrlTimeSlots []string, kitchenClosingTime string) []string {
+	graphApiResults := make(chan string, len(restaurantGraphApiUrlTimeSlots))
+	err := make(chan error, len(restaurantGraphApiUrlTimeSlots))
+
 	for _, graphApiUrlTimeSlot := range restaurantGraphApiUrlTimeSlots {
 		graphApiResponseFromRequestUrl, err := initProgram.GraphApi.GetGraphApiResponseFromTimeSlot(graphApiUrlTimeSlot)
 		if err != nil {
@@ -27,9 +30,13 @@ func (initProgram *InitializeProgram) getAvailableTableTimeSlotsFromRestaurantUr
 			graphApiReservationTimes := raflaamoGraphApiTimes.GetGraphApiReservationTimes(graphApiResponseFromRequestUrl)
 
 			timeSlotsForRestaurant := graphApiReservationTimes.GetTimeSlotsInBetweenUnixIntervals(kitchenClosingTime, initProgram.AllNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)
+
+			// Capturing all the time slots for the specified time slot.
+			for _, timeSlot := range timeSlotsForRestaurant {
+				graphApiResults <- timeSlot
+			}
 			fmt.Println(timeSlotsForRestaurant) // TODO: capture
 		}
-
 	}
 }
 
