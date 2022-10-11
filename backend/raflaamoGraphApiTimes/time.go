@@ -7,7 +7,6 @@ package raflaamoGraphApiTimes
 import (
 	"backend/graphApiResponseStructure"
 	"backend/helpers"
-	"backend/raflaamoRestaurantsApi"
 )
 
 type GraphApiReservationTimes struct {
@@ -38,14 +37,16 @@ func convertReservationTimesIntoDesiredFormat(graphApiReservationTimes *GraphApi
 	graphApiReservationTimes.graphApiIntervalEnd = graphApiReservationTimes.convertEndUnixIntervalBackIntoDesiredUnixFormat()
 }
 
-func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenUnixIntervals(restaurant *raflaamoRestaurantsApi.ResponseFields, allRaflaamoReservationUnixTimeIntervals []int64) {
-	lastPossibleReservationTime := graphApiReservationTimes.getLastPossibleReservationTime(restaurant)
+func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenUnixIntervals(restaurantClosingTime string, allRaflaamoReservationUnixTimeIntervals []int64) []string {
+	allTimeSlotsInBetweenUnixIntervals := make([]string, 0, 96)
+	lastPossibleReservationTime := graphApiReservationTimes.getLastPossibleReservationTime(restaurantClosingTime)
 	for _, raflaamoReservationUnixTimeInterval := range allRaflaamoReservationUnixTimeIntervals {
 		if graphApiReservationTimes.reservationUnixTimeIntervalIsValid(raflaamoReservationUnixTimeInterval, lastPossibleReservationTime) {
 			raflaamoReservationTime := helpers.ConvertUnixSecondsToString(raflaamoReservationUnixTimeInterval, false)
-			restaurant.GraphApiResults.AvailableTimeSlotsBuffer <- raflaamoReservationTime
+			allTimeSlotsInBetweenUnixIntervals = append(allTimeSlotsInBetweenUnixIntervals, raflaamoReservationTime)
 		}
 	}
+	return allTimeSlotsInBetweenUnixIntervals
 }
 
 func (graphApiReservationTimes *GraphApiReservationTimes) reservationUnixTimeIntervalIsValid(raflaamoReservationUnixTimeInterval int64, lastPossibleReservationTime int64) bool {
@@ -54,9 +55,9 @@ func (graphApiReservationTimes *GraphApiReservationTimes) reservationUnixTimeInt
 	}
 	return false
 }
-func (graphApiReservationTimes *GraphApiReservationTimes) getLastPossibleReservationTime(restaurant *raflaamoRestaurantsApi.ResponseFields) int64 {
+func (graphApiReservationTimes *GraphApiReservationTimes) getLastPossibleReservationTime(kitchenClosingTime string) int64 {
 	const oneHour = 3600 // Restaurants don't take reservations one hour before closing.
-	restaurantsKitchenClosingTimeUnix := helpers.ConvertStringTimeToDesiredUnixFormat(restaurant.Openingtime.Kitchentime.Ranges[0].End)
+	restaurantsKitchenClosingTimeUnix := helpers.ConvertStringTimeToDesiredUnixFormat(kitchenClosingTime)
 	lastPossibleReservationTime := restaurantsKitchenClosingTimeUnix - oneHour
 	return lastPossibleReservationTime
 }

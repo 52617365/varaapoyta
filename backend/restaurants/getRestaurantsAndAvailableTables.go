@@ -8,58 +8,76 @@ import (
 	"backend/raflaamoGraphApi"
 	"backend/raflaamoGraphApiTimes"
 	"backend/raflaamoRestaurantsApi"
-	"backend/raflaamoTimes"
+	"fmt"
 	"log"
-	"sync"
 )
 
-type ResponseFields = raflaamoRestaurantsApi.ResponseFields
+// TODO: capture results into channel first then into a string slice.
+func (initProgram *InitializeProgram) getAvailableTableTimeSlotsFromRestaurantUrls(restaurantGraphApiUrlTimeSlots []string, kitchenClosingTime string) []string {
+	for _, graphApiUrlTimeSlot := range restaurantGraphApiUrlTimeSlots {
+		graphApiResponseFromRequestUrl, err := initProgram.GraphApi.GetGraphApiResponseFromTimeSlot(graphApiUrlTimeSlot)
+		if err != nil {
+			// TODO: if error has to do with not being able to access graphApi then terminate or something else.
+			continue
+		}
+		if intervals := *graphApiResponseFromRequestUrl.Intervals; intervals[0].Color == "transparent" {
+			// send something along the channel like an empty string or something else.
+		} else {
+			// send result along the channel
+			graphApiReservationTimes := raflaamoGraphApiTimes.GetGraphApiReservationTimes(graphApiResponseFromRequestUrl)
 
-func getInitializeProgram(city string, amountOfEaters string) *InitializeProgram {
-	allNeededRaflaamoTimes := raflaamoTimes.GetAllNeededRaflaamoTimes()
-	graphApi := raflaamoGraphApi.GetRaflaamoGraphApi()
-	initializedRaflaamoRestaurantsApi := raflaamoRestaurantsApi.GetRaflaamoRestaurantsApi(city)
-	return &InitializeProgram{
-		City:                   city,
-		AmountOfEaters:         amountOfEaters,
-		AllNeededRaflaamoTimes: allNeededRaflaamoTimes,
-		GraphApi:               graphApi,
-		RestaurantsApi:         initializedRaflaamoRestaurantsApi,
+			timeSlotsForRestaurant := graphApiReservationTimes.GetTimeSlotsInBetweenUnixIntervals(kitchenClosingTime, initProgram.AllNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)
+			fmt.Println(timeSlotsForRestaurant) // TODO: capture
+		}
+
 	}
 }
 
-// TODO: id from reservation url link does not stick, same with time slots.
-// TODO: Get rid of all the magical shit happening for example, modifying parameter references, this will end up in a fucking nightmare, don't do it at all, I'm serious, DO NOT.
-// GetRestaurantsAndAvailableTables This is the entry point to the functionality.
-func (restaurants *InitializeProgram) getRestaurantsAndAvailableTablesIntoChannel() []raflaamoRestaurantsApi.ResponseFields {
-	currentTime := restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
+func (initProgram *InitializeProgram) getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields) ([]string, error) {
+	raflaamoGraphApiRequestUrlStruct := raflaamoGraphApi.GetRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, initProgram.AmountOfEaters, initProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate)
+	initProgram.addRelativeTimesAndReservationIdToRestaurant(restaurant, raflaamoGraphApiRequestUrlStruct)
 
-	restaurantsFromApi, err := restaurants.RestaurantsApi.GetRestaurantsFromRaflaamoApi(currentTime)
+	restaurantGraphApiRequestUrls := initProgram.GraphApi.GenerateGraphApiRequestUrlsForRestaurant(restaurant, initProgram)
+
+	kitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
+	openTablesFromGraphApi := initProgram.getAvailableTableTimeSlotsFromRestaurantUrls(restaurantGraphApiRequestUrls, kitchenClosingTime)
+
+	return openTablesFromGraphApi, nil
+}
+
+func (initProgram *InitializeProgram) iterateRestaurants(restaurantsToIterate []raflaamoRestaurantsApi.ResponseFields) ([]raflaamoRestaurantsApi.ResponseFields, error) {
+	restaurantsWithOpenTables := make([]raflaamoRestaurantsApi.ResponseFields, 0, 50)
+
+	for _, restaurant := range restaurantsToIterate {
+		resultsForRestaurant, err := initProgram.getAvailableTablesForRestaurant(&restaurant)
+		if err != nil {
+			continue
+		}
+		restaurant.AvailableTimeSlots = resultsForRestaurant // TODO: make sure this sticks.
+		restaurantsWithOpenTables = append(restaurantsWithOpenTables, restaurant)
+	}
+	return restaurantsWithOpenTables, nil
+}
+
+func (initProgram *InitializeProgram) getRestaurantsAndAvailableTables() ([]raflaamoRestaurantsApi.ResponseFields, error) {
+	currentTime := initProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
+	restaurantsFromApi, err := initProgram.RestaurantsApi.GetRestaurantsFromRaflaamoApi(currentTime)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, fmt.Errorf("server down or raflaamo down")
 	}
-
-	for _, restaurant := range restaurantsFromApi {
-		restaurant := restaurant
-		// TODO: declare channels here then assign them into the restaurant for clarity?
-		go func() {
-			restaurants.getAvailableTablesForRestaurant(&restaurant)
-		}()
+	restaurantsWithTables, err := initProgram.iterateRestaurants(restaurantsFromApi)
+	if err != nil {
+		log.Fatalln("") // TODO: handle
 	}
-	return restaurantsFromApi
+	return restaurantsWithTables, nil
+	// TODO: iterate initProgram
+	// TODO: getAvailableTablesForRestaurant
 }
 
-// TODO: simplify this somehow.
-func (restaurants *InitializeProgram) getAvailableTablesForRestaurant(restaurant *ResponseFields) {
-	raflaamoGraphApiRequestUrlStruct := raflaamoGraphApi.GetRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, restaurants.AmountOfEaters, restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate)
-	restaurants.addAdditionalInformationToRestaurant(restaurant, raflaamoGraphApiRequestUrlStruct)
+// downwards from here is old code.
 
-	restaurantGraphApiRequestUrls := restaurants.GraphApi.GenerateGraphApiRequestUrlsForRestaurant(restaurant, raflaamoGraphApiRequestUrlStruct)
-	restaurants.getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel(restaurant, restaurantGraphApiRequestUrls)
-}
-
-func (restaurants *InitializeProgram) addAdditionalInformationToRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, graphApiRequestUrl *raflaamoGraphApi.RequestUrl) {
-	timeTillRestaurantCloses, timeTillKitchenCloses := restaurants.getRelativeClosingTimes(restaurant)
+func (initProgram *InitializeProgram) addRelativeTimesAndReservationIdToRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, graphApiRequestUrl *raflaamoGraphApi.RequestUrl) {
+	timeTillRestaurantCloses, timeTillKitchenCloses := initProgram.getRelativeClosingTimes(restaurant)
 
 	restaurantRelativeTime := timeTillRestaurantCloses.CalculateRelativeTime()
 	restaurant.Openingtime.TimeTillRestaurantClosedMinutes = restaurantRelativeTime.RelativeMinutes
@@ -71,38 +89,4 @@ func (restaurants *InitializeProgram) addAdditionalInformationToRestaurant(resta
 
 	// TODO: this does not actually stick in the long term.
 	restaurant.Links.TableReservationLocalizedId = graphApiRequestUrl.IdFromReservationPageUrl // Storing the id for the front end.
-}
-
-func (restaurants *InitializeProgram) getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel(restaurant *raflaamoRestaurantsApi.ResponseFields, restaurantGraphApiRequestUrls []string) {
-	var wg sync.WaitGroup
-
-	for _, restaurantGraphApiRequestUrl := range restaurantGraphApiRequestUrls {
-		restaurantGraphApiRequestUrl := restaurantGraphApiRequestUrl
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			graphApiResponseFromRequestUrl, err := restaurants.GraphApi.GetGraphApiResponseFromTimeSlot(restaurantGraphApiRequestUrl)
-
-			if err != nil {
-				restaurant.GraphApiResults.Err <- err
-				restaurant.GraphApiResults.AvailableTimeSlotsBuffer <- ""
-				return
-			}
-
-			timeIntervals := *graphApiResponseFromRequestUrl.Intervals
-			if timeIntervals[0].Color == "transparent" {
-				// TODO: why is this fucking up everything?
-				restaurant.GraphApiResults.AvailableTimeSlotsBuffer <- ""
-				restaurant.GraphApiResults.Err <- nil
-				//return
-			}
-
-			graphApiReservationTimes := raflaamoGraphApiTimes.GetGraphApiReservationTimes(graphApiResponseFromRequestUrl)
-
-			graphApiReservationTimes.GetTimeSlotsInBetweenUnixIntervals(restaurant, restaurants.AllNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)
-		}()
-	}
-	wg.Wait()
-	close(restaurant.GraphApiResults.Err)
-	close(restaurant.GraphApiResults.AvailableTimeSlotsBuffer)
 }
