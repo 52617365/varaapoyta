@@ -5,7 +5,7 @@
 package raflaamoTimes
 
 import (
-	"backend/regexHelpers"
+	"backend/helpers"
 	"strings"
 	"time"
 )
@@ -18,7 +18,7 @@ type TimeUtils struct {
 func (timeUtils *TimeUtils) GetStringTimeFromCurrentTime() string {
 	timeInString := time.Unix(timeUtils.CurrentTime.CurrentTime, 0).UTC().String()
 
-	stringTimeFromUnix := regexHelpers.TimeRegex.FindString(timeInString)
+	stringTimeFromUnix := helpers.TimeRegex.FindString(timeInString)
 
 	stringTimeFromUnix = strings.Replace(stringTimeFromUnix, ":", "", -1)
 	return stringTimeFromUnix
@@ -27,7 +27,7 @@ func (timeUtils *TimeUtils) GetStringTimeFromCurrentTime() string {
 func (timeUtils *TimeUtils) getStringTimeFromTimeSlot() string {
 	timeInString := time.Unix(timeUtils.CurrentTime.CurrentTime, 0).UTC().String()
 
-	stringTimeFromUnix := regexHelpers.TimeRegex.FindString(timeInString)
+	stringTimeFromUnix := helpers.TimeRegex.FindString(timeInString)
 
 	stringTimeFromUnix = strings.Replace(stringTimeFromUnix, ":", "", -1)
 	return stringTimeFromUnix

@@ -5,8 +5,7 @@
 package raflaamoGraphApiTimes
 
 import (
-	"backend/regexHelpers"
-	"backend/unixHelpers"
+	"backend/helpers"
 	"strings"
 	"time"
 )
@@ -18,10 +17,10 @@ type CoveredTimes struct {
 	TimeWindowsEnd  int64
 }
 
-func (coveredTimes *CoveredTimes) ConvertUnixTimeToString() string {
-	timeInString := time.Unix(coveredTimes.Time, 0).UTC().String()
+func ConvertUnixTimeToString(unixTime int64) string {
+	timeInString := time.Unix(unixTime, 0).UTC().String()
 
-	stringTimeFromUnix := regexHelpers.TimeRegex.FindString(timeInString)
+	stringTimeFromUnix := helpers.TimeRegex.FindString(timeInString)
 
 	stringTimeFromUnix = strings.Replace(stringTimeFromUnix, ":", "", -1)
 	return stringTimeFromUnix
@@ -33,7 +32,7 @@ The function gets all the time windows we need to check to avoid checking redund
 */
 func GetAllFutureGraphApiTimeSlots(restaurantsKitchenClosingTime string) []string {
 	restaurantsKitchenClosingTime = strings.ReplaceAll(restaurantsKitchenClosingTime, ":", "")
-	restaurantClosingTimeUnix := unixHelpers.ConvertStringTimeToDesiredUnixFormat(restaurantsKitchenClosingTime)
+	restaurantClosingTimeUnix := helpers.ConvertStringTimeToDesiredUnixFormat(restaurantsKitchenClosingTime)
 	allPossibleGraphApiTimeSlots := &[...]CoveredTimes{
 		{Time: 7200, TimeWindowStart: 0, TimeWindowsEnd: 21600},
 		{Time: 28800, TimeWindowStart: 21600, TimeWindowsEnd: 43200},
@@ -44,7 +43,7 @@ func GetAllFutureGraphApiTimeSlots(restaurantsKitchenClosingTime string) []strin
 	timeSlotsFromCurrentTimeForward := make([]string, 0, len(allPossibleGraphApiTimeSlots))
 	for _, graphApiUnixTimeSlot := range allPossibleGraphApiTimeSlots {
 		if graphApiUnixTimeSlotIsValid(&graphApiUnixTimeSlot, restaurantClosingTimeUnix) {
-			graphApiUnixTimeSlotIntoString := graphApiUnixTimeSlot.ConvertUnixTimeToString()
+			graphApiUnixTimeSlotIntoString := ConvertUnixTimeToString(graphApiUnixTimeSlot.Time)
 			timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, graphApiUnixTimeSlotIntoString)
 		}
 	}

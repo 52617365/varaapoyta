@@ -2,7 +2,7 @@
  * Copyright (c) 2022. Rasmus Mäki
  */
 
-package raflaamoGraphApi
+package graphApiResponseStructure
 
 type ParsedGraphData struct {
 	Name      string                `json:"name"`

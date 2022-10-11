@@ -5,13 +5,22 @@
 package raflaamoTimes
 
 import (
+	"backend/helpers"
 	"backend/raflaamoGraphApiTimes"
-	"backend/regexHelpers"
-	"backend/unixHelpers"
 	"fmt"
 	"regexp"
 	"time"
 )
+
+type TimeAndDate struct {
+	CurrentTime int64
+	CurrentDate string
+}
+
+type RaflaamoTimes struct {
+	TimeAndDate                               *TimeAndDate
+	AllFutureRaflaamoReservationTimeIntervals []int64
+}
 
 // Returns all possible raflaamoTimes intervals that can be reserved in the raflaamo reservation page.
 // 11:00, 11:15, 11:30 and so on.
@@ -20,46 +29,46 @@ func (times *RaflaamoTimes) getAllRaflaamoReservingIntervalsThatAreNotInThePast(
 	currentTime := times.TimeAndDate.CurrentTime
 	for hour := 0; hour < 24; hour++ {
 		if hour < 10 {
-			formattedTimeSlotOne := unixHelpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d00", hour))
+			formattedTimeSlotOne := helpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d00", hour))
 			formattedTimeSlotOne += 10800 // To match finnish timezone.
 			if formattedTimeSlotOne > currentTime {
 				allTimes = append(allTimes, formattedTimeSlotOne)
 			}
 
-			formattedTimeSlotTwo := unixHelpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d15", hour))
+			formattedTimeSlotTwo := helpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d15", hour))
 			formattedTimeSlotTwo += 10800 // To match finnish timezone.
 			if formattedTimeSlotTwo > currentTime {
 				allTimes = append(allTimes, formattedTimeSlotTwo)
 			}
 
-			formattedTimeSlotThree := unixHelpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d30", hour))
+			formattedTimeSlotThree := helpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d30", hour))
 			formattedTimeSlotThree += 10800 // To match finnish timezone.
 			if formattedTimeSlotThree > currentTime {
 				allTimes = append(allTimes, formattedTimeSlotThree)
 			}
-			formattedTimeSlotFour := unixHelpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d45", hour))
+			formattedTimeSlotFour := helpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("0%d45", hour))
 			formattedTimeSlotFour += 10800 // To match finnish timezone.
 			if formattedTimeSlotFour > currentTime {
 				allTimes = append(allTimes, formattedTimeSlotFour)
 			}
 		}
 		if hour >= 10 {
-			formattedTimeSlotOne := unixHelpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d00", hour))
+			formattedTimeSlotOne := helpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d00", hour))
 			formattedTimeSlotOne += 10800 // To match finnish timezone.
 			if formattedTimeSlotOne > currentTime {
 				allTimes = append(allTimes, formattedTimeSlotOne)
 			}
-			formattedTimeSlotTwo := unixHelpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d15", hour))
+			formattedTimeSlotTwo := helpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d15", hour))
 			formattedTimeSlotTwo += 10800 // To match finnish timezone.
 			if formattedTimeSlotTwo > currentTime {
 				allTimes = append(allTimes, formattedTimeSlotTwo)
 			}
-			formattedTimeSlotThree := unixHelpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d30", hour))
+			formattedTimeSlotThree := helpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d30", hour))
 			formattedTimeSlotThree += 10800 // To match finnish timezone.
 			if formattedTimeSlotThree > currentTime {
 				allTimes = append(allTimes, formattedTimeSlotThree)
 			}
-			formattedTimeSlotFour := unixHelpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d45", hour))
+			formattedTimeSlotFour := helpers.ConvertStringTimeToDesiredUnixFormat(fmt.Sprintf("%d45", hour))
 			formattedTimeSlotFour += 10800 // To match finnish timezone.
 			if formattedTimeSlotFour > currentTime {
 				allTimes = append(allTimes, formattedTimeSlotFour)
@@ -78,7 +87,7 @@ func (times *RaflaamoTimes) getCurrentTimeAndDate(regexToMatchTime *regexp.Regex
 
 	currentTimeAndDate := &TimeAndDate{
 		CurrentDate: currentDate,
-		CurrentTime: unixHelpers.ConvertStringTimeToDesiredUnixFormat(matchedMinutesAndSeconds),
+		CurrentTime: helpers.ConvertStringTimeToDesiredUnixFormat(matchedMinutesAndSeconds),
 	}
 
 	times.TimeAndDate = currentTimeAndDate
@@ -95,7 +104,7 @@ func (times *RaflaamoTimes) graphApiUnixTimeSlotIsValid(unixTimeSlot *raflaamoGr
 // GetAllNeededRaflaamoTimes this should be called only once somewhere in the code because it's pretty expensive to construct.
 func GetAllNeededRaflaamoTimes() *RaflaamoTimes {
 	raflaamoTimes := RaflaamoTimes{}
-	raflaamoTimes.getCurrentTimeAndDate(regexHelpers.TimeRegex, regexHelpers.RegexToMatchDate)
+	raflaamoTimes.getCurrentTimeAndDate(helpers.TimeRegex, helpers.RegexToMatchDate)
 	raflaamoTimes.getAllRaflaamoReservingIntervalsThatAreNotInThePast()
 
 	return &raflaamoTimes

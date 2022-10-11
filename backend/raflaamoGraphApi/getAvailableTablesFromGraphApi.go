@@ -5,6 +5,7 @@
 package raflaamoGraphApi
 
 import (
+	"backend/graphApiResponseStructure"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -43,8 +44,8 @@ func (graphApi *RaflaamoGraphApi) sendRequestToGraphApi(graphApiRequest *http.Re
 	return response, nil
 }
 
-func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse(graphApiResponse *http.Response) (*ParsedGraphData, error) {
-	var deserializedGraphData []ParsedGraphData
+func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse(graphApiResponse *http.Response) (*graphApiResponseStructure.ParsedGraphData, error) {
+	var deserializedGraphData []graphApiResponseStructure.ParsedGraphData
 	err := json.NewDecoder((graphApiResponse).Body).Decode(&deserializedGraphData)
 	if err != nil {
 		return nil, fmt.Errorf("[deserializeGraphApiResponse] - %w", err)
@@ -56,7 +57,7 @@ func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse(graphApiResponse *
 	return &deserializedGraphData[0], nil
 }
 
-func (graphApi *RaflaamoGraphApi) GetGraphApiResponseFromTimeSlot(requestUrlContainingTimeSlot string) (*ParsedGraphData, error) {
+func (graphApi *RaflaamoGraphApi) GetGraphApiResponseFromTimeSlot(requestUrlContainingTimeSlot string) (*graphApiResponseStructure.ParsedGraphData, error) {
 	httpRequest := graphApi.getRaflaamoGraphApiRequest(requestUrlContainingTimeSlot)
 	response, err := graphApi.sendRequestToGraphApi(httpRequest)
 	if err != nil {

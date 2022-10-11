@@ -5,7 +5,6 @@
 package restaurants
 
 import (
-	"log"
 	"testing"
 )
 
@@ -15,9 +14,6 @@ func BenchmarkGetRestaurantsAndAvailableTables(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		restaurantsInstance, _ := GetRestaurants("helsinki", "1")
 		raflaamoRestaurants := restaurantsInstance.GetRestaurantsAndAvailableTables()
-		if err != nil {
-			log.Fatalln("err")
-		}
 		for _, restaurant := range raflaamoRestaurants {
 			if <-restaurant.GraphApiResults.Err != nil {
 				continue

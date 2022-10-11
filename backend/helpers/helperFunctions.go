@@ -2,10 +2,9 @@
  * Copyright (c) 2022. Rasmus Mäki
  */
 
-package unixHelpers
+package helpers
 
 import (
-	"backend/regexHelpers"
 	"strconv"
 	"strings"
 	"time"
@@ -17,7 +16,7 @@ func ConvertUnixSecondsToString(unixTimeToConvert int64, convertToFinnishTimezon
 	}
 	timeInString := time.Unix(unixTimeToConvert, 0).UTC().String()
 
-	stringTimeFromUnix := regexHelpers.TimeRegex.FindString(timeInString)
+	stringTimeFromUnix := TimeRegex.FindString(timeInString)
 
 	stringTimeFromUnix = strings.Replace(stringTimeFromUnix, ":", "", -1)
 
@@ -27,7 +26,7 @@ func ConvertUnixSecondsToString(unixTimeToConvert int64, convertToFinnishTimezon
 func ConvertUnixMilliSecondsToString(unixTimeToConvert int64) string {
 	timeInString := time.UnixMilli(unixTimeToConvert).UTC().String()
 
-	stringTimeFromUnix := regexHelpers.TimeRegex.FindString(timeInString)
+	stringTimeFromUnix := TimeRegex.FindString(timeInString)
 
 	stringTimeFromUnix = strings.Replace(stringTimeFromUnix, ":", "", -1)
 

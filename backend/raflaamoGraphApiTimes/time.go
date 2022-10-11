@@ -5,9 +5,9 @@
 package raflaamoGraphApiTimes
 
 import (
-	"backend/raflaamoGraphApi"
+	"backend/graphApiResponseStructure"
+	"backend/helpers"
 	"backend/raflaamoRestaurantsApi"
-	"backend/unixHelpers"
 )
 
 type GraphApiReservationTimes struct {
@@ -17,7 +17,7 @@ type GraphApiReservationTimes struct {
 	graphApiIntervalEndString   string
 }
 
-func GetGraphApiReservationTimes(graphApiResponse *raflaamoGraphApi.ParsedGraphData) *GraphApiReservationTimes {
+func GetGraphApiReservationTimes(graphApiResponse *graphApiResponseStructure.ParsedGraphData) *GraphApiReservationTimes {
 	graphApiResponseTimeIntervals := *graphApiResponse.Intervals
 
 	graphApiTimeIntervalStart := graphApiResponseTimeIntervals[0].From
@@ -42,7 +42,7 @@ func (graphApiReservationTimes *GraphApiReservationTimes) GetTimeSlotsInBetweenU
 	lastPossibleReservationTime := graphApiReservationTimes.getLastPossibleReservationTime(restaurant)
 	for _, raflaamoReservationUnixTimeInterval := range allRaflaamoReservationUnixTimeIntervals {
 		if graphApiReservationTimes.reservationUnixTimeIntervalIsValid(raflaamoReservationUnixTimeInterval, lastPossibleReservationTime) {
-			raflaamoReservationTime := unixHelpers.ConvertUnixSecondsToString(raflaamoReservationUnixTimeInterval, false)
+			raflaamoReservationTime := helpers.ConvertUnixSecondsToString(raflaamoReservationUnixTimeInterval, false)
 			restaurant.GraphApiResults.AvailableTimeSlotsBuffer <- raflaamoReservationTime
 		}
 	}
@@ -56,7 +56,7 @@ func (graphApiReservationTimes *GraphApiReservationTimes) reservationUnixTimeInt
 }
 func (graphApiReservationTimes *GraphApiReservationTimes) getLastPossibleReservationTime(restaurant *raflaamoRestaurantsApi.ResponseFields) int64 {
 	const oneHour = 3600 // Restaurants don't take reservations one hour before closing.
-	restaurantsKitchenClosingTimeUnix := unixHelpers.ConvertStringTimeToDesiredUnixFormat(restaurant.Openingtime.Kitchentime.Ranges[0].End)
+	restaurantsKitchenClosingTimeUnix := helpers.ConvertStringTimeToDesiredUnixFormat(restaurant.Openingtime.Kitchentime.Ranges[0].End)
 	lastPossibleReservationTime := restaurantsKitchenClosingTimeUnix - oneHour
 	return lastPossibleReservationTime
 }
@@ -65,7 +65,7 @@ func (graphApiReservationTimes *GraphApiReservationTimes) convertStartUnixInterv
 	if convertToFinnishTime {
 		graphApiReservationTimes.graphApiIntervalStart += 3600000 * 3 // Adding three hours into the Time to match finnish timezone.
 	}
-	startIntervalString := unixHelpers.ConvertUnixMilliSecondsToString(graphApiReservationTimes.graphApiIntervalStart)
+	startIntervalString := helpers.ConvertUnixMilliSecondsToString(graphApiReservationTimes.graphApiIntervalStart)
 
 	graphApiReservationTimes.graphApiIntervalStartString = startIntervalString
 }
@@ -75,18 +75,18 @@ func (graphApiReservationTimes *GraphApiReservationTimes) convertEndUnixInterval
 		graphApiReservationTimes.graphApiIntervalEnd += 3600000 * 3 // Adding three hours into the Time to match finnish timezone.
 	}
 
-	endIntervalString := unixHelpers.ConvertUnixMilliSecondsToString(graphApiReservationTimes.graphApiIntervalEnd)
+	endIntervalString := helpers.ConvertUnixMilliSecondsToString(graphApiReservationTimes.graphApiIntervalEnd)
 	graphApiReservationTimes.graphApiIntervalEndString = endIntervalString
 }
 
 func (graphApiReservationTimes *GraphApiReservationTimes) convertStartUnixIntervalBackIntoDesiredUnixFormat() int64 {
 	startIntervalString := graphApiReservationTimes.graphApiIntervalStartString
-	startIntervalStringInDesiredUnixFormat := unixHelpers.ConvertStringTimeToDesiredUnixFormat(startIntervalString)
+	startIntervalStringInDesiredUnixFormat := helpers.ConvertStringTimeToDesiredUnixFormat(startIntervalString)
 	return startIntervalStringInDesiredUnixFormat
 }
 
 func (graphApiReservationTimes *GraphApiReservationTimes) convertEndUnixIntervalBackIntoDesiredUnixFormat() int64 {
 	endIntervalString := graphApiReservationTimes.graphApiIntervalEndString
-	endIntervalStringInDesiredUnixFormat := unixHelpers.ConvertStringTimeToDesiredUnixFormat(endIntervalString)
+	endIntervalStringInDesiredUnixFormat := helpers.ConvertStringTimeToDesiredUnixFormat(endIntervalString)
 	return endIntervalStringInDesiredUnixFormat
 }

@@ -5,7 +5,7 @@
 package raflaamoRestaurantsApi
 
 import (
-	"backend/unixHelpers"
+	"backend/helpers"
 	"bytes"
 	"errors"
 	"fmt"
@@ -112,8 +112,8 @@ func (response *ResponseFields) doesNotContainOpeningTimes() bool {
 }
 
 func (response *ResponseFields) restaurantOrKitchenIsAlreadyClosed(currentTime int64) bool {
-	restaurantsClosingTime := unixHelpers.ConvertStringTimeToDesiredUnixFormat(response.Openingtime.Restauranttime.Ranges[0].End)
-	kitchenClosingTime := unixHelpers.ConvertStringTimeToDesiredUnixFormat(response.Openingtime.Kitchentime.Ranges[0].End)
+	restaurantsClosingTime := helpers.ConvertStringTimeToDesiredUnixFormat(response.Openingtime.Restauranttime.Ranges[0].End)
+	kitchenClosingTime := helpers.ConvertStringTimeToDesiredUnixFormat(response.Openingtime.Kitchentime.Ranges[0].End)
 
 	if currentTime > restaurantsClosingTime || currentTime > kitchenClosingTime {
 		return true

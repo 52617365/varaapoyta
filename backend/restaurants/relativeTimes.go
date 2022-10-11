@@ -5,8 +5,8 @@
 package restaurants
 
 import (
+	"backend/helpers"
 	"backend/raflaamoRestaurantsApi"
-	"backend/unixHelpers"
 	"strconv"
 )
 
@@ -31,14 +31,14 @@ func (restaurants *InitializeProgram) getRelativeClosingTimes(restaurant *raflaa
 }
 
 func getCalculateClosingTime(currentTime int64, closingTime string) *CalculateClosingTime {
-	closingTimeConvertedToUnix := unixHelpers.ConvertStringTimeToDesiredUnixFormat(closingTime)
+	closingTimeConvertedToUnix := helpers.ConvertStringTimeToDesiredUnixFormat(closingTime)
 	return &CalculateClosingTime{CurrentTime: currentTime, ClosingTime: closingTimeConvertedToUnix}
 }
 
 func (calculation *CalculateClosingTime) CalculateRelativeTime() *CalculateClosingTimeResult {
 	relativeCalculation := calculation.ClosingTime - calculation.CurrentTime
 
-	humanReadableRelativeCalculation := unixHelpers.ConvertUnixSecondsToString(relativeCalculation, false)
+	humanReadableRelativeCalculation := helpers.ConvertUnixSecondsToString(relativeCalculation, false)
 
 	humanReadableRelativeMinutes, _ := strconv.Atoi(humanReadableRelativeCalculation[len(humanReadableRelativeCalculation)-2:])
 	humanReadableRelativeHours, _ := strconv.Atoi(humanReadableRelativeCalculation[:len(humanReadableRelativeCalculation)-2])

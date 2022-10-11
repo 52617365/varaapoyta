@@ -2,7 +2,7 @@
  * Copyright (c) 2022. Rasmus Mäki
  */
 
-package regexHelpers
+package helpers
 
 import "regexp"
 

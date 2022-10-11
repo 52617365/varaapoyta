@@ -5,14 +5,13 @@
 package raflaamoGraphApi
 
 import (
+	"backend/helpers"
 	"backend/raflaamoGraphApiTimes"
-	"backend/regexHelpers"
-	"backend/restaurants"
+	"backend/raflaamoRestaurantsApi"
 	"fmt"
 )
 
-type RestaurantsApi = restaurants.InitializeProgram
-type ResponseFields = restaurants.ResponseFields
+type ResponseFields = raflaamoRestaurantsApi.ResponseFields
 
 type RequestUrl struct {
 	amountOfEaters           string
@@ -22,7 +21,7 @@ type RequestUrl struct {
 }
 
 func GetRequestUrl(reservationPageUrl string, amountOfEaters string, currentDate string) *RequestUrl {
-	idFromReservationPageUrl := regexHelpers.RegexToMatchRestaurantId.FindString(reservationPageUrl)
+	idFromReservationPageUrl := helpers.RegexToMatchRestaurantId.FindString(reservationPageUrl)
 	return &RequestUrl{
 		amountOfEaters:           amountOfEaters,
 		currentDate:              currentDate,
