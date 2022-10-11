@@ -16,16 +16,15 @@ func removeIndexFromSlice[T any](slice []T, s int) []T {
 }
 
 func GetRestaurantsAndCollectResults(city string, amountOfEaters string) []raflaamoRestaurantsApi.ResponseFields {
-	restaurantsInstance := getRestaurants(city, amountOfEaters)
+	restaurantsInstance := getInitializeProgram(city, amountOfEaters)
 	raflaamoRestaurants := restaurantsInstance.getRestaurantsAndAvailableTablesIntoChannel()
 	raflaamoRestaurants = iterateRestaurantsAndCaptureAvailableTimeSlotsFromChannel(raflaamoRestaurants)
 	return raflaamoRestaurants
 }
 
 func iterateRestaurantsAndCaptureAvailableTimeSlotsFromChannel(raflaamoRestaurants []raflaamoRestaurantsApi.ResponseFields) []raflaamoRestaurantsApi.ResponseFields {
-	for index := range raflaamoRestaurants {
-		restaurant := &raflaamoRestaurants[index] // Else it won't actually be a ptr to it.
-		timeSlotsForRestaurant, err := iterateAndCaptureRestaurantTimeSlots(restaurant)
+	for index, restaurant := range raflaamoRestaurants {
+		timeSlotsForRestaurant, err := iterateAndCaptureRestaurantTimeSlots(&restaurant)
 		if err != nil {
 			continue
 		}

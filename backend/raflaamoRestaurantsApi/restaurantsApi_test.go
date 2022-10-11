@@ -9,13 +9,10 @@ import (
 )
 
 func TestRaflaamoRestaurantsApi_GetRestaurants(t *testing.T) {
-	raflaamoRestaurantsApi, err := GetRaflaamoRestaurantsApi("rovaniemi")
-	if err != nil {
-		t.Errorf("[TestRaflaamoRestaurantsApi_GetRestaurants] (GetRaflaamoRestaurantsApi) did not expect error but we got one: %s", err)
-	}
+	raflaamoRestaurantsApi := GetRaflaamoRestaurantsApi("rovaniemi")
 
 	var currentTime int64 = 43200
-	restaurantsFromApi, err := raflaamoRestaurantsApi.getRestaurantsFromRaflaamoApi(currentTime)
+	restaurantsFromApi, err := raflaamoRestaurantsApi.GetRestaurantsFromRaflaamoApi(currentTime)
 	if err != nil {
 		t.Errorf("[TestRaflaamoRestaurantsApi_GetRestaurants] (getRestaurantsFromRaflaamoApi) did not expect error but we got one: %s", err)
 	}

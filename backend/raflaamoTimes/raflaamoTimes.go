@@ -2,16 +2,18 @@
  * Copyright (c) 2022. Rasmus Mäki
  */
 
-package raflaamoTime
+package raflaamoTimes
 
 import (
+	"backend/raflaamoGraphApiTimes"
+	"backend/regexHelpers"
 	"backend/unixHelpers"
 	"fmt"
 	"regexp"
 	"time"
 )
 
-// Returns all possible raflaamoTime intervals that can be reserved in the raflaamo reservation page.
+// Returns all possible raflaamoTimes intervals that can be reserved in the raflaamo reservation page.
 // 11:00, 11:15, 11:30 and so on.
 func (times *RaflaamoTimes) getAllRaflaamoReservingIntervalsThatAreNotInThePast() {
 	allTimes := make([]int64, 0, 96)
@@ -82,10 +84,18 @@ func (times *RaflaamoTimes) getCurrentTimeAndDate(regexToMatchTime *regexp.Regex
 	times.TimeAndDate = currentTimeAndDate
 }
 
+func (times *RaflaamoTimes) graphApiUnixTimeSlotIsValid(unixTimeSlot *raflaamoGraphApiTimes.CoveredTimes, restaurantClosingTimeUnix int64) bool {
+	currentTimeUnix := times.TimeAndDate.CurrentTime
+	if currentTimeUnix < unixTimeSlot.TimeWindowsEnd && restaurantClosingTimeUnix > unixTimeSlot.TimeWindowStart /* I'm not 100% on this logic. */ {
+		return true
+	}
+	return false
+}
+
 // GetAllNeededRaflaamoTimes this should be called only once somewhere in the code because it's pretty expensive to construct.
-func GetAllNeededRaflaamoTimes(regexToMatchTime *regexp.Regexp, regexToMatchDate *regexp.Regexp) *RaflaamoTimes {
+func GetAllNeededRaflaamoTimes() *RaflaamoTimes {
 	raflaamoTimes := RaflaamoTimes{}
-	raflaamoTimes.getCurrentTimeAndDate(regexToMatchTime, regexToMatchDate)
+	raflaamoTimes.getCurrentTimeAndDate(regexHelpers.TimeRegex, regexHelpers.RegexToMatchDate)
 	raflaamoTimes.getAllRaflaamoReservingIntervalsThatAreNotInThePast()
 
 	return &raflaamoTimes

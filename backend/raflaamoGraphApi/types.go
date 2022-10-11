@@ -10,7 +10,6 @@ import (
 	"net/http"
 )
 
-// RaflaamoGraphApi control flow is: getRaflaamoGraphApiRequest -> InteractWithGraphApi -> DeserializeGraphApiResponse
 type RaflaamoGraphApi struct {
 	httpClient        *http.Client
 	GraphApiResponses chan *Response

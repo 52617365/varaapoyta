@@ -2,10 +2,10 @@
  * Copyright (c) 2022. Rasmus Mäki
  */
 
-package raflaamoTime
+package raflaamoGraphApiTimes
 
 import (
-	"backend/graphApiResponseStructure"
+	"backend/raflaamoGraphApi"
 	"backend/raflaamoRestaurantsApi"
 	"backend/unixHelpers"
 )
@@ -17,7 +17,7 @@ type GraphApiReservationTimes struct {
 	graphApiIntervalEndString   string
 }
 
-func GetGraphApiReservationTimes(graphApiResponse *graphApiResponseStructure.ParsedGraphData) *GraphApiReservationTimes {
+func GetGraphApiReservationTimes(graphApiResponse *raflaamoGraphApi.ParsedGraphData) *GraphApiReservationTimes {
 	graphApiResponseTimeIntervals := *graphApiResponse.Intervals
 
 	graphApiTimeIntervalStart := graphApiResponseTimeIntervals[0].From
@@ -63,7 +63,7 @@ func (graphApiReservationTimes *GraphApiReservationTimes) getLastPossibleReserva
 
 func (graphApiReservationTimes *GraphApiReservationTimes) convertStartUnixIntervalIntoString(convertToFinnishTime bool) {
 	if convertToFinnishTime {
-		graphApiReservationTimes.graphApiIntervalStart += 3600000 * 3 // Adding three hours into the time to match finnish timezone.
+		graphApiReservationTimes.graphApiIntervalStart += 3600000 * 3 // Adding three hours into the Time to match finnish timezone.
 	}
 	startIntervalString := unixHelpers.ConvertUnixMilliSecondsToString(graphApiReservationTimes.graphApiIntervalStart)
 
@@ -72,7 +72,7 @@ func (graphApiReservationTimes *GraphApiReservationTimes) convertStartUnixInterv
 
 func (graphApiReservationTimes *GraphApiReservationTimes) convertEndUnixIntervalIntoString(convertToFinnishTime bool) {
 	if convertToFinnishTime {
-		graphApiReservationTimes.graphApiIntervalEnd += 3600000 * 3 // Adding three hours into the time to match finnish timezone.
+		graphApiReservationTimes.graphApiIntervalEnd += 3600000 * 3 // Adding three hours into the Time to match finnish timezone.
 	}
 
 	endIntervalString := unixHelpers.ConvertUnixMilliSecondsToString(graphApiReservationTimes.graphApiIntervalEnd)

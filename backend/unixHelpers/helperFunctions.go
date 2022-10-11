@@ -5,13 +5,11 @@
 package unixHelpers
 
 import (
-	"regexp"
+	"backend/regexHelpers"
 	"strconv"
 	"strings"
 	"time"
 )
-
-var timeRegex = regexp.MustCompile(`\d{2}:\d{2}`) // declaring this again to avoid import cycle.
 
 func ConvertUnixSecondsToString(unixTimeToConvert int64, convertToFinnishTimezone bool) string {
 	if convertToFinnishTimezone {
@@ -19,16 +17,17 @@ func ConvertUnixSecondsToString(unixTimeToConvert int64, convertToFinnishTimezon
 	}
 	timeInString := time.Unix(unixTimeToConvert, 0).UTC().String()
 
-	stringTimeFromUnix := timeRegex.FindString(timeInString)
+	stringTimeFromUnix := regexHelpers.TimeRegex.FindString(timeInString)
 
 	stringTimeFromUnix = strings.Replace(stringTimeFromUnix, ":", "", -1)
 
 	return stringTimeFromUnix
 }
+
 func ConvertUnixMilliSecondsToString(unixTimeToConvert int64) string {
 	timeInString := time.UnixMilli(unixTimeToConvert).UTC().String()
 
-	stringTimeFromUnix := timeRegex.FindString(timeInString)
+	stringTimeFromUnix := regexHelpers.TimeRegex.FindString(timeInString)
 
 	stringTimeFromUnix = strings.Replace(stringTimeFromUnix, ":", "", -1)
 

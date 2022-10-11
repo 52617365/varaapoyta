@@ -6,18 +6,20 @@ package restaurants
 
 import (
 	"backend/raflaamoGraphApi"
+	"backend/raflaamoGraphApiTimes"
 	"backend/raflaamoRestaurantsApi"
-	"backend/raflaamoTime"
-	"backend/regex"
+	"backend/raflaamoTimes"
 	"log"
 	"sync"
 )
 
-func getRestaurants(city string, amountOfEaters string) *Restaurants {
-	allNeededRaflaamoTimes := raflaamoTime.GetAllNeededRaflaamoTimes(regex.RegexToMatchTime, regex.RegexToMatchDate)
+type ResponseFields = raflaamoRestaurantsApi.ResponseFields
+
+func getInitializeProgram(city string, amountOfEaters string) *InitializeProgram {
+	allNeededRaflaamoTimes := raflaamoTimes.GetAllNeededRaflaamoTimes()
 	graphApi := raflaamoGraphApi.GetRaflaamoGraphApi()
 	initializedRaflaamoRestaurantsApi := raflaamoRestaurantsApi.GetRaflaamoRestaurantsApi(city)
-	return &Restaurants{
+	return &InitializeProgram{
 		City:                   city,
 		AmountOfEaters:         amountOfEaters,
 		AllNeededRaflaamoTimes: allNeededRaflaamoTimes,
@@ -29,7 +31,7 @@ func getRestaurants(city string, amountOfEaters string) *Restaurants {
 // TODO: id from reservation url link does not stick, same with time slots.
 // TODO: Get rid of all the magical shit happening for example, modifying parameter references, this will end up in a fucking nightmare, don't do it at all, I'm serious, DO NOT.
 // GetRestaurantsAndAvailableTables This is the entry point to the functionality.
-func (restaurants *Restaurants) getRestaurantsAndAvailableTablesIntoChannel() []raflaamoRestaurantsApi.ResponseFields {
+func (restaurants *InitializeProgram) getRestaurantsAndAvailableTablesIntoChannel() []raflaamoRestaurantsApi.ResponseFields {
 	currentTime := restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
 
 	restaurantsFromApi, err := restaurants.RestaurantsApi.GetRestaurantsFromRaflaamoApi(currentTime)
@@ -39,7 +41,7 @@ func (restaurants *Restaurants) getRestaurantsAndAvailableTablesIntoChannel() []
 
 	for _, restaurant := range restaurantsFromApi {
 		restaurant := restaurant
-
+		// TODO: declare channels here then assign them into the restaurant for clarity?
 		go func() {
 			restaurants.getAvailableTablesForRestaurant(&restaurant)
 		}()
@@ -47,55 +49,31 @@ func (restaurants *Restaurants) getRestaurantsAndAvailableTablesIntoChannel() []
 	return restaurantsFromApi
 }
 
-type ResponseFields = raflaamoRestaurantsApi.ResponseFields
+// TODO: simplify this somehow.
+func (restaurants *InitializeProgram) getAvailableTablesForRestaurant(restaurant *ResponseFields) {
+	raflaamoGraphApiRequestUrlStruct := raflaamoGraphApi.GetRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, restaurants.AmountOfEaters, restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate)
+	restaurants.addAdditionalInformationToRestaurant(restaurant, raflaamoGraphApiRequestUrlStruct)
 
-func (restaurants *Restaurants) getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields) {
-	restaurantsKitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
-	graphApiTimeIntervalsFromTheFuture := restaurants.AllNeededRaflaamoTimes.GetAllGraphApiUnixTimeIntervalsFromCurrentPointForward(restaurantsKitchenClosingTime)
-	restaurants.AllNeededRaflaamoTimes.AllFutureGraphApiTimeIntervals = graphApiTimeIntervalsFromTheFuture
-
-	raflaamoGraphApiRequestUrlStruct := raflaamoGraphApi.GetRaflaamoGraphApiRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, restaurants.AmountOfEaters, restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate)
-
-	restaurant.Links.TableReservationLocalizedId = raflaamoGraphApiRequestUrlStruct.IdFromReservationPageUrl // Storing the id for the front end.
-
-	restaurantGraphApiRequestUrls := raflaamoGraphApiRequestUrlStruct.GenerateGraphApiRequestUrlsForRestaurant(restaurants.AllNeededRaflaamoTimes)
-
-	restaurants.addRelativeTimesToRestaurant(restaurant, restaurantsKitchenClosingTime)
-
+	restaurantGraphApiRequestUrls := restaurants.GraphApi.GenerateGraphApiRequestUrlsForRestaurant(restaurant, raflaamoGraphApiRequestUrlStruct)
 	restaurants.getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel(restaurant, restaurantGraphApiRequestUrls)
 }
 
-func (restaurants *Restaurants) addRelativeTimesToRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, restaurantsKitchenClosingTime string) {
-	currentTime := restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
+func (restaurants *InitializeProgram) addAdditionalInformationToRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, graphApiRequestUrl *raflaamoGraphApi.RequestUrl) {
+	timeTillRestaurantCloses, timeTillKitchenCloses := restaurants.getRelativeClosingTimes(restaurant)
 
-	calculateTimeTillKitchenCloses := raflaamoTime.GetCalculateClosingTime(currentTime, restaurantsKitchenClosingTime)
-	restaurants.addRelativeKitchenTime(restaurant, calculateTimeTillKitchenCloses)
-
-	calculateTimeTillRestaurantCloses := raflaamoTime.GetCalculateClosingTime(currentTime, restaurant.Openingtime.Restauranttime.Ranges[0].End)
-	restaurants.addRelativeRestaurantTime(restaurant, calculateTimeTillRestaurantCloses)
-}
-
-/* Contract:
-*  currentTime should not be bigger than restaurantClosingTime.
-*  This contract is currently enforced in [restaurantsApi.go] (filterBadRestaurantsOut).
- */
-func (restaurants *Restaurants) addRelativeRestaurantTime(restaurant *raflaamoRestaurantsApi.ResponseFields, calculateRestaurantsClosingTime *raflaamoTime.CalculateClosingTime) {
-	restaurantRelativeTime := calculateRestaurantsClosingTime.CalculateRelativeTime()
+	restaurantRelativeTime := timeTillRestaurantCloses.CalculateRelativeTime()
 	restaurant.Openingtime.TimeTillRestaurantClosedMinutes = restaurantRelativeTime.RelativeMinutes
 	restaurant.Openingtime.TimeTillRestaurantClosedHours = restaurantRelativeTime.RelativeHours
-}
 
-/* Contract:
-*  currentTime should not be bigger than restaurantsKitchenClosingTime.
-*  This contract is currently enforced in [restaurantsApi.go] (filterBadRestaurantsOut).
- */
-func (restaurants *Restaurants) addRelativeKitchenTime(restaurant *raflaamoRestaurantsApi.ResponseFields, calculateKitchenClosingTime *raflaamoTime.CalculateClosingTime) {
-	kitchenRelativeTime := calculateKitchenClosingTime.CalculateRelativeTime()
-	restaurant.Openingtime.TimeLeftToReserveMinutes = kitchenRelativeTime.RelativeMinutes
+	kitchenRelativeTime := timeTillKitchenCloses.CalculateRelativeTime()
 	restaurant.Openingtime.TimeLeftToReserveHours = kitchenRelativeTime.RelativeHours
+	restaurant.Openingtime.TimeLeftToReserveMinutes = kitchenRelativeTime.RelativeMinutes
+
+	// TODO: this does not actually stick in the long term.
+	restaurant.Links.TableReservationLocalizedId = graphApiRequestUrl.IdFromReservationPageUrl // Storing the id for the front end.
 }
 
-func (restaurants *Restaurants) getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel(restaurant *raflaamoRestaurantsApi.ResponseFields, restaurantGraphApiRequestUrls []string) {
+func (restaurants *InitializeProgram) getAvailableTableTimesFromRestaurantRequestUrlsIntoRestaurantsChannel(restaurant *raflaamoRestaurantsApi.ResponseFields, restaurantGraphApiRequestUrls []string) {
 	var wg sync.WaitGroup
 
 	for _, restaurantGraphApiRequestUrl := range restaurantGraphApiRequestUrls {
@@ -119,7 +97,7 @@ func (restaurants *Restaurants) getAvailableTableTimesFromRestaurantRequestUrlsI
 				//return
 			}
 
-			graphApiReservationTimes := raflaamoTime.GetGraphApiReservationTimes(graphApiResponseFromRequestUrl)
+			graphApiReservationTimes := raflaamoGraphApiTimes.GetGraphApiReservationTimes(graphApiResponseFromRequestUrl)
 
 			graphApiReservationTimes.GetTimeSlotsInBetweenUnixIntervals(restaurant, restaurants.AllNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)
 		}()

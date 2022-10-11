@@ -1,4 +1,8 @@
-package graphApiResponseStructure
+/*
+ * Copyright (c) 2022. Rasmus Mäki
+ */
+
+package raflaamoGraphApi
 
 type ParsedGraphData struct {
 	Name      string                `json:"name"`

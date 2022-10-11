@@ -2,9 +2,10 @@
  * Copyright (c) 2022. Rasmus Mäki
  */
 
-package raflaamoTime
+package restaurants
 
 import (
+	"backend/raflaamoRestaurantsApi"
 	"backend/unixHelpers"
 	"strconv"
 )
@@ -19,7 +20,17 @@ type CalculateClosingTimeResult struct {
 	RelativeMinutes int
 }
 
-func GetCalculateClosingTime(currentTime int64, closingTime string) *CalculateClosingTime {
+func (restaurants *InitializeProgram) getRelativeClosingTimes(restaurant *raflaamoRestaurantsApi.ResponseFields) (*CalculateClosingTime, *CalculateClosingTime) {
+	restaurantsKitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
+	currentTime := restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
+
+	calculateTimeTillKitchenCloses := getCalculateClosingTime(currentTime, restaurantsKitchenClosingTime)
+	calculateTimeTillRestaurantCloses := getCalculateClosingTime(currentTime, restaurant.Openingtime.Restauranttime.Ranges[0].End)
+
+	return calculateTimeTillRestaurantCloses, calculateTimeTillKitchenCloses
+}
+
+func getCalculateClosingTime(currentTime int64, closingTime string) *CalculateClosingTime {
 	closingTimeConvertedToUnix := unixHelpers.ConvertStringTimeToDesiredUnixFormat(closingTime)
 	return &CalculateClosingTime{CurrentTime: currentTime, ClosingTime: closingTimeConvertedToUnix}
 }

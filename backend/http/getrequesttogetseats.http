@@ -1,6 +1,6 @@
 ### GET request with a header
-// returns from and to as unix raflaamoTime stamp (raflaamoTime in milliseconds from january 1st 1970 to now)
-// seems to be https://s-varaukset.fi/api/recommendations/slot/{restaurant_id}/{current_date}/{raflaamoTime}/{amount_of_eaters}
+// returns from and to as unix raflaamoTimes stamp (raflaamoTimes in milliseconds from january 1st 1970 to now)
+// seems to be https://s-varaukset.fi/api/recommendations/slot/{restaurant_id}/{current_date}/{raflaamoTimes}/{amount_of_eaters}
 GET https://s-varaukset.fi/api/recommendations/slot/281/2022-08-12/1000/1
 Accept: application/json
 

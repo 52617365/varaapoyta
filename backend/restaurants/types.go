@@ -7,13 +7,13 @@ package restaurants
 import (
 	"backend/raflaamoGraphApi"
 	"backend/raflaamoRestaurantsApi"
-	"backend/raflaamoTime"
+	"backend/raflaamoTimes"
 )
 
-type Restaurants struct {
+type InitializeProgram struct {
 	City                   string
 	AmountOfEaters         string
-	AllNeededRaflaamoTimes *raflaamoTime.RaflaamoTimes
+	AllNeededRaflaamoTimes *raflaamoTimes.RaflaamoTimes
 	GraphApi               *raflaamoGraphApi.RaflaamoGraphApi
 	RestaurantsApi         *raflaamoRestaurantsApi.RaflaamoRestaurantsApi
 }
