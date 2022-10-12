@@ -20,9 +20,9 @@ type CalculateClosingTimeResult struct {
 	RelativeMinutes int
 }
 
-func (initProgram *InitializeProgram) getRelativeClosingTimes(restaurant *raflaamoRestaurantsApi.ResponseFields) (*CalculateClosingTime, *CalculateClosingTime) {
+func (initializedProgram *InitializeProgram) getRelativeClosingTimes(restaurant *raflaamoRestaurantsApi.ResponseFields) (*CalculateClosingTime, *CalculateClosingTime) {
 	restaurantsKitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
-	currentTime := initProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
+	currentTime := initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
 
 	calculateTimeTillKitchenCloses := getCalculateClosingTime(currentTime, restaurantsKitchenClosingTime)
 	calculateTimeTillRestaurantCloses := getCalculateClosingTime(currentTime, restaurant.Openingtime.Restauranttime.Ranges[0].End)

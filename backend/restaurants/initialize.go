@@ -18,7 +18,7 @@ type InitializeProgram struct {
 	RestaurantsApi         *raflaamoRestaurantsApi.RaflaamoRestaurantsApi
 }
 
-func getInitializeProgram(city string, amountOfEaters string) *InitializeProgram {
+func GetInitializeProgram(city string, amountOfEaters string) *InitializeProgram {
 	allNeededRaflaamoTimes := raflaamoTimes.GetAllNeededRaflaamoTimes()
 	graphApi := raflaamoGraphApi.GetRaflaamoGraphApi()
 	initializedRaflaamoRestaurantsApi := raflaamoRestaurantsApi.GetRaflaamoRestaurantsApi(city)

@@ -8,11 +8,8 @@ import (
 	"backend/helpers"
 	"backend/raflaamoGraphApiTimes"
 	"backend/raflaamoRestaurantsApi"
-	"backend/restaurants"
 	"fmt"
 )
-
-type ResponseFields = raflaamoRestaurantsApi.ResponseFields
 
 type RequestUrl struct {
 	amountOfEaters           string
@@ -48,8 +45,8 @@ func (graphApiPayload *RequestUrl) GenerateGraphApiRequestUrlsFromFutureTimeSlot
 	return requestUrls
 }
 
-func (graphApi *RaflaamoGraphApi) GenerateGraphApiRequestUrlsForRestaurant(restaurant *ResponseFields, restaurants *restaurants.InitializeProgram) []string {
-	raflaamoGraphApiRequestUrlStruct := GetRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, restaurants.AmountOfEaters, restaurants.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate)
+func (graphApi *RaflaamoGraphApi) GenerateGraphApiRequestUrlsForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, currentDate string, amountOfEaters string) []string {
+	raflaamoGraphApiRequestUrlStruct := GetRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, amountOfEaters, currentDate)
 	restaurantsKitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
 	graphApiTimeIntervalsFromTheFuture := raflaamoGraphApiTimes.GetAllFutureGraphApiTimeSlots(restaurantsKitchenClosingTime)
 	restaurantGraphApiRequestUrls := raflaamoGraphApiRequestUrlStruct.GenerateGraphApiRequestUrlsFromFutureTimeSlots(graphApiTimeIntervalsFromTheFuture)

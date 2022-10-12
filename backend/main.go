@@ -150,8 +150,12 @@ func (endpoint *Endpoint) usersAmountOfEatersIsNotNumber() bool {
 }
 
 func main() {
-
-	collectedRestaurants := restaurants.GetRestaurantsAndCollectResults("helsinki", "1")
+	init := restaurants.GetInitializeProgram("helsinki", "1")
+	collectedRestaurants, err := init.GetRestaurantsAndAvailableTables()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	fmt.Println(collectedRestaurants)
 	//r := gin.Default()
 	//config := cors.DefaultConfig()
