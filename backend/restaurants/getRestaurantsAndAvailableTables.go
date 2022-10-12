@@ -19,41 +19,44 @@ func (initializedProgram *InitializeProgram) getAvailableTableTimeSlotsFromResta
 	errChan := make(chan error, len(restaurantGraphApiUrlTimeSlots))
 
 	for _, graphApiUrlTimeSlot := range restaurantGraphApiUrlTimeSlots {
-		graphApiResponseFromRequestUrl, err := initializedProgram.GraphApi.GetGraphApiResponseFromTimeSlot(graphApiUrlTimeSlot)
-		if err != nil {
-			// TODO: if error has to do with not being able to access graphApi then terminate or something else.
-			graphApiResultsChan <- ""
-			errChan <- errors.New("graph api most likely down")
-			continue
-		}
-		if intervals := *graphApiResponseFromRequestUrl.Intervals; intervals[0].Color == "transparent" {
-			graphApiResultsChan <- ""
-			errChan <- errors.New("no available tables for time slot")
-			// send something along the channel like an empty string or something else.
-		} else {
-			// send result along the channel
-			graphApiReservationTimes := raflaamoGraphApiTimes.GetGraphApiReservationTimes(graphApiResponseFromRequestUrl)
-
-			timeSlotsForRestaurant := graphApiReservationTimes.GetTimeSlotsInBetweenUnixIntervals(kitchenClosingTime, initializedProgram.AllNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)
-
-			// Capturing all the time slots for the specified time slot.
-			for _, timeSlot := range timeSlotsForRestaurant {
-				graphApiResultsChan <- timeSlot
-				errChan <- nil
+		graphApiUrlTimeSlot := graphApiUrlTimeSlot
+		go func() {
+			graphApiResponseFromRequestUrl, err := initializedProgram.GraphApi.GetGraphApiResponseFromTimeSlot(graphApiUrlTimeSlot)
+			if err != nil {
+				// TODO: if error has to do with not being able to access graphApi then terminate or something else.
+				graphApiResultsChan <- ""
+				errChan <- errors.New("graph api most likely down")
+				return
 			}
-		}
+			if intervals := *graphApiResponseFromRequestUrl.Intervals; intervals[0].Color == "transparent" {
+				graphApiResultsChan <- ""
+				errChan <- errors.New("no available tables for time slot")
+				// send something along the channel like an empty string or something else.
+			} else {
+				// send result along the channel
+				graphApiReservationTimes := raflaamoGraphApiTimes.GetGraphApiReservationTimes(graphApiResponseFromRequestUrl)
+
+				timeSlotsForRestaurant := graphApiReservationTimes.GetTimeSlotsInBetweenUnixIntervals(kitchenClosingTime, initializedProgram.AllNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)
+
+				// Capturing all the time slots for the specified time slot.
+				for _, timeSlot := range timeSlotsForRestaurant {
+					graphApiResultsChan <- timeSlot
+					errChan <- nil
+				}
+			}
+		}()
 	}
-	syncedTimeSlots := initializedProgram.getSyncedResultsFromChannels(restaurantGraphApiUrlTimeSlots, errChan, graphApiResultsChan)
+	syncedTimeSlots := initializedProgram.getSyncedResultsFromChannels(len(restaurantGraphApiUrlTimeSlots), errChan, graphApiResultsChan)
 	return syncedTimeSlots
 }
 
-func (initializedProgram *InitializeProgram) getSyncedResultsFromChannels(restaurantGraphApiUrlTimeSlots []string, errChan chan error, graphApiResultsChan chan string) []string {
+func (initializedProgram *InitializeProgram) getSyncedResultsFromChannels(restaurantGraphApiUrlTimeSlotsLength int, errChan chan error, graphApiResultsChan chan string) []string {
 	timeSlots := make([]string, 0, 96)
-	for i := 0; i < len(restaurantGraphApiUrlTimeSlots); i++ {
+	for i := 0; i < restaurantGraphApiUrlTimeSlotsLength; i++ {
 		syncedErr := <-errChan
 		syncedResult := <-graphApiResultsChan
 
-		if syncedErr != nil {
+		if syncedErr != nil || syncedResult == "" { // If error or if time slot interval was "transparent".
 			continue
 		}
 		timeSlots = append(timeSlots, syncedResult)
@@ -65,7 +68,7 @@ func (initializedProgram *InitializeProgram) getAvailableTablesForRestaurant(res
 	raflaamoGraphApiRequestUrlStruct := raflaamoGraphApi.GetRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, initializedProgram.AmountOfEaters, initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate)
 	initializedProgram.addRelativeTimesAndReservationIdToRestaurant(restaurant, raflaamoGraphApiRequestUrlStruct)
 
-	restaurantGraphApiRequestUrls := initializedProgram.GraphApi.GenerateGraphApiRequestUrlsForRestaurant(restaurant, initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate, initializedProgram.AmountOfEaters)
+	restaurantGraphApiRequestUrls := initializedProgram.GraphApi.GenerateGraphApiRequestUrlsForRestaurant(restaurant, initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime, initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate, initializedProgram.AmountOfEaters)
 
 	kitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
 	openTablesFromGraphApi := initializedProgram.getAvailableTableTimeSlotsFromRestaurantUrls(restaurantGraphApiRequestUrls, kitchenClosingTime)
@@ -77,7 +80,7 @@ func (initializedProgram *InitializeProgram) iterateRestaurants(restaurantsToIte
 	restaurantsWithOpenTables := make([]raflaamoRestaurantsApi.ResponseFields, 0, 50)
 
 	for _, restaurant := range restaurantsToIterate {
-		resultsForRestaurant, err := initializedProgram.getAvailableTablesForRestaurant(&restaurant)
+		resultsForRestaurant, err := initializedProgram.getAvailableTablesForRestaurant(&restaurant) // Do we need a goroutine here?
 		if err != nil {
 			continue
 		}
@@ -98,8 +101,6 @@ func (initializedProgram *InitializeProgram) GetRestaurantsAndAvailableTables() 
 		log.Fatalln("") // TODO: handle
 	}
 	return restaurantsWithTables, nil
-	// TODO: iterate initializedProgram
-	// TODO: getAvailableTablesForRestaurant
 }
 
 // downwards from here is old code.

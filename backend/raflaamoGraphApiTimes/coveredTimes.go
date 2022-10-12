@@ -30,7 +30,7 @@ func ConvertUnixTimeToString(unixTime int64) string {
 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
 The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
 */
-func GetAllFutureGraphApiTimeSlots(restaurantsKitchenClosingTime string) []string {
+func GetAllFutureGraphApiTimeSlots(currentTime int64, restaurantsKitchenClosingTime string) []string {
 	restaurantsKitchenClosingTime = strings.ReplaceAll(restaurantsKitchenClosingTime, ":", "")
 	restaurantClosingTimeUnix := helpers.ConvertStringTimeToDesiredUnixFormat(restaurantsKitchenClosingTime)
 	allPossibleGraphApiTimeSlots := &[...]CoveredTimes{
@@ -42,13 +42,17 @@ func GetAllFutureGraphApiTimeSlots(restaurantsKitchenClosingTime string) []strin
 
 	timeSlotsFromCurrentTimeForward := make([]string, 0, len(allPossibleGraphApiTimeSlots))
 	for _, graphApiUnixTimeSlot := range allPossibleGraphApiTimeSlots {
-		if graphApiUnixTimeSlotIsValid(&graphApiUnixTimeSlot, restaurantClosingTimeUnix) {
+		if graphApiUnixTimeSlotIsValid(&graphApiUnixTimeSlot, restaurantClosingTimeUnix, currentTime) {
 			graphApiUnixTimeSlotIntoString := ConvertUnixTimeToString(graphApiUnixTimeSlot.Time)
 			timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, graphApiUnixTimeSlotIntoString)
 		}
 	}
 	return timeSlotsFromCurrentTimeForward
 }
-func graphApiUnixTimeSlotIsValid(graphApiUnixTimeSlot *CoveredTimes, restaurantClosingTimeUnix int64) bool {
-	return restaurantClosingTimeUnix < graphApiUnixTimeSlot.Time
+
+func graphApiUnixTimeSlotIsValid(graphApiUnixTimeSlot *CoveredTimes, restaurantClosingTimeUnix int64, currentTime int64) bool {
+	if currentTime < graphApiUnixTimeSlot.TimeWindowsEnd {
+		return true
+	}
+	return false
 }
