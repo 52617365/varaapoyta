@@ -11,6 +11,7 @@ import (
 	"backend/raflaamoRestaurantsApi"
 	"errors"
 	"fmt"
+	"sort"
 	"sync"
 )
 
@@ -79,6 +80,7 @@ func (initializedProgram *InitializeProgram) syncRestaurantsWithOpenTablesChanne
 		if restaurantWithOpenTables.err != nil {
 			return nil, restaurantWithOpenTables.err
 		}
+		sort.Strings(restaurantWithOpenTables.results.AvailableTables)
 		restaurantsWithOpenTablesSync = append(restaurantsWithOpenTablesSync, *restaurantWithOpenTables.results)
 	}
 	return restaurantsWithOpenTablesSync, nil
