@@ -6,6 +6,7 @@ package main
 
 import (
 	"backend/restaurants"
+	"errors"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slices"
@@ -138,7 +139,7 @@ func main() {
 	r := gin.Default()
 	config := cors.DefaultConfig()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:  []string{"https://raflaamo.rasmusmaki.com", "http://localhost:3000"},
+		AllowOrigins:  []string{"https://raflaamo.rasmusmaki.com"},
 		AllowMethods:  []string{"GET"},
 		AllowHeaders:  []string{"Origin"},
 		ExposeHeaders: []string{"Content-Length"},
@@ -158,7 +159,7 @@ func main() {
 		init := restaurants.GetInitializeProgram(endpoint.userParameters.city, endpoint.userParameters.amountOfEaters)
 		collectedRestaurants, err := init.GetRestaurantsAndAvailableTables()
 		if err != nil {
-			c.JSON(http.StatusBadRequest, err)
+			c.JSON(http.StatusBadRequest, errors.Unwrap(err))
 			return
 		}
 		c.JSON(http.StatusOK, collectedRestaurants)
