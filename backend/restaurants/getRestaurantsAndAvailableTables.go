@@ -11,6 +11,7 @@ import (
 	"backend/raflaamoRestaurantsApi"
 	"errors"
 	"fmt"
+	"sync"
 )
 
 type RestaurantWithAvailableTables struct {
@@ -66,21 +67,56 @@ func (initializedProgram *InitializeProgram) getAvailableTablesForRestaurant(res
 	return openTablesFromGraphApi, nil
 }
 
+type GraphApiResponse struct {
+	response []string
+	err      error
+}
+
 func (initializedProgram *InitializeProgram) getAvailableTableTimeSlotsFromRestaurantUrls(restaurantGraphApiUrlTimeSlots []string, kitchenClosingTime string) ([]string, error) {
 	allCapturedTimeSlots := make([]string, 0, 96)
+	channelResult := make(chan GraphApiResponse, len(restaurantGraphApiUrlTimeSlots))
+	var wg sync.WaitGroup
 	for _, timeSlotUrl := range restaurantGraphApiUrlTimeSlots {
-		graphApiResponseFromRequestUrl, err := initializedProgram.GraphApi.GetGraphApiResponseFromTimeSlot(timeSlotUrl)
-		if err != nil {
-			if errors.As(err, &raflaamoGraphApi.NoAvailableTimeSlots{}) {
+		wg.Add(1)
+		timeSlotUrl := timeSlotUrl
+		go func() {
+			defer wg.Done()
+			graphApiResponseFromRequestUrl, err := initializedProgram.GraphApi.GetGraphApiResponseFromTimeSlot(timeSlotUrl)
+			if err != nil {
+				if errors.As(err, &raflaamoGraphApi.NoAvailableTimeSlots{}) {
+					channelResult <- GraphApiResponse{
+						response: []string{},
+						err:      raflaamoGraphApi.NoAvailableTimeSlots{},
+					}
+					return
+				}
+				channelResult <- GraphApiResponse{
+					response: []string{},
+					err:      raflaamoGraphApi.RaflaamoGraphApiDown{},
+				}
+				return
+			}
+			timeSlots := initializedProgram.captureTimeSlots(graphApiResponseFromRequestUrl, kitchenClosingTime)
+
+			channelResult <- GraphApiResponse{
+				response: timeSlots,
+				err:      nil,
+			}
+		}()
+	}
+	wg.Wait()
+	close(channelResult)
+	for timeSlot := range channelResult {
+		if timeSlot.err != nil {
+			if errors.As(timeSlot.err, &raflaamoGraphApi.NoAvailableTimeSlots{}) {
 				continue
 			}
-			return nil, raflaamoGraphApi.RaflaamoGraphApiDown{}
+			if errors.As(timeSlot.err, &raflaamoGraphApi.RaflaamoGraphApiDown{}) {
+				return nil, timeSlot.err
+			}
 		}
-		timeSlots := initializedProgram.captureTimeSlots(graphApiResponseFromRequestUrl, kitchenClosingTime)
-
-		allCapturedTimeSlots = append(allCapturedTimeSlots, timeSlots...)
+		allCapturedTimeSlots = append(allCapturedTimeSlots, timeSlot.response...)
 	}
-
 	return removeDuplicate(allCapturedTimeSlots), nil
 }
 
