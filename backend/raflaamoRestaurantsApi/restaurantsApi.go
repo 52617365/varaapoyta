@@ -43,21 +43,18 @@ func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) GetRestaurantsFromRaflaamo
 	res, err := httpClient.Do(request)
 
 	if err != nil {
-		log.Fatal("[GetRestaurantsFromRaflaamoApi]", errors.New("there was an error connecting to the raflaamo api"))
+		return nil, fmt.Errorf("[GetRestaurantsFromRaflaamoApi] - %w", errors.New("could not get raflaamo restaurants since the site seems to be down"))
 	}
 
-	raflaamoRestaurantsApi.response = res
-
-	decodedRaflaamoRestaurants, err := raflaamoRestaurantsApi.deserializeRaflaamoRestaurantsResponse()
+	decodedRaflaamoRestaurants, err := raflaamoRestaurantsApi.deserializeRaflaamoRestaurantsResponse(res)
 
 	if err != nil {
-		return nil, fmt.Errorf("[GetRestaurantsFromRaflaamoApi] - %w", errors.New("there was an error deserializing raflaamo API response"))
+		return nil, fmt.Errorf("[GetRestaurantsFromRaflaamoApi] - %w", errors.New("there was an error deserializing raflaamo restaurants api response"))
 	}
 
-	validRestaurantsMatchingCriteria := raflaamoRestaurantsApi.filterBadRestaurantsOut(decodedRaflaamoRestaurants)
+	filteredGoodRestaurants := raflaamoRestaurantsApi.filterBadRestaurantsOut(decodedRaflaamoRestaurants)
 
-	// TODO: Handle return value being empty in caller.
-	return validRestaurantsMatchingCriteria, nil
+	return filteredGoodRestaurants, nil
 }
 
 // A restaurant is considered "Bad" if:
@@ -66,20 +63,16 @@ func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) GetRestaurantsFromRaflaamo
 //   - Restaurant does not contain opening times (Specified in the Ranges array).
 //   - Restaurant or restaurants kitchen is already closed.
 func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) filterBadRestaurantsOut(structureContainingRestaurantData *responseTopLevel) []ResponseFields {
-	raflaamoRestaurantsApi.cityToGetRestaurantsFrom = strings.ToLower(raflaamoRestaurantsApi.cityToGetRestaurantsFrom)
-	arrayContainingRestaurantData := structureContainingRestaurantData.Data.ListRestaurantsByLocation.Edges
+	restaurantsFromRaflaamoApi := structureContainingRestaurantData.Data.ListRestaurantsByLocation.Edges
 
-	filteredRestaurantsFromProvidedCity := make([]ResponseFields, 0, 40)
-	for _, restaurant := range arrayContainingRestaurantData {
+	filteredGoodRestaurants := make([]ResponseFields, 0, 40)
+	for _, restaurant := range restaurantsFromRaflaamoApi {
 		if restaurant.isBad(raflaamoRestaurantsApi.cityToGetRestaurantsFrom, raflaamoRestaurantsApi.currentTime) {
 			continue
 		}
-
-		restaurant.GraphApiResults = &GraphApiResult{AvailableTimeSlotsBuffer: make(chan string, 4), Err: make(chan error, 4)}
-		// Here we have done all the checks we know to date. There might be more in the future once I figure them out.
-		filteredRestaurantsFromProvidedCity = append(filteredRestaurantsFromProvidedCity, restaurant)
+		filteredGoodRestaurants = append(filteredGoodRestaurants, restaurant)
 	}
-	return filteredRestaurantsFromProvidedCity
+	return filteredGoodRestaurants
 }
 
 func (response *ResponseFields) isBad(city string, currentTime int64) bool {
@@ -130,5 +123,5 @@ func (response *ResponseFields) cityDoesNotMatchUsersCity(usersCity string) bool
 	response.Address.Municipality.FiFi = strings.ToLower(response.Address.Municipality.FiFi)
 	restaurantsCity := response.Address.Municipality.FiFi
 
-	return restaurantsCity != usersCity
+	return restaurantsCity != strings.ToLower(usersCity)
 }

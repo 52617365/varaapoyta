@@ -47,8 +47,7 @@ func (graphApiPayload *RequestUrl) GenerateGraphApiRequestUrlsFromFutureTimeSlot
 
 func (graphApi *RaflaamoGraphApi) GenerateGraphApiRequestUrlsForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, currentTime int64, currentDate string, amountOfEaters string) []string {
 	raflaamoGraphApiRequestUrlStruct := GetRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, amountOfEaters, currentDate) // @NOTICE: timeSlotToCheck not initialized.
-	restaurantsKitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
-	graphApiTimeIntervalsFromTheFuture := raflaamoGraphApiTimes.GetAllFutureGraphApiTimeSlots(currentTime, restaurantsKitchenClosingTime)
+	graphApiTimeIntervalsFromTheFuture := raflaamoGraphApiTimes.GetAllFutureGraphApiTimeSlots(currentTime)
 	restaurantGraphApiRequestUrls := raflaamoGraphApiRequestUrlStruct.GenerateGraphApiRequestUrlsFromFutureTimeSlots(graphApiTimeIntervalsFromTheFuture)
 
 	return restaurantGraphApiRequestUrls

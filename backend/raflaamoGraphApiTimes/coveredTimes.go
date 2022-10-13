@@ -30,9 +30,9 @@ func ConvertUnixTimeToString(unixTime int64) string {
 02:00 covers(00:00-06:00), 08:00 covers(6:00-12:00), 14:00 covers(12:00-18:00), 20:00 covers(18:00-00:00).
 The function gets all the time windows we need to check to avoid checking redundant time windows from the past.
 */
-func GetAllFutureGraphApiTimeSlots(currentTime int64, restaurantsKitchenClosingTime string) []string {
-	restaurantsKitchenClosingTime = strings.ReplaceAll(restaurantsKitchenClosingTime, ":", "")
-	restaurantClosingTimeUnix := helpers.ConvertStringTimeToDesiredUnixFormat(restaurantsKitchenClosingTime)
+func GetAllFutureGraphApiTimeSlots(currentTime int64) []string {
+	//restaurantsKitchenClosingTime = strings.ReplaceAll(restaurantsKitchenClosingTime, ":", "")
+	//restaurantClosingTimeUnix := helpers.ConvertStringTimeToDesiredUnixFormat(restaurantsKitchenClosingTime)
 	allPossibleGraphApiTimeSlots := &[...]CoveredTimes{
 		{Time: 7200, TimeWindowStart: 0, TimeWindowsEnd: 21600},
 		{Time: 28800, TimeWindowStart: 21600, TimeWindowsEnd: 43200},
@@ -42,7 +42,7 @@ func GetAllFutureGraphApiTimeSlots(currentTime int64, restaurantsKitchenClosingT
 
 	timeSlotsFromCurrentTimeForward := make([]string, 0, len(allPossibleGraphApiTimeSlots))
 	for _, graphApiUnixTimeSlot := range allPossibleGraphApiTimeSlots {
-		if graphApiUnixTimeSlotIsValid(&graphApiUnixTimeSlot, restaurantClosingTimeUnix, currentTime) {
+		if graphApiUnixTimeSlotIsValid(&graphApiUnixTimeSlot, currentTime) {
 			graphApiUnixTimeSlotIntoString := ConvertUnixTimeToString(graphApiUnixTimeSlot.Time)
 			timeSlotsFromCurrentTimeForward = append(timeSlotsFromCurrentTimeForward, graphApiUnixTimeSlotIntoString)
 		}
@@ -50,7 +50,7 @@ func GetAllFutureGraphApiTimeSlots(currentTime int64, restaurantsKitchenClosingT
 	return timeSlotsFromCurrentTimeForward
 }
 
-func graphApiUnixTimeSlotIsValid(graphApiUnixTimeSlot *CoveredTimes, restaurantClosingTimeUnix int64, currentTime int64) bool {
+func graphApiUnixTimeSlotIsValid(graphApiUnixTimeSlot *CoveredTimes, currentTime int64) bool {
 	if currentTime < graphApiUnixTimeSlot.TimeWindowsEnd {
 		return true
 	}

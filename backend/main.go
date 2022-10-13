@@ -150,7 +150,7 @@ func (endpoint *Endpoint) usersAmountOfEatersIsNotNumber() bool {
 }
 
 func main() {
-	init := restaurants.GetInitializeProgram("helsinki", "1")
+	init := restaurants.GetInitializeProgram("rovaniemi", "1")
 	collectedRestaurants, err := init.GetRestaurantsAndAvailableTables()
 	if err != nil {
 		fmt.Println(err)

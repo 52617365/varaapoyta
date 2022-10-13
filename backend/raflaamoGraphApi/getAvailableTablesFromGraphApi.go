@@ -19,12 +19,11 @@ func GetRaflaamoGraphApi() *RaflaamoGraphApi {
 	return &RaflaamoGraphApi{httpClient: httpClient}
 }
 
-func (graphApi *RaflaamoGraphApi) getRaflaamoGraphApiRequest(requestUrl string) *http.Request {
+func (graphApi *RaflaamoGraphApi) NewRaflaamoGraphApi(requestUrl string) *http.Request {
 	r, err := http.NewRequest("GET", requestUrl, nil)
 
 	if err != nil {
-		// TODO: figure out if this can fail depending on requestUrl.
-		log.Fatal("[getRaflaamoGraphApiRequest] - Error initializing get request")
+		log.Fatal("[NewRaflaamoGraphApi] - Error initializing get request")
 	}
 
 	r.Header.Add("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
@@ -57,8 +56,15 @@ func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse(graphApiResponse *
 	return &deserializedGraphData[0], nil
 }
 
+type NoAvailableTimeSlots struct {
+}
+
+func (NoAvailableTimeSlots) Error() string {
+	return "there were no available time slots"
+}
+
 func (graphApi *RaflaamoGraphApi) GetGraphApiResponseFromTimeSlot(requestUrlContainingTimeSlot string) (*graphApiResponseStructure.ParsedGraphData, error) {
-	httpRequest := graphApi.getRaflaamoGraphApiRequest(requestUrlContainingTimeSlot)
+	httpRequest := graphApi.NewRaflaamoGraphApi(requestUrlContainingTimeSlot)
 	response, err := graphApi.sendRequestToGraphApi(httpRequest)
 	if err != nil {
 		return nil, err
@@ -67,5 +73,15 @@ func (graphApi *RaflaamoGraphApi) GetGraphApiResponseFromTimeSlot(requestUrlCont
 	if err != nil {
 		return nil, err
 	}
+	if timeSlotsNotVisible(deserializedGraphApiResponse) {
+		return nil, NoAvailableTimeSlots{}
+	}
 	return deserializedGraphApiResponse, nil
+}
+
+func timeSlotsNotVisible(parsedIntervalData *graphApiResponseStructure.ParsedGraphData) bool {
+	if intervals := *parsedIntervalData.Intervals; intervals[0].Color == "transparent" {
+		return true
+	}
+	return false
 }

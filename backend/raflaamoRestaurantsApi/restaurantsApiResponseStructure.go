@@ -7,6 +7,7 @@ package raflaamoRestaurantsApi
 import (
 	"encoding/json"
 	"errors"
+	"net/http"
 )
 
 type responseTopLevel struct {
@@ -70,9 +71,9 @@ type GraphApiResult struct {
 	Err                      chan error  `json:"-"`
 }
 
-func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) deserializeRaflaamoRestaurantsResponse() (*responseTopLevel, error) {
+func (raflaamoRestaurantsApi *RaflaamoRestaurantsApi) deserializeRaflaamoRestaurantsResponse(graphApiResponse *http.Response) (*responseTopLevel, error) {
 	responseDecoded := &responseTopLevel{}
-	err := json.NewDecoder((raflaamoRestaurantsApi.response).Body).Decode(responseDecoded)
+	err := json.NewDecoder((graphApiResponse).Body).Decode(responseDecoded)
 	if err != nil {
 		return nil, errors.New("could not deserialize the response body")
 	}
