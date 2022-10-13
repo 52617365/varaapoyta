@@ -34,10 +34,10 @@ func (graphApi *RaflaamoGraphApi) sendRequestToGraphApi(graphApiRequest *http.Re
 	response, err := graphApi.httpClient.Do(graphApiRequest)
 
 	if err != nil {
-		return nil, fmt.Errorf("[sendRequestToGraphApi] - %w", err)
+		return nil, RaflaamoGraphApiDown{}
 	}
 	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("[sendRequestToGraphApi] - %w", errors.New("raflaamo graph api returned non 200 status code"))
+		return nil, RaflaamoGraphApiDown{}
 	}
 
 	return response, nil
@@ -54,13 +54,6 @@ func (graphApi *RaflaamoGraphApi) deserializeGraphApiResponse(graphApiResponse *
 	}
 	// The relevant data from the graph API is in the first index only.
 	return &deserializedGraphData[0], nil
-}
-
-type NoAvailableTimeSlots struct {
-}
-
-func (NoAvailableTimeSlots) Error() string {
-	return "there were no available time slots"
 }
 
 func (graphApi *RaflaamoGraphApi) GetGraphApiResponseFromTimeSlot(requestUrlContainingTimeSlot string) (*graphApiResponseStructure.ParsedGraphData, error) {

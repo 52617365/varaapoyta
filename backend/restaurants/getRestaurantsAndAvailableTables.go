@@ -58,22 +58,13 @@ func (initializedProgram *InitializeProgram) getAvailableTablesForRestaurant(res
 
 	kitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
 	openTablesFromGraphApi, err := initializedProgram.getAvailableTableTimeSlotsFromRestaurantUrls(restaurantGraphApiRequestUrls, kitchenClosingTime)
-	if err != nil { // TODO: use named errors for clarity
-		if errors.As(err, &RaflaamoGraphApiDown{}) {
-			// can't get any open tables, we will not continue this error.
-			return nil, RaflaamoGraphApiDown{}
-		}
+	if err != nil {
+		return nil, err
 	}
 
 	return openTablesFromGraphApi, nil
 }
 
-type RaflaamoGraphApiDown struct {
-}
-
-func (RaflaamoGraphApiDown) Error() string {
-	return "raflaamo open tables api down, we can not get open tables at this time"
-}
 func (initializedProgram *InitializeProgram) getAvailableTableTimeSlotsFromRestaurantUrls(restaurantGraphApiUrlTimeSlots []string, kitchenClosingTime string) ([]string, error) {
 	allCapturedTimeSlots := make([]string, 0, 96)
 	for _, timeSlotUrl := range restaurantGraphApiUrlTimeSlots {
@@ -82,7 +73,7 @@ func (initializedProgram *InitializeProgram) getAvailableTableTimeSlotsFromResta
 			if errors.As(err, &raflaamoGraphApi.NoAvailableTimeSlots{}) {
 				continue
 			}
-			return nil, RaflaamoGraphApiDown{}
+			return nil, fmt.Errorf("[getAvailableTableTimeSlotsFromRestaurantUrls] - %w", errors.New("raflaamo open tables api seems to be down"))
 		}
 		timeSlots := initializedProgram.captureTimeSlots(graphApiResponseFromRequestUrl, kitchenClosingTime)
 		allCapturedTimeSlots = append(allCapturedTimeSlots, timeSlots...)
@@ -95,12 +86,7 @@ func (initializedProgram *InitializeProgram) captureTimeSlots(graphApiResponseFr
 
 	timeSlotsForRestaurant := graphApiReservationTimes.GetTimeSlotsInBetweenUnixIntervals(kitchenClosingTime, initializedProgram.AllNeededRaflaamoTimes.AllFutureRaflaamoReservationTimeIntervals)
 
-	timeSlotsCaptured := make([]string, 0, 50)
-	// Capturing all the time slots for the specified time slot.
-	for _, timeSlot := range timeSlotsForRestaurant {
-		timeSlotsCaptured = append(timeSlotsCaptured, timeSlot)
-	}
-	return timeSlotsCaptured
+	return timeSlotsForRestaurant
 }
 
 // downwards from here is old code.

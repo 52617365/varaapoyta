@@ -23,13 +23,11 @@ type responseThirdLevel struct {
 }
 
 type ResponseFields struct {
-	Id                 string          `json:"id"`
-	Name               *StringField    `json:"name"`
-	Address            *AddressFields  `json:"address"`
-	Openingtime        *OpeningFields  `json:"openingTime"`
-	Links              *linksFields    `json:"links"`
-	GraphApiResults    *GraphApiResult `json:"-"` // This will be populated later on when we iterate this list and get all raflaamoTimes slots.
-	AvailableTimeSlots []string        `json:"available_time_slots"`
+	Id          string         `json:"id"`
+	Name        *StringField   `json:"name"`
+	Address     *AddressFields `json:"address"`
+	Openingtime *OpeningFields `json:"openingTime"`
+	Links       *linksFields   `json:"links"`
 }
 
 type StringField struct {
