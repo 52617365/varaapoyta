@@ -22,10 +22,7 @@ const Home: NextPage = () => {
         const response = await fetch(url);
         const parsed_response = await response.json();
         asetaKaupunki(parsed_response.city);
-        console.log(kaupunki);
       } catch (e) {
-        // Could not find users location.
-        console.log("Could not find users location.");
       }
     });
   };
@@ -101,11 +98,6 @@ const Home: NextPage = () => {
               Aloita pöytävaraus kirjoittamalla kaupunkisi kenttään.
             </p>
             <div className={"pb-3"}>
-              {/* TODO: make this auto completion work correctly. */}
-              {/* <AutoCompleteCities
-                selected={kaupunki}
-                setSelected={handleKaupunki}
-              /> */}
               <input
                 onKeyDown={handleKeypress}
                 type="text"

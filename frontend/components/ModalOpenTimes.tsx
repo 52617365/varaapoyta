@@ -4,18 +4,18 @@ function ModalOpenTimes({ ravintola }: { ravintola: api_response }) {
   return (
     <>
       <label
-        htmlFor={"vapaat_ajat" + ravintola.id}
+        htmlFor={"vapaat_ajat" + ravintola.restaurant.id}
         className="btn modal-button"
       >
         Vapaat pöydät
       </label>
       <input
         type="checkbox"
-        id={"vapaat_ajat" + ravintola.id}
+        id={"vapaat_ajat" + ravintola.restaurant.id}
         className="modal-toggle"
       />
       <label
-        htmlFor={"vapaat_ajat" + ravintola.id}
+        htmlFor={"vapaat_ajat" + ravintola.restaurant.id}
         className="modal cursor-pointer"
       >
         <label className="modal-box relative" htmlFor="">
