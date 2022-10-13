@@ -7,7 +7,7 @@ function Card({ ravintola }: { ravintola: api_response }) {
   return (
     <div className="card w-150 bg-base-100 shadow-xl">
       <div className="card-body items-center text-center">
-        <h2 className="card-title">{ravintola.name.fi_FI}</h2>
+        <h2 className="card-title">{ravintola.restaurant.name.fi_FI}</h2>
         <div className="pr-4 space-x-2">
           <ModalInformation ravintola={ravintola} />
           <ModalLinks ravintola={ravintola} />

@@ -36,10 +36,10 @@ const Home: NextPage = () => {
     }
   });
 
-  const handleKeypress = (e: any) => {
+  const handleKeypress = async (e: any) => {
     //it triggers by pressing the enter key
     if (e.keyCode === 13) {
-      fetchInformation(kaupunki);
+      await fetchInformation(kaupunki);
     }
   };
   // TODO: use bigdata geolocation api to get city of user using the thing.
@@ -49,7 +49,7 @@ const Home: NextPage = () => {
     }
     setButtonLoading(true);
     try {
-      const url = `https://www.api.rasmusmaki.com/raflaamo/tables/${city}/1`;
+      const url = `https://www.api.rasmusmaki.com/raflaamo/tables/${city}/1`; // TODO: uncomment this after testing
       const response = await fetch(url);
       const parsed_response = await response.json();
       setRavintolat(parsed_response);
@@ -80,7 +80,7 @@ const Home: NextPage = () => {
       const cards = ravintolatApista.map((ravintola: api_response) => {
         return (
           // Storing the id from the reservation page url as a key so its easy to reuse when in V2 we have reservation too.
-          <div key={ravintola.links.tableReservationLocalizedId}>
+          <div key={ravintola.restaurant.links.tableReservationLocalizedId}>
             <Card ravintola={ravintola} />
           </div>
         );

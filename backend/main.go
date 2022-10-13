@@ -6,14 +6,13 @@ package main
 
 import (
 	"backend/restaurants"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/exp/slices"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"golang.org/x/exp/slices"
 )
 
 var allPossibleCities = []string{
@@ -75,27 +74,6 @@ var allPossibleCities = []string{
 	"oulu",
 	"rovaniemi",
 	"kittilä"}
-
-/*
-* Stuff to fix:
-GET http://localhost:10000/raflaamo/tables/tampere/1
-- TODO: some tableReservationLocalized fields are empty for some reason.
-- TODO: some available_time_slots are null for some reason, if they're null they should not even be included.
-- TODO: when we get an error, everything fucks up, channel waits forever. Happens with helsinki, tampere etc. but not with rovaniemi.
-*/
-
-// Starting from here everything should go into own file.
-
-// In other words, if graph API response had the "transparent" field set.
-func graphApiResponseHadNoTimeSlots(timeSlotResult string) bool {
-	// This exists because some time slots might have "transparent" field set aka no time slots found.
-	// And we are forced to send something down the channel or else it will keep waiting forever expecting n items to iterate.
-	return timeSlotResult == ""
-}
-
-func removeIndexFromSlice[T any](slice []T, s int) []T {
-	return append(slice[:s], slice[s+1:]...)
-}
 
 type Endpoint struct {
 	c              *gin.Context
@@ -159,7 +137,12 @@ func main() {
 	//fmt.Println(collectedRestaurants)
 	r := gin.Default()
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"https://raflaamo.rasmusmaki.com"}
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:  []string{"https://raflaamo.rasmusmaki.com", "http://localhost:3000"},
+		AllowMethods:  []string{"GET"},
+		AllowHeaders:  []string{"Origin"},
+		ExposeHeaders: []string{"Content-Length"},
+	}))
 	r.GET("/raflaamo/tables/:city/:amountOfEaters", func(c *gin.Context) {
 		endpoint := &Endpoint{
 			c:    c,

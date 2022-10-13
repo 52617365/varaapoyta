@@ -44,9 +44,7 @@ func (initializedProgram *InitializeProgram) GetRestaurantsAndAvailableTables() 
 	return restaurantsWithTables, nil
 }
 
-// TODO: other goroutines work now, we are syncing the goroutines for each restaurant before proceeding in getAvailableTableTimeSlotsFromRestaurantUrls, to avoid blocking in here too we should spawn the stuff in this function with goroutines.
 func (initializedProgram *InitializeProgram) iterateRestaurants(restaurantsToIterate []raflaamoRestaurantsApi.ResponseFields) ([]RestaurantWithAvailableTables, error) {
-	//restaurantsWithOpenTables := make([]RestaurantWithAvailableTables, 0, 30)
 	restaurantsWithOpenTables := make(chan RestaurantsChannelResults, len(restaurantsToIterate))
 
 	var wg sync.WaitGroup
