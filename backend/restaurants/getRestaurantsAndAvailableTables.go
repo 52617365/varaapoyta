@@ -74,8 +74,7 @@ type GraphApiResponse struct {
 }
 
 func (initializedProgram *InitializeProgram) getAvailableTableTimeSlotsFromRestaurantUrls(restaurantGraphApiUrlTimeSlots []string, kitchenClosingTime string) ([]string, error) {
-	allCapturedTimeSlots := make([]string, 0, 96)
-	channelResult := make(chan GraphApiResponse, len(restaurantGraphApiUrlTimeSlots))
+	channelResult := make(chan GraphApiResponse, len(restaurantGraphApiUrlTimeSlots)) // TODO: admire this solution because it's god tier
 	var wg sync.WaitGroup
 	for _, timeSlotUrl := range restaurantGraphApiUrlTimeSlots {
 		wg.Add(1)
@@ -86,13 +85,13 @@ func (initializedProgram *InitializeProgram) getAvailableTableTimeSlotsFromResta
 			if err != nil {
 				if errors.As(err, &raflaamoGraphApi.NoAvailableTimeSlots{}) {
 					channelResult <- GraphApiResponse{
-						response: []string{},
+						response: nil,
 						err:      raflaamoGraphApi.NoAvailableTimeSlots{},
 					}
 					return
 				}
 				channelResult <- GraphApiResponse{
-					response: []string{},
+					response: nil,
 					err:      raflaamoGraphApi.RaflaamoGraphApiDown{},
 				}
 				return
@@ -107,6 +106,12 @@ func (initializedProgram *InitializeProgram) getAvailableTableTimeSlotsFromResta
 	}
 	wg.Wait()
 	close(channelResult)
+
+	return initializedProgram.synchronizeGraphApiChannelResults(channelResult)
+}
+
+func (initializedProgram *InitializeProgram) synchronizeGraphApiChannelResults(channelResult chan GraphApiResponse) ([]string, error) {
+	allCapturedTimeSlots := make([]string, 0, 96)
 	for timeSlot := range channelResult {
 		if timeSlot.err != nil {
 			if errors.As(timeSlot.err, &raflaamoGraphApi.NoAvailableTimeSlots{}) {
