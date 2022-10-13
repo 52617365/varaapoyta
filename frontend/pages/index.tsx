@@ -1,17 +1,16 @@
-import type { NextPage } from "next";
+import type {NextPage} from "next";
 import Button from "../components/Button";
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import Card from "../components/Card";
 import api_response from "../interfaces/api_response_interface";
 
-const Home: NextPage = () => {
+function Home() {
   const [buttonLoading, setButtonLoading] = React.useState(false);
   const [ravintolatApista, setRavintolat] = React.useState<api_response[]>([]);
   const [is_error, set_error] = React.useState<boolean>(false);
   const [fetched, set_fetched] = React.useState<boolean>(false);
   const [kaupunki, asetaKaupunki] = useState("");
   const handleKaupunki = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.value);
     asetaKaupunki(event.target.value);
   };
 
@@ -74,15 +73,14 @@ const Home: NextPage = () => {
 
     // API returns either an error message or an array containing the restaurant information.
     if (Array.isArray(ravintolatApista)) {
-      const cards = ravintolatApista.map((ravintola: api_response) => {
+      return ravintolatApista.map((ravintola: api_response) => {
         return (
-          // Storing the id from the reservation page url as a key so its easy to reuse when in V2 we have reservation too.
-          <div key={ravintola.restaurant.links.tableReservationLocalizedId}>
-            <Card ravintola={ravintola} />
-          </div>
+            // Storing the id from the reservation page url as a key so its easy to reuse when in V2 we have reservation too.
+            <div key={ravintola.restaurant.links.tableReservationLocalizedId}>
+              <Card apiResponse={ravintola}/>
+            </div>
         );
       });
-      return cards;
     } else {
       return <h1>{ravintolatApista}</h1>;
     }

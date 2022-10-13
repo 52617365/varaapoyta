@@ -3,15 +3,15 @@ import ModalInformation from "../components/ModalContacts";
 import ModalLinks from "../components/ModalLinks";
 import ModalOpenTimes from "../components/ModalOpenTimes";
 
-function Card({ ravintola }: { ravintola: api_response }) {
+function Card({ apiResponse }: { apiResponse: api_response }) {
   return (
     <div className="card w-150 bg-base-100 shadow-xl">
       <div className="card-body items-center text-center">
-        <h2 className="card-title">{ravintola.restaurant.name.fi_FI}</h2>
+        <h2 className="card-title">{apiResponse.restaurant.name.fi_FI}</h2>
         <div className="pr-4 space-x-2">
-          <ModalInformation ravintola={ravintola} />
-          <ModalLinks ravintola={ravintola} />
-          <ModalOpenTimes ravintola={ravintola} />
+          <ModalInformation apiResponse={apiResponse} />
+          <ModalLinks ravintola={apiResponse} />
+          <ModalOpenTimes ravintola={apiResponse} />
         </div>
         <div className="card-actions justify-end">
           <button
