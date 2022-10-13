@@ -19,6 +19,11 @@ type RestaurantWithAvailableTables struct {
 	AvailableTables []string                              `json:"availableTables"`
 }
 
+type RestaurantsChannelResults struct {
+	results *RestaurantWithAvailableTables
+	err     error
+}
+
 func (initializedProgram *InitializeProgram) GetRestaurantsAndAvailableTables() ([]RestaurantWithAvailableTables, error) {
 	currentTimeUnix := initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
 
@@ -40,17 +45,45 @@ func (initializedProgram *InitializeProgram) GetRestaurantsAndAvailableTables() 
 
 // TODO: other goroutines work now, we are syncing the goroutines for each restaurant before proceeding in getAvailableTableTimeSlotsFromRestaurantUrls, to avoid blocking in here too we should spawn the stuff in this function with goroutines.
 func (initializedProgram *InitializeProgram) iterateRestaurants(restaurantsToIterate []raflaamoRestaurantsApi.ResponseFields) ([]RestaurantWithAvailableTables, error) {
-	restaurantsWithOpenTables := make([]RestaurantWithAvailableTables, 0, 30)
+	//restaurantsWithOpenTables := make([]RestaurantWithAvailableTables, 0, 30)
+	restaurantsWithOpenTables := make(chan RestaurantsChannelResults, len(restaurantsToIterate))
 
+	var wg sync.WaitGroup
 	for _, restaurant := range restaurantsToIterate {
-		availableTablesForRestaurant, err := initializedProgram.getAvailableTablesForRestaurant(&restaurant)
-		if err != nil {
-			return nil, err
-		}
-		restaurantWithTables := RestaurantWithAvailableTables{AvailableTables: availableTablesForRestaurant, Restaurant: restaurant}
-		restaurantsWithOpenTables = append(restaurantsWithOpenTables, restaurantWithTables)
+		wg.Add(1)
+		restaurant := restaurant
+		go func() {
+			defer wg.Done()
+			availableTablesForRestaurant, err := initializedProgram.getAvailableTablesForRestaurant(&restaurant)
+			if err != nil {
+				restaurantsWithOpenTables <- RestaurantsChannelResults{
+					results: nil,
+					err:     raflaamoGraphApi.RaflaamoGraphApiDown{},
+				}
+			}
+			restaurantWithTables := RestaurantWithAvailableTables{AvailableTables: availableTablesForRestaurant, Restaurant: restaurant}
+			restaurantsWithOpenTables <- RestaurantsChannelResults{
+				results: &restaurantWithTables,
+				err:     nil,
+			}
+		}()
+		//restaurantsWithOpenTables = append(restaurantsWithOpenTables, restaurantWithTables)
 	}
-	return restaurantsWithOpenTables, nil
+	wg.Wait()
+	close(restaurantsWithOpenTables)
+	// TODO: synchronize channel results
+	return initializedProgram.syncRestaurantsWithOpenTablesChannel(restaurantsWithOpenTables)
+}
+
+func (initializedProgram *InitializeProgram) syncRestaurantsWithOpenTablesChannel(restaurantsWithOpenTables chan RestaurantsChannelResults) ([]RestaurantWithAvailableTables, error) {
+	restaurantsWithOpenTablesSync := make([]RestaurantWithAvailableTables, 0, 30)
+	for restaurantWithOpenTables := range restaurantsWithOpenTables {
+		if restaurantWithOpenTables.err != nil {
+			return nil, restaurantWithOpenTables.err
+		}
+		restaurantsWithOpenTablesSync = append(restaurantsWithOpenTablesSync, *restaurantWithOpenTables.results)
+	}
+	return restaurantsWithOpenTablesSync, nil
 }
 
 func (initializedProgram *InitializeProgram) getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields) ([]string, error) {
