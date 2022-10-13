@@ -6,7 +6,8 @@ package main
 
 import (
 	"backend/restaurants"
-	"fmt"
+	"log"
+	"net/http"
 	"strconv"
 	"strings"
 
@@ -150,30 +151,33 @@ func (endpoint *Endpoint) usersAmountOfEatersIsNotNumber() bool {
 }
 
 func main() {
-	init := restaurants.GetInitializeProgram("rovaniemi", "1")
-	collectedRestaurants, err := init.GetRestaurantsAndAvailableTables()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(collectedRestaurants)
-	//r := gin.Default()
-	//config := cors.DefaultConfig()
-	//config.AllowOrigins = []string{"https://raflaamo.rasmusmaki.com"}
-	//r.GET("/raflaamo/tables/:city/:amountOfEaters", func(c *gin.Context) {
-	//	endpoint := &Endpoint{
-	//		c:    c,
-	//		cors: config,
-	//	}
-	//	endpoint.userParameters = endpoint.getUserRaflaamoParameters()
-	//
-	//	if endpoint.userInputIsInvalid() {
-	//		c.JSON(http.StatusBadRequest, "no results found with that city")
-	//		return
-	//	}
-	//
-	//	collectedRestaurants := restaurants.GetRestaurantsAndCollectResults(endpoint.userParameters.city, endpoint.userParameters.amountOfEaters)
-	//	c.JSON(http.StatusOK, collectedRestaurants)
-	//})
-	//log.Fatalln(r.Run(":10000"))
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//fmt.Println(collectedRestaurants)
+	r := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"https://raflaamo.rasmusmaki.com"}
+	r.GET("/raflaamo/tables/:city/:amountOfEaters", func(c *gin.Context) {
+		endpoint := &Endpoint{
+			c:    c,
+			cors: config,
+		}
+		endpoint.userParameters = endpoint.getUserRaflaamoParameters()
+
+		if endpoint.userInputIsInvalid() {
+			c.JSON(http.StatusBadRequest, "no results found with that city")
+			return
+		}
+
+		init := restaurants.GetInitializeProgram(endpoint.userParameters.city, endpoint.userParameters.amountOfEaters)
+		collectedRestaurants, err := init.GetRestaurantsAndAvailableTables()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return
+		}
+		c.JSON(http.StatusOK, collectedRestaurants)
+	})
+	log.Fatalln(r.Run(":10000"))
 }

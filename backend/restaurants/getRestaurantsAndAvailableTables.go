@@ -11,7 +11,6 @@ import (
 	"backend/raflaamoRestaurantsApi"
 	"errors"
 	"fmt"
-	"golang.org/x/exp/slices"
 )
 
 type RestaurantWithAvailableTables struct {
@@ -21,16 +20,17 @@ type RestaurantWithAvailableTables struct {
 
 func (initializedProgram *InitializeProgram) GetRestaurantsAndAvailableTables() ([]RestaurantWithAvailableTables, error) {
 	currentTimeUnix := initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime
-	allRestaurantsFromSpecifiedCity, err := initializedProgram.RestaurantsApi.GetRestaurantsFromRaflaamoApi(currentTimeUnix)
+
+	restaurantsFromRaflaamoApi, err := initializedProgram.RestaurantsApi.GetRestaurantsFromRaflaamoApi(currentTimeUnix)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(allRestaurantsFromSpecifiedCity) == 0 {
+	if len(restaurantsFromRaflaamoApi) == 0 {
 		return nil, fmt.Errorf("[GetRestaurantsAndAvailableTables] - %w", errors.New("getting restaurant data succeeded but there was no data to show to the user, most likely a bug, contact the developer"))
 	}
 
-	restaurantsWithTables, err := initializedProgram.iterateRestaurants(allRestaurantsFromSpecifiedCity)
+	restaurantsWithTables, err := initializedProgram.iterateRestaurants(restaurantsFromRaflaamoApi)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (initializedProgram *InitializeProgram) GetRestaurantsAndAvailableTables() 
 }
 
 func (initializedProgram *InitializeProgram) iterateRestaurants(restaurantsToIterate []raflaamoRestaurantsApi.ResponseFields) ([]RestaurantWithAvailableTables, error) {
-	restaurantsWithOpenTables := make([]RestaurantWithAvailableTables, 0, 50)
+	restaurantsWithOpenTables := make([]RestaurantWithAvailableTables, 0, 30)
 
 	for _, restaurant := range restaurantsToIterate {
 		availableTablesForRestaurant, err := initializedProgram.getAvailableTablesForRestaurant(&restaurant)
@@ -60,7 +60,7 @@ func (initializedProgram *InitializeProgram) getAvailableTablesForRestaurant(res
 	kitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
 	openTablesFromGraphApi, err := initializedProgram.getAvailableTableTimeSlotsFromRestaurantUrls(restaurantGraphApiRequestUrls, kitchenClosingTime)
 	if err != nil {
-		return nil, err
+		return nil, raflaamoGraphApi.RaflaamoGraphApiDown{}
 	}
 
 	return openTablesFromGraphApi, nil
@@ -74,18 +74,14 @@ func (initializedProgram *InitializeProgram) getAvailableTableTimeSlotsFromResta
 			if errors.As(err, &raflaamoGraphApi.NoAvailableTimeSlots{}) {
 				continue
 			}
-			return nil, fmt.Errorf("[getAvailableTableTimeSlotsFromRestaurantUrls] - %w", errors.New("raflaamo open tables api seems to be down"))
+			return nil, raflaamoGraphApi.RaflaamoGraphApiDown{}
 		}
 		timeSlots := initializedProgram.captureTimeSlots(graphApiResponseFromRequestUrl, kitchenClosingTime)
 
-		// avoid duplicates.
-		for _, timeSlot := range timeSlots {
-			if !slices.Contains(allCapturedTimeSlots, timeSlot) {
-				allCapturedTimeSlots = append(allCapturedTimeSlots, timeSlot)
-			}
-		}
+		allCapturedTimeSlots = append(allCapturedTimeSlots, timeSlots...)
 	}
-	return allCapturedTimeSlots, nil
+
+	return removeDuplicate(allCapturedTimeSlots), nil
 }
 
 func (initializedProgram *InitializeProgram) captureTimeSlots(graphApiResponseFromRequestUrl *graphApiResponseStructure.ParsedGraphData, kitchenClosingTime string) []string {
@@ -95,8 +91,6 @@ func (initializedProgram *InitializeProgram) captureTimeSlots(graphApiResponseFr
 
 	return timeSlotsForRestaurant
 }
-
-// downwards from here is old code.
 
 func (initializedProgram *InitializeProgram) addRelativeTimesAndReservationIdToRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, graphApiRequestUrl *raflaamoGraphApi.RequestUrl) {
 	timeTillRestaurantCloses, timeTillKitchenCloses := initializedProgram.getRelativeClosingTimes(restaurant)
