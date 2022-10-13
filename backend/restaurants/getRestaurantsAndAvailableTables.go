@@ -67,11 +67,9 @@ func (initializedProgram *InitializeProgram) iterateRestaurants(restaurantsToIte
 				err:     nil,
 			}
 		}()
-		//restaurantsWithOpenTables = append(restaurantsWithOpenTables, restaurantWithTables)
 	}
 	wg.Wait()
 	close(restaurantsWithOpenTables)
-	// TODO: synchronize channel results
 	return initializedProgram.syncRestaurantsWithOpenTablesChannel(restaurantsWithOpenTables)
 }
 
