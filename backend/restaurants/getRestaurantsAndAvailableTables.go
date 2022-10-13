@@ -11,6 +11,7 @@ import (
 	"backend/raflaamoRestaurantsApi"
 	"errors"
 	"fmt"
+	"golang.org/x/exp/slices"
 )
 
 type RestaurantWithAvailableTables struct {
@@ -76,7 +77,13 @@ func (initializedProgram *InitializeProgram) getAvailableTableTimeSlotsFromResta
 			return nil, fmt.Errorf("[getAvailableTableTimeSlotsFromRestaurantUrls] - %w", errors.New("raflaamo open tables api seems to be down"))
 		}
 		timeSlots := initializedProgram.captureTimeSlots(graphApiResponseFromRequestUrl, kitchenClosingTime)
-		allCapturedTimeSlots = append(allCapturedTimeSlots, timeSlots...)
+
+		// avoid duplicates.
+		for _, timeSlot := range timeSlots {
+			if !slices.Contains(allCapturedTimeSlots, timeSlot) {
+				allCapturedTimeSlots = append(allCapturedTimeSlots, timeSlot)
+			}
+		}
 	}
 	return allCapturedTimeSlots, nil
 }
@@ -103,4 +110,16 @@ func (initializedProgram *InitializeProgram) addRelativeTimesAndReservationIdToR
 	restaurant.Openingtime.TimeLeftToReserveMinutes = kitchenRelativeTime.RelativeMinutes
 
 	restaurant.Links.TableReservationLocalizedId = graphApiRequestUrl.IdFromReservationPageUrl // Storing the id for the front end, so we can in the future reserve with the id.
+}
+
+func removeDuplicate[T string | int](sliceList []T) []T {
+	allKeys := make(map[T]bool)
+	list := []T{}
+	for _, item := range sliceList {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
 }
