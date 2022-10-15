@@ -6,7 +6,6 @@ package main
 
 import (
 	"backend/restaurants"
-	"errors"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slices"
@@ -136,6 +135,7 @@ func main() {
 	//	log.Fatalln(err)
 	//}
 	//fmt.Println(collectedRestaurants)
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	config := cors.DefaultConfig()
 	r.Use(cors.New(cors.Config{
@@ -159,7 +159,7 @@ func main() {
 		init := restaurants.GetInitializeProgram(endpoint.userParameters.city, endpoint.userParameters.amountOfEaters)
 		collectedRestaurants, err := init.GetRestaurantsAndAvailableTables()
 		if err != nil {
-			c.JSON(http.StatusBadRequest, errors.Unwrap(err))
+			c.JSON(http.StatusBadRequest, "there was problems getting restaurants and/or available tables")
 			return
 		}
 		c.JSON(http.StatusOK, collectedRestaurants)
