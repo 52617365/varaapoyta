@@ -78,6 +78,9 @@ func (initializedProgram *InitializeProgram) syncRestaurantsWithOpenTablesChanne
 		if restaurantWithOpenTables.err != nil {
 			return nil, restaurantWithOpenTables.err
 		}
+		if len(restaurantWithOpenTables.results.AvailableTables) == 0 {
+			continue
+		}
 		sort.Strings(restaurantWithOpenTables.results.AvailableTables)
 		restaurantsWithOpenTablesSync = append(restaurantsWithOpenTablesSync, *restaurantWithOpenTables.results)
 	}
@@ -181,7 +184,7 @@ func (initializedProgram *InitializeProgram) addRelativeTimesAndReservationIdToR
 
 func removeDuplicate[T string | int](sliceList []T) []T {
 	allKeys := make(map[T]bool)
-	list := []T{}
+	var list []T
 	for _, item := range sliceList {
 		if _, value := allKeys[item]; !value {
 			allKeys[item] = true

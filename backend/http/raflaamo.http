@@ -5,14 +5,14 @@ content-type: application/json
 client_id: jNAWMvWD9rp637RaR
 
 {
-"operationName": "getRestaurantsByLocation",
+  "operationName": "getRestaurantsByLocation",
   "variables": {
     "first": 470,
     "restaurantType": "ALL",
     "input": {
       "locationName": "Helsinki",
       "feature": {
-        "rentableVenues": false
+        "rentableVenues": true
       }
     },
     "after": "eyJmIjoxMCwiZyI6eyJhIjo2MC4xNzExNiwibyI6MjQuOTMyNTh9fQo"
