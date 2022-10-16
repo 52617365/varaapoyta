@@ -33,10 +33,7 @@ func (graphApi *RaflaamoGraphApi) NewRaflaamoGraphApi(requestUrl string) *http.R
 func (graphApi *RaflaamoGraphApi) sendRequestToGraphApi(graphApiRequest *http.Request) (*http.Response, error) {
 	response, err := graphApi.httpClient.Do(graphApiRequest)
 
-	if err != nil {
-		return nil, RaflaamoGraphApiDown{}
-	}
-	if response.StatusCode != 200 {
+	if err != nil || response.StatusCode != 200 {
 		return nil, RaflaamoGraphApiDown{}
 	}
 

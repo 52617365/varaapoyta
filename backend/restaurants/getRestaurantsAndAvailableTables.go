@@ -88,10 +88,13 @@ func (initializedProgram *InitializeProgram) syncRestaurantsWithOpenTablesChanne
 }
 
 func (initializedProgram *InitializeProgram) getAvailableTablesForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields) ([]string, error) {
-	raflaamoGraphApiRequestUrlStruct := raflaamoGraphApi.GetRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, initializedProgram.AmountOfEaters, initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate)
+	raflaamoGraphApiRequestUrlStruct, err := raflaamoGraphApi.GetRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, initializedProgram.AmountOfEaters, initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate)
+	if err != nil {
+		return nil, err
+	}
 	initializedProgram.addRelativeTimesAndReservationIdToRestaurant(restaurant, raflaamoGraphApiRequestUrlStruct)
 
-	restaurantGraphApiRequestUrls := initializedProgram.GraphApi.GenerateGraphApiRequestUrlsForRestaurant(restaurant, initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime, initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentDate, initializedProgram.AmountOfEaters)
+	restaurantGraphApiRequestUrls := initializedProgram.GraphApi.GenerateGraphApiRequestUrlsForRestaurant(initializedProgram.AllNeededRaflaamoTimes.TimeAndDate.CurrentTime, raflaamoGraphApiRequestUrlStruct)
 
 	kitchenClosingTime := restaurant.Openingtime.Kitchentime.Ranges[0].End
 	openTablesFromGraphApi, err := initializedProgram.getAvailableTableTimeSlotsFromRestaurantUrls(restaurantGraphApiRequestUrls, kitchenClosingTime)
@@ -108,7 +111,7 @@ type GraphApiResponse struct {
 }
 
 func (initializedProgram *InitializeProgram) getAvailableTableTimeSlotsFromRestaurantUrls(restaurantGraphApiUrlTimeSlots []string, kitchenClosingTime string) ([]string, error) {
-	channelResult := make(chan GraphApiResponse, len(restaurantGraphApiUrlTimeSlots)) // TODO: admire this solution because it's god tier
+	channelResult := make(chan GraphApiResponse, len(restaurantGraphApiUrlTimeSlots))
 	var wg sync.WaitGroup
 	for _, timeSlotUrl := range restaurantGraphApiUrlTimeSlots {
 		wg.Add(1)

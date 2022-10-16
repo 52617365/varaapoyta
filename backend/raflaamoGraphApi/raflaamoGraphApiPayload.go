@@ -7,7 +7,7 @@ package raflaamoGraphApi
 import (
 	"backend/helpers"
 	"backend/raflaamoGraphApiTimes"
-	"backend/raflaamoRestaurantsApi"
+	"errors"
 	"fmt"
 )
 
@@ -18,13 +18,17 @@ type RequestUrl struct {
 	IdFromReservationPageUrl string
 }
 
-func GetRequestUrl(reservationPageUrl string, amountOfEaters string, currentDate string) *RequestUrl {
-	idFromReservationPageUrl := helpers.RegexToMatchRestaurantId.FindString(reservationPageUrl)
+func GetRequestUrl(reservationPageUrl string, amountOfEaters string, currentDate string) (*RequestUrl, error) {
+	regexMatchGroups := helpers.RegexToMatchRestaurantId.FindAllStringSubmatch(reservationPageUrl, -1)
+	idFromReservationPageUrl := regexMatchGroups[0][1]
+	if idFromReservationPageUrl == "" {
+		return nil, fmt.Errorf("[GetRequestUrl] - %w", errors.New("there was an error matching regex"))
+	}
 	return &RequestUrl{
 		amountOfEaters:           amountOfEaters,
 		currentDate:              currentDate,
 		IdFromReservationPageUrl: idFromReservationPageUrl,
-	}
+	}, nil
 }
 
 func (graphApiPayload *RequestUrl) getRequestUrlForGraphApi(timeSlotToCheck string) string {
@@ -45,8 +49,7 @@ func (graphApiPayload *RequestUrl) GenerateGraphApiRequestUrlsFromFutureTimeSlot
 	return requestUrls
 }
 
-func (graphApi *RaflaamoGraphApi) GenerateGraphApiRequestUrlsForRestaurant(restaurant *raflaamoRestaurantsApi.ResponseFields, currentTime int64, currentDate string, amountOfEaters string) []string {
-	raflaamoGraphApiRequestUrlStruct := GetRequestUrl(restaurant.Links.TableReservationLocalized.FiFi, amountOfEaters, currentDate) // @NOTICE: timeSlotToCheck not initialized.
+func (graphApi *RaflaamoGraphApi) GenerateGraphApiRequestUrlsForRestaurant(currentTime int64, raflaamoGraphApiRequestUrlStruct *RequestUrl) []string {
 	graphApiTimeIntervalsFromTheFuture := raflaamoGraphApiTimes.GetAllFutureGraphApiTimeSlots(currentTime)
 	restaurantGraphApiRequestUrls := raflaamoGraphApiRequestUrlStruct.GenerateGraphApiRequestUrlsFromFutureTimeSlots(graphApiTimeIntervalsFromTheFuture)
 
