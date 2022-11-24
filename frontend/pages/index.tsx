@@ -45,7 +45,7 @@ function Home() {
     }
     setButtonLoading(true);
     try {
-      const url = `https://www.api.rasmusmaki.com/raflaamo/tables/${city}/1`; // TODO: uncomment this after testing
+      const url = `https://www.api.rasmusmaki.com/raflaamo/tables/${city}/1`;
       const response = await fetch(url);
       const parsed_response = await response.json();
       setRavintolat(parsed_response);
