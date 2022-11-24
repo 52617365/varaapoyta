@@ -18,7 +18,7 @@ func main() {
 	r := gin.Default()
 	config := cors.DefaultConfig()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:  []string{"https://raflaamo.rasmusmaki.com", "http://localhost:3000"},
+		AllowOrigins:  []string{"https://raflaamo.rasmusmaki.com"},
 		AllowMethods:  []string{"GET"},
 		AllowHeaders:  []string{"Origin"},
 		ExposeHeaders: []string{"Content-Length"},
