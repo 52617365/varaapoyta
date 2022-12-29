@@ -1,0 +1,840 @@
+[
+  {
+    "restaurant": {
+      "id": "333",
+      "name": {
+        "fi_FI": "Jyvänen Myllypuro"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "helsinki"
+        },
+        "street": {
+          "fi_FI": "Kiviparintie 2"
+        },
+        "zipCode": "00920"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "12:00",
+              "end": "21:30"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "12:00",
+              "end": "21:00"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 6,
+        "time_till_restaurant_closed_minutes": 48,
+        "time_left_to_reserve_hours": 6,
+        "time_left_to_reserve_minutes": 18
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/371"
+        },
+        "tableReservationLocalizedId": "371",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/helsinki/jyvanen-myllypuro"
+        }
+      }
+    },
+    "availableTables": [
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900",
+      "1915",
+      "1930",
+      "1945",
+      "2000"
+    ]
+  },
+  {
+    "restaurant": {
+      "id": "201",
+      "name": {
+        "fi_FI": "Chico's Viikki"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "helsinki"
+        },
+        "street": {
+          "fi_FI": "Viikintori 3"
+        },
+        "zipCode": "00790"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "11:00",
+              "end": "20:00"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "11:00",
+              "end": "20:00"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 5,
+        "time_till_restaurant_closed_minutes": 18,
+        "time_left_to_reserve_hours": 5,
+        "time_left_to_reserve_minutes": 18
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/319"
+        },
+        "tableReservationLocalizedId": "319",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/helsinki/chicos-viikki"
+        }
+      }
+    },
+    "availableTables": [
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900"
+    ]
+  },
+  {
+    "restaurant": {
+      "id": "247",
+      "name": {
+        "fi_FI": "Fredde's"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "helsinki"
+        },
+        "street": {
+          "fi_FI": "Fredikanterassi 1"
+        },
+        "zipCode": "00520"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "11:00",
+              "end": "21:00"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "11:00",
+              "end": "21:00"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 6,
+        "time_till_restaurant_closed_minutes": 18,
+        "time_left_to_reserve_hours": 6,
+        "time_left_to_reserve_minutes": 18
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/2129"
+        },
+        "tableReservationLocalizedId": "2129",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/helsinki/freddes"
+        }
+      }
+    },
+    "availableTables": [
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900",
+      "1915",
+      "1930",
+      "1945",
+      "2000"
+    ]
+  },
+  {
+    "restaurant": {
+      "id": "539",
+      "name": {
+        "fi_FI": "Salve"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "helsinki"
+        },
+        "street": {
+          "fi_FI": "Hietalahdenranta 5 C"
+        },
+        "zipCode": "00180"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "12:00",
+              "end": "23:00"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "12:00",
+              "end": "23:00"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 8,
+        "time_till_restaurant_closed_minutes": 18,
+        "time_left_to_reserve_hours": 8,
+        "time_left_to_reserve_minutes": 18
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/342"
+        },
+        "tableReservationLocalizedId": "342",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/helsinki/salve"
+        }
+      }
+    },
+    "availableTables": [
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900",
+      "1915",
+      "1930",
+      "1945",
+      "2000",
+      "2015",
+      "2030",
+      "2045",
+      "2100",
+      "2115",
+      "2130",
+      "2145",
+      "2200"
+    ]
+  },
+  {
+    "restaurant": {
+      "id": "598",
+      "name": {
+        "fi_FI": "Zetor"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "helsinki"
+        },
+        "street": {
+          "fi_FI": "Mannerheimintie 3-5"
+        },
+        "zipCode": "00100"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "13:00",
+              "end": "23:30"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "13:00",
+              "end": "23:00"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 8,
+        "time_till_restaurant_closed_minutes": 48,
+        "time_left_to_reserve_hours": 8,
+        "time_left_to_reserve_minutes": 18
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/297"
+        },
+        "tableReservationLocalizedId": "297",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/helsinki/zetor"
+        }
+      }
+    },
+    "availableTables": [
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900",
+      "1915",
+      "1930",
+      "1945",
+      "2000",
+      "2015",
+      "2030",
+      "2045",
+      "2100",
+      "2115",
+      "2130",
+      "2145",
+      "2200"
+    ]
+  },
+  {
+    "restaurant": {
+      "id": "176",
+      "name": {
+        "fi_FI": "Belge"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "helsinki"
+        },
+        "street": {
+          "fi_FI": "Kluuvikatu 5"
+        },
+        "zipCode": "00100"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "14:00",
+              "end": "22:00"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "14:00",
+              "end": "21:30"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 7,
+        "time_till_restaurant_closed_minutes": 18,
+        "time_left_to_reserve_hours": 6,
+        "time_left_to_reserve_minutes": 48
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/341"
+        },
+        "tableReservationLocalizedId": "341",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/helsinki/belge"
+        }
+      }
+    },
+    "availableTables": [
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900",
+      "1915",
+      "1930",
+      "1945",
+      "2000",
+      "2015",
+      "2030"
+    ]
+  },
+  {
+    "restaurant": {
+      "id": "342",
+      "name": {
+        "fi_FI": "Kappeli"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "helsinki"
+        },
+        "street": {
+          "fi_FI": "Eteläesplanadi 1"
+        },
+        "zipCode": "00130"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "10:00",
+              "end": "00:00"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "12:00",
+              "end": "22:00"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 9,
+        "time_till_restaurant_closed_minutes": 18,
+        "time_left_to_reserve_hours": 7,
+        "time_left_to_reserve_minutes": 18
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/293"
+        },
+        "tableReservationLocalizedId": "293",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/helsinki/kappeli"
+        }
+      }
+    },
+    "availableTables": [
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900",
+      "1915",
+      "1930",
+      "1945",
+      "2000",
+      "2015",
+      "2030",
+      "2045",
+      "2100"
+    ]
+  },
+  {
+    "restaurant": {
+      "id": "169",
+      "name": {
+        "fi_FI": "Ateljee Bar"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "helsinki"
+        },
+        "street": {
+          "fi_FI": "Yrjönkatu 26"
+        },
+        "zipCode": "00100"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "08:00",
+              "end": "00:00"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "08:00",
+              "end": "00:00"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 9,
+        "time_till_restaurant_closed_minutes": 18,
+        "time_left_to_reserve_hours": 9,
+        "time_left_to_reserve_minutes": 18
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/56"
+        },
+        "tableReservationLocalizedId": "56",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/helsinki/ateljee-bar"
+        }
+      }
+    },
+    "availableTables": [
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900",
+      "1915",
+      "1930",
+      "1945",
+      "2000",
+      "2015",
+      "2030",
+      "2045",
+      "2100",
+      "2115",
+      "2130",
+      "2145",
+      "2200",
+      "2215",
+      "2230",
+      "2245",
+      "2300"
+    ]
+  },
+  {
+    "restaurant": {
+      "id": "369",
+      "name": {
+        "fi_FI": "La Famiglia Helsinki"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "helsinki"
+        },
+        "street": {
+          "fi_FI": "Keskuskatu 3"
+        },
+        "zipCode": "00100"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "12:00",
+              "end": "23:00"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "12:00",
+              "end": "23:00"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 8,
+        "time_till_restaurant_closed_minutes": 18,
+        "time_left_to_reserve_hours": 8,
+        "time_left_to_reserve_minutes": 18
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/357"
+        },
+        "tableReservationLocalizedId": "357",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/helsinki/la-famiglia-helsinki"
+        }
+      }
+    },
+    "availableTables": [
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900",
+      "1915",
+      "1930",
+      "1945",
+      "2000",
+      "2015",
+      "2030",
+      "2045",
+      "2100",
+      "2115",
+      "2130",
+      "2145",
+      "2200"
+    ]
+  },
+  {
+    "restaurant": {
+      "id": "554",
+      "name": {
+        "fi_FI": "Stone's"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "helsinki"
+        },
+        "street": {
+          "fi_FI": "Keskuskatu 4"
+        },
+        "zipCode": "00100"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "12:00",
+              "end": "00:00"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "12:00",
+              "end": "00:00"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 9,
+        "time_till_restaurant_closed_minutes": 18,
+        "time_left_to_reserve_hours": 9,
+        "time_left_to_reserve_minutes": 18
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/281"
+        },
+        "tableReservationLocalizedId": "281",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/helsinki/stones"
+        }
+      }
+    },
+    "availableTables": [
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900",
+      "1915",
+      "1930",
+      "1945",
+      "2000",
+      "2015",
+      "2030",
+      "2045",
+      "2100",
+      "2115",
+      "2130",
+      "2145",
+      "2200",
+      "2215",
+      "2230",
+      "2245",
+      "2300"
+    ]
+  },
+  {
+    "restaurant": {
+      "id": "200",
+      "name": {
+        "fi_FI": "Chico's Töölö"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "helsinki"
+        },
+        "street": {
+          "fi_FI": "Mannerheimintie 68"
+        },
+        "zipCode": "00260"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "14:00",
+              "end": "20:00"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "14:00",
+              "end": "20:00"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 5,
+        "time_till_restaurant_closed_minutes": 18,
+        "time_left_to_reserve_hours": 5,
+        "time_left_to_reserve_minutes": 18
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/320"
+        },
+        "tableReservationLocalizedId": "320",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/helsinki/chicos-tl"
+        }
+      }
+    },
+    "availableTables": [
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900"
+    ]
+  }
+]

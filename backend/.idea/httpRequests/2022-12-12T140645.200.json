@@ -1,0 +1,73 @@
+[
+  {
+    "name": "Stone's",
+    "intervals": [
+      {
+        "from": 1660305600000,
+        "to": 1660305600000,
+        "color": "transparent"
+      }
+    ],
+    "seats": 0,
+    "id": 281,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "Sports Academy Citykäytävä",
+    "intervals": [
+      {
+        "from": 1660305600000,
+        "to": 1660305600000,
+        "color": "transparent"
+      }
+    ],
+    "seats": 0,
+    "id": 533,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "La Famiglia Helsinki Sali",
+    "intervals": [
+      {
+        "from": 1660305600000,
+        "to": 1660328099000
+      }
+    ],
+    "seats": 0,
+    "id": 357,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "Zetor",
+    "intervals": [
+      {
+        "from": 1660305600000,
+        "to": 1660328099000
+      }
+    ],
+    "seats": 0,
+    "id": 297,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "VENN",
+    "intervals": [
+      {
+        "from": 1660305600000,
+        "to": 1660312799000
+      },
+      {
+        "from": 1660324500000,
+        "to": 1660328099000
+      }
+    ],
+    "seats": 0,
+    "id": 1531,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  }
+]

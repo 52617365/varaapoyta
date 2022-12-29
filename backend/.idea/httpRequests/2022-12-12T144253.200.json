@@ -1,0 +1,70 @@
+[
+  {
+    "name": "Stone's",
+    "intervals": [
+      {
+        "from": 1670817600000,
+        "to": 1670817600000,
+        "color": "transparent"
+      }
+    ],
+    "seats": 0,
+    "id": 281,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "Sports Academy Citykäytävä",
+    "intervals": [
+      {
+        "from": 1670835600000,
+        "to": 1670840099000
+      }
+    ],
+    "seats": 0,
+    "id": 533,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "La Famiglia Helsinki Sali",
+    "intervals": [
+      {
+        "from": 1670835600000,
+        "to": 1670840099000
+      }
+    ],
+    "seats": 0,
+    "id": 357,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "VENN",
+    "intervals": [
+      {
+        "from": 1670817600000,
+        "to": 1670817600000,
+        "color": "transparent"
+      }
+    ],
+    "seats": 0,
+    "id": 1531,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "Amarillo Helsinki Aleksanterinkatu",
+    "intervals": [
+      {
+        "from": 1670817600000,
+        "to": 1670817600000,
+        "color": "transparent"
+      }
+    ],
+    "seats": 0,
+    "id": 2041,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  }
+]

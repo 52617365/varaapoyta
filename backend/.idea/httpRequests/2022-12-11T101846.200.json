@@ -1,0 +1,69 @@
+[
+  {
+    "name": "Bistro MANU",
+    "intervals": [
+      {
+        "from": 1660291200000,
+        "to": 1660295699000
+      }
+    ],
+    "seats": 0,
+    "id": 38,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "Presidentti Show & Dinner",
+    "intervals": [
+      {
+        "from": 1660273200000,
+        "to": 1660273200000,
+        "color": "transparent"
+      }
+    ],
+    "seats": 0,
+    "id": 53,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "Presidentti Sali",
+    "intervals": [
+      {
+        "from": 1660273200000,
+        "to": 1660273200000,
+        "color": "transparent"
+      }
+    ],
+    "seats": 0,
+    "id": 816,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "Original Sokos Hotel Presidentti Aamiainen",
+    "intervals": [
+      {
+        "from": 1660275000000,
+        "to": 1660287599000
+      }
+    ],
+    "seats": 0,
+    "id": 2465,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  },
+  {
+    "name": "10. Kerros",
+    "intervals": [
+      {
+        "from": 1660294800000,
+        "to": 1660295699000
+      }
+    ],
+    "seats": 0,
+    "id": 72,
+    "env": null,
+    "host": "https:\/\/s-varaukset.fi"
+  }
+]

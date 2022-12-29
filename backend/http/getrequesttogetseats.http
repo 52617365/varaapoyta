@@ -18,11 +18,11 @@ GET https://s-varaukset.fi/api/recommendations/slot/281/2022-08-12/2400/1
 Accept: application/json
 
 ###
-GET https://s-varaukset.fi/api/recommendations/slot/281/2022-08-12/0000/1
+GET https://s-varaukset.fi/api/recommendations/slot/38/2022-12-12/1400/1
 Accept: application/json
 
 ###
 
 // testing.
-GET https://s-varaukset.fi/api/recommendations/slot/38/2022-08-12/0800/1
+GET https://s-varaukset.fi/api/recommendations/slot/38/2022-12-22/0800/1
 Accept: application/json

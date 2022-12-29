@@ -1,0 +1,19 @@
+Index: ../frontend/pages/index.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../frontend/pages/index.tsx b/../frontend/pages/index.tsx
+--- a/../frontend/pages/index.tsx	
++++ b/../frontend/pages/index.tsx	
+@@ -22,10 +22,8 @@
+         const response = await fetch(url);
+         const parsed_response = await response.json();
+         asetaKaupunki(parsed_response.city);
+-        console.log(kaupunki);
+       } catch (e) {
+         // Could not find users location.
+-        console.log("Could not find users location.");
+       }
+     });
+   };

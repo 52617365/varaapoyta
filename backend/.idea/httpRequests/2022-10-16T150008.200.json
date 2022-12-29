@@ -1,0 +1,162 @@
+[
+  {
+    "restaurant": {
+      "id": "155",
+      "name": {
+        "fi_FI": "Amarillo, Rovaniemi"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "rovaniemi"
+        },
+        "street": {
+          "fi_FI": "Koskikatu 4"
+        },
+        "zipCode": "96200"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "12:00",
+              "end": "23:00"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "12:00",
+              "end": "22:30"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 11,
+        "time_till_restaurant_closed_minutes": 0,
+        "time_left_to_reserve_hours": 10,
+        "time_left_to_reserve_minutes": 30
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/1685?_ga=2.148999472.726295467.1612508860-500513624.1552976624"
+        },
+        "tableReservationLocalizedId": "1685",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/rovaniemi/amarillo-rovaniemi"
+        }
+      }
+    },
+    "availableTables": [
+      "1215",
+      "1230",
+      "1245",
+      "1300",
+      "1315",
+      "1330",
+      "1345",
+      "1400",
+      "1415",
+      "1430",
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900",
+      "1915",
+      "1930",
+      "1945",
+      "2000",
+      "2015",
+      "2030",
+      "2045",
+      "2100",
+      "2115",
+      "2130"
+    ]
+  },
+  {
+    "restaurant": {
+      "id": "237",
+      "name": {
+        "fi_FI": "Frans & Chérie, Rovaniemi"
+      },
+      "address": {
+        "municipality": {
+          "fi_FI": "rovaniemi"
+        },
+        "street": {
+          "fi_FI": "Koskikatu 4"
+        },
+        "zipCode": "96200"
+      },
+      "openingTime": {
+        "restaurantTime": {
+          "ranges": [
+            {
+              "start": "14:00",
+              "end": "21:00"
+            }
+          ]
+        },
+        "kitchenTime": {
+          "ranges": [
+            {
+              "start": "14:00",
+              "end": "20:30"
+            }
+          ]
+        },
+        "time_till_restaurant_closed_hours": 9,
+        "time_till_restaurant_closed_minutes": 0,
+        "time_left_to_reserve_hours": 8,
+        "time_left_to_reserve_minutes": 30
+      },
+      "links": {
+        "tableReservationLocalized": {
+          "fi_FI": "https://s-varaukset.fi/online/reservation/fi/1679?_ga=2.214461841.726295467.1612508860-500513624.1552976624"
+        },
+        "tableReservationLocalizedId": "1679",
+        "homepageLocalized": {
+          "fi_FI": "https://www.raflaamo.fi/fi/rovaniemi/frans-cherie-rovaniemi"
+        }
+      }
+    },
+    "availableTables": [
+      "1415",
+      "1430",
+      "1445",
+      "1500",
+      "1515",
+      "1530",
+      "1545",
+      "1600",
+      "1615",
+      "1630",
+      "1645",
+      "1700",
+      "1715",
+      "1730",
+      "1745",
+      "1800",
+      "1815",
+      "1830",
+      "1845",
+      "1900",
+      "1915",
+      "1930"
+    ]
+  }
+]

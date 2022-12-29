@@ -6,37 +6,37 @@
         {
           "id": "563",
           "name": {
-            "fi_FI": "Tilausravintola Presidentti"
+            "fi_fi": "tilausravintola presidentti"
           },
-          "urlPath": {
-            "fi_FI": "/fi/ravintola/helsinki/tilausravintola-presidentti"
+          "urlpath": {
+            "fi_fi": "/fi/ravintola/helsinki/tilausravintola-presidentti"
           },
           "address": {
             "municipality": {
-              "fi_FI": "Helsinki"
+              "fi_fi": "helsinki"
             },
             "street": {
-              "fi_FI": "Eteläinen Rautatiekatu 4"
+              "fi_fi": "eteläinen rautatiekatu 4"
             },
-            "zipCode": "00100"
+            "zipcode": "00100"
           },
           "features": {
             "accessible": true
           },
-          "openingTime": {
-            "restaurantTime": {
+          "openingtime": {
+            "restauranttime": {
               "ranges": null
             },
-            "kitchenTime": {
+            "kitchentime": {
               "ranges": null
             }
           },
           "links": {
-            "tableReservationLocalized": {
-              "fi_FI": ""
+            "tablereservationlocalized": {
+              "fi_fi": ""
             },
-            "homepageLocalized": {
-              "fi_FI": "https://www.raflaamo.fi/fi/helsinki/tilausravintola-presidentti"
+            "homepagelocalized": {
+              "fi_fi": "https://www.raflaamo.fi/fi/helsinki/tilausravintola-presidentti"
             }
           }
         },

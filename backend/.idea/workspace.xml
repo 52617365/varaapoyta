@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="faa9261e-3e69-4638-8eda-f18f527abd1b" name="Changes" comment="took testing origin out of allowed origins.">
+      <change beforePath="$PROJECT_DIR$/http/getrequesttogetseats.http" beforeDir="false" afterPath="$PROJECT_DIR$/http/getrequesttogetseats.http" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/http/modified_response.json" beforeDir="false" afterPath="$PROJECT_DIR$/http/modified_response.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/pages/index.tsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file://$USER_HOME$/go/go1.19" />
+  <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="52617365 &lt;rasengithub@protonmail.com&gt;" />
+      </list>
+    </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RESET_MODE" value="HARD" />
+    <option name="SIGN_OFF_COMMIT" value="true" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2ELRkQhb0FYCzt6hV8gI0nuIZZC" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
+    &quot;Project.color&quot;: &quot;1e0239&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.format.on.save.advertiser.fired&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.watchers.conflict.with.on.save.actions.check.performed&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/rase/dev/varaapoyta-backend-refactor&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
+    &quot;update.copyright.on.save&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="GoMoveDeclarationDialog.RECENT_KEY">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\rase\dev\varaapoyta\backend\endpoint" />
+      <recent name="C:\Users\rase\dev\varaapoyta\backend\restaurants" />
+      <recent name="C:\Users\rase\dev\varaapoyta\backend\graphApiResponseStructure" />
+      <recent name="C:\Users\rase\dev\varaapoyta\backend\helpers" />
+      <recent name="C:\Users\rase\dev\varaapoyta\backend\raflaamoGraphApi" />
+    </key>
+  </component>
+  <component name="RunManager" selected="HTTP Request.getrequesttogetseats | #6">
+    <configuration name="go build backend" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+      <module name="backend" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <package value="backend" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go test backend" type="GoTestRunConfiguration" factoryName="Go Test" nameIsGenerated="true">
+      <module name="backend" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <package value="backend" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <configuration name="getrequesttogetseats | #2" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/getrequesttogetseats.http" index="2" requestIdentifier="#2" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="getrequesttogetseats | #3" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/getrequesttogetseats.http" index="3" requestIdentifier="#3" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="getrequesttogetseats | #4" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/getrequesttogetseats.http" index="4" requestIdentifier="#4" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="getrequesttogetseats | #5" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/getrequesttogetseats.http" index="5" requestIdentifier="#5" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="getrequesttogetseats | #6" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/getrequesttogetseats.http" index="6" requestIdentifier="#6" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Go Build.go build backend" />
+      <item itemvalue="Go Test.go test backend" />
+      <item itemvalue="HTTP Request.getrequesttogetseats | #2" />
+      <item itemvalue="HTTP Request.getrequesttogetseats | #3" />
+      <item itemvalue="HTTP Request.getrequesttogetseats | #4" />
+      <item itemvalue="HTTP Request.getrequesttogetseats | #5" />
+      <item itemvalue="HTTP Request.getrequesttogetseats | #6" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="HTTP Request.getrequesttogetseats | #6" />
+        <item itemvalue="HTTP Request.getrequesttogetseats | #4" />
+        <item itemvalue="HTTP Request.getrequesttogetseats | #2" />
+        <item itemvalue="HTTP Request.getrequesttogetseats | #5" />
+        <item itemvalue="HTTP Request.getrequesttogetseats | #3" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="faa9261e-3e69-4638-8eda-f18f527abd1b" name="Changes" comment="Fixed regex to produce expected results, it was not matching a single digit before, now it is." />
+      <created>1666278759484</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1666278759484</updated>
+      <workItem from="1666278760648" duration="451000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UpdateCopyrightCheckinHandler">
+    <option name="UPDATE_COPYRIGHT" value="true" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
+    <MESSAGE value="Going to use select to determine if channel had error or not. It does not yet work though." />
+    <MESSAGE value="new todos to fix a new mess i made" />
+    <MESSAGE value="Did two hours of refactoring, continuing later." />
+    <MESSAGE value="import cycle fixed" />
+    <MESSAGE value="Rewrote functions in getRestaurantsAndAvailableTables.go" />
+    <MESSAGE value="TODO: finish getAvailableTableTimeSlotsRestaurantsUrls." />
+    <MESSAGE value="reservation link id sticks, time slot don't." />
+    <MESSAGE value="reservation link id sticks, time slots don't, fixed import cycle again." />
+    <MESSAGE value="We get the graph api time slots from current point forward correctly again." />
+    <MESSAGE value="Making the program good sync first then trying goroutines again." />
+    <MESSAGE value="It seems to be working fine sync now." />
+    <MESSAGE value="avoiding duplicates now." />
+    <MESSAGE value="ready sync code for main" />
+    <MESSAGE value="Some goroutines work now, this is a huge ass fucking step. We need to add some more goroutines into iterateRestaurants now." />
+    <MESSAGE value="New TODO so I don't forget." />
+    <MESSAGE value="synchronizeGraphApiChannelResults added for separation of concerns." />
+    <MESSAGE value="Think we nailed it with goroutines, not sure." />
+    <MESSAGE value="It's good now I believe." />
+    <MESSAGE value="open tables now get sorted too." />
+    <MESSAGE value="unwrapped errors, took localhost out of accepted origins (cors)." />
+    <MESSAGE value="Gin now in release mode." />
+    <MESSAGE value="Empty available tables now get rendered out." />
+    <MESSAGE value="Fixed regex to produce expected results, it was not matching a single digit before, now it is." />
+    <MESSAGE value="Think I fixed clocks." />
+    <MESSAGE value="took testing origin out of allowed origins." />
+    <option name="LAST_COMMIT_MESSAGE" value="took testing origin out of allowed origins." />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="GoApplicationRunConfiguration">
+        <watch expression="raflaamoReservationTime" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>
