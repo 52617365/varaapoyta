@@ -85,7 +85,6 @@ function Home() {
       return <h1>{ravintolatApista}</h1>;
     }
   };
-  // kaupunki is used in get query to endpoint
   return (
     <>
       <div className="hero min-h-screen bg-base-200">
