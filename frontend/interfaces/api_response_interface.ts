@@ -1,48 +1,56 @@
-interface string_field {
-  fi_FI: string;
+export interface ApiResponse {
+    restaurant:               Restaurant;
+    timeSlots:                string[];
+    timeTillRestaurantCloses: TimeTillCloses;
+    timeTillKitchenCloses:    TimeTillCloses;
 }
 
-interface ranges_contents {
-  end: string;
-  start: string;
+export interface Restaurant {
+    id:                string;
+    reservationPageId: string;
+    name:              Name;
+    urlPath:           Name;
+    address:           Address;
+    features:          Features;
+    openingTime:       OpeningTime;
+    Links:             Links;
 }
 
-interface ranges {
-  ranges: Array<ranges_contents>;
+export interface Links {
+    tableReservationLocalized: Name;
+    homepageLocalized:         Name;
 }
 
-interface opening_time {
-  kitchenTime: ranges;
-  restaurantTime: ranges;
-  time_till_restaurant_closed_hours: number;
-  time_till_restaurant_closed_minutes: number;
-  time_left_to_reserve_hours: number;
-  time_left_to_reserve_minutes: number;
+export interface Name {
+    fi_FI: string;
 }
 
-interface address {
-  municipality: string_field;
-  street: string_field;
-  zipCode: string;
-}
-interface links {
-  tableReservationLocalized: string_field;
-  tableReservationLocalizedId: string;
-  homepageLocalized: string_field;
+export interface Address {
+    municipality: Name;
+    street:       Name;
+    zipCode:      string;
 }
 
-interface restaurant {
-  id: string;
-  name: string_field;
-  urlPath: string_field;
-  address: address;
-  openingTime: opening_time;
-  links: links;
+export interface Features {
+    accessible: boolean;
 }
 
-interface api_response {
-  restaurant: restaurant
-  availableTables: Array<string>;
+export interface OpeningTime {
+    restaurantTime: Time;
+    kitchenTime:    Time;
 }
 
-export default api_response;
+export interface Time {
+    ranges: Range[];
+}
+
+export interface Range {
+    start:      string;
+    end:        string;
+    endNextDay: boolean;
+}
+
+export interface TimeTillCloses {
+    hour:   number;
+    minute: number;
+}

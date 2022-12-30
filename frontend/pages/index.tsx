@@ -2,11 +2,11 @@ import type {NextPage} from "next";
 import Button from "../components/Button";
 import React, {useEffect, useState} from "react";
 import Card from "../components/Card";
-import api_response from "../interfaces/api_response_interface";
+import { ApiResponse } from "../interfaces/api_response_interface";
 
 function Home() {
   const [buttonLoading, setButtonLoading] = React.useState(false);
-  const [ravintolatApista, setRavintolat] = React.useState<api_response[]>([]);
+  const [ravintolatApista, setRavintolat] = React.useState<ApiResponse[]>([]);
   const [is_error, set_error] = React.useState<boolean>(false);
   const [fetched, set_fetched] = React.useState<boolean>(false);
   const [kaupunki, asetaKaupunki] = useState("");
@@ -45,7 +45,8 @@ function Home() {
     }
     setButtonLoading(true);
     try {
-      const url = `https://www.api.rasmusmaki.com/raflaamo/tables/${city}/1`;
+      // const url = `https://www.api.rasmusmaki.com/raflaamo/tables/${city}/1`;
+      const url = `http://localhost:8080/tables/${city}`;
       const response = await fetch(url);
       const parsed_response = await response.json();
       setRavintolat(parsed_response);
@@ -73,11 +74,11 @@ function Home() {
 
     // API returns either an error message or an array containing the restaurant information.
     if (Array.isArray(ravintolatApista)) {
-      return ravintolatApista.map((ravintola: api_response) => {
+      return ravintolatApista.map((restaurant: ApiResponse) => {
         return (
             // Storing the id from the reservation page url as a key so its easy to reuse when in V2 we have reservation too.
-            <div key={ravintola.restaurant.links.tableReservationLocalizedId}>
-              <Card apiResponse={ravintola}/>
+            <div key={restaurant.restaurant.reservationPageId}>
+              <Card apiResponse={restaurant}/>
             </div>
         );
       });
